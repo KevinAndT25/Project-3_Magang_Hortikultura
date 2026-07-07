@@ -11,8 +11,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Daftarkan middleware alias di sini
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
+
+        $middleware->group('admin', [
+            'auth',
+            'role:admin',
+        ]);
+        
+        $middleware->group('pemohon', [
+            'auth',
+            'role:pemohon',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        //  
     })->create();
