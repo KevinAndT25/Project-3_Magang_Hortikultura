@@ -9,53 +9,77 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function showLoginForm()
+    // Tampilkan login admin
+    public function showLoginAdmin()
     {
-        return view('auth.login');
+        return view('auth.login_admin');
     }
 
-    public function login(Request $request)
+    // Tampilkan login pemohon
+    public function showLoginPemohon()
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->intended('/dashboard');
-        }
-
-        return back()->withErrors(['email' => 'Email atau password salah.']);
+        return view('auth.login_pemohon');
     }
 
-    public function showRegisterForm()
+    // Tampilkan register
+    public function showRegister()
     {
         return view('auth.register');
     }
 
+    // Proses login
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $credentials = [
+            'name' => $request->username,
+            'password' => $request->password,
+        ];
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect()->route('dashboard.admin');
+            }
+            return redirect()->route('dashboard.pemohon');
+        }
+
+        return back()->withErrors(['username' => 'Username atau password salah.']);
+    }
+
+    // Proses register
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'no_hp' => 'required|string|max:15',
-            'password' => 'required|min:6|confirmed',
+            'no_hp' => 'required|string|max:20',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
             'no_hp' => $request->no_hp,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'pemohon', // default pemohon
+            'role' => 'pemohon',
         ]);
 
-        return redirect('/login')->with('success', 'Registrasi berhasil, silakan login.');
+        Auth::login($user);
+        return redirect()->route('dashboard.pemohon');
     }
 
-    public function logout()
+    // Logout
+    public function logout(Request $request)
     {
         Auth::logout();
-        return redirect('/login');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }

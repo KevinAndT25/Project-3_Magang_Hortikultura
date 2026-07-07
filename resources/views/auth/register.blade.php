@@ -1,36 +1,51 @@
 @extends('layouts.app')
 
+@section('title', 'Register Pemohon')
+
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card">
-            <div class="card-header">Register Pemohon</div>
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Register Pemohon</h4>
+            </div>
             <div class="card-body">
-                <form method="POST" action="{{ route('register') }}">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form method="POST" action="{{ route('register.submit') }}">
                     @csrf
                     <div class="mb-3">
-                        <label>Nama Lengkap</label>
-                        <input type="text" name="name" class="form-control" required>
+                        <label for="name" class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
                     </div>
                     <div class="mb-3">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-control" required>
+                        <label for="no_hp" class="form-label">No. HP</label>
+                        <input type="text" class="form-control" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" required>
                     </div>
                     <div class="mb-3">
-                        <label>No HP</label>
-                        <input type="text" name="no_hp" class="form-control" required>
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
                     </div>
                     <div class="mb-3">
-                        <label>Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="mb-3">
-                        <label>Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
+                        <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
                     </div>
-                    <button type="submit" class="btn btn-success w-100">Daftar</button>
+                    <button type="submit" class="btn btn-warning w-100">Daftar</button>
                 </form>
-                <p class="mt-3 text-center">Sudah punya akun? <a href="{{ route('login') }}">Login</a></p>
+                <div class="mt-3 text-center">
+                    Sudah punya akun? <a href="{{ route('login.pemohon') }}">Login</a>
+                </div>
             </div>
         </div>
     </div>

@@ -8,11 +8,13 @@ use App\Models\Permohonan;
 
 class PengujianController extends Controller
 {
-    public function show($permohonan_id)
+    public function create($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
-        $pengujian = Pengujian::where('permohonan_id', $permohonan_id)->first();
-        return view('admin.pengujian', compact('permohonan', 'pengujian'));
+        if ($permohonan->pengujian && $permohonan->pengujian->is_submit) {
+            return redirect()->route('pengujian.show', $permohonan_id);
+        }
+        return view('pengujian.create', compact('permohonan'));
     }
 
     public function store(Request $request, $permohonan_id)
@@ -24,25 +26,26 @@ class PengujianController extends Controller
         ]);
 
         $permohonan = Permohonan::findOrFail($permohonan_id);
-        $pengujian = Pengujian::where('permohonan_id', $permohonan_id)->first();
-        if ($pengujian && $pengujian->is_submit) {
-            return back()->with('error', 'Pengujian sudah disubmit, tidak bisa diubah.');
-        }
 
-        $data = $request->all();
-        $data['nomor_permohonan_uji'] = $permohonan->nomor_permohonan;
-        $data['permohonan_id'] = $permohonan_id;
-        $data['is_submit'] = true;
-
-        if ($pengujian) {
-            $pengujian->update($data);
-        } else {
-            Pengujian::create($data);
-        }
+        Pengujian::create([
+            'permohonan_id' => $permohonan_id,
+            'nomor_permohonan_uji' => $permohonan->nomor_permohonan,
+            'tanggal_pengujian' => $request->tanggal_pengujian,
+            'lokasi' => $request->lokasi,
+            'deskripsi' => $request->deskripsi,
+            'is_submit' => true,
+        ]);
 
         $permohonan->pengujian_selesai = true;
         $permohonan->save();
 
-        return redirect()->route('admin.dashboard')->with('success', 'Pengujian berhasil disubmit.');
+        return redirect()->route('dashboard.admin')->with('success', 'Data pengujian berhasil disubmit.');
+    }
+
+    public function show($permohonan_id)
+    {
+        $permohonan = Permohonan::findOrFail($permohonan_id);
+        $pengujian = $permohonan->pengujian;
+        return view('pengujian.show', compact('permohonan', 'pengujian'));
     }
 }

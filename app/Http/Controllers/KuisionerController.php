@@ -8,35 +8,29 @@ use App\Models\Permohonan;
 
 class KuisionerController extends Controller
 {
-    // Tampilkan form kuisioner (jika sudah diisi, tampilkan readonly)
-    public function show($permohonan_id)
+    public function create($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
-        // Hanya pemilik atau admin yang bisa lihat
-        if (auth()->user()->role == 'pemohon' && $permohonan->user_id != auth()->id()) {
-            abort(403);
-        }
-        // Cek apakah test report sudah selesai (agar kuisioner bisa diisi)
-        // Jika belum, mungkin arahkan ke dashboard dengan pesan
         if (!$permohonan->test_report_selesai) {
-            return redirect()->route('pemohon.dashboard')->with('error', 'Test report belum tersedia, silahkan tunggu.');
+            return redirect()->route('dashboard.pemohon')->with('error', 'Test report belum tersedia.');
         }
-        $kuisioner = Kuisioner::where('permohonan_id', $permohonan_id)->first();
-        return view('kuisioner.form', compact('permohonan', 'kuisioner'));
+        if ($permohonan->kuisioner && $permohonan->kuisioner->is_submit) {
+            return redirect()->route('kuisioner.show', $permohonan_id);
+        }
+        return view('kuisioner.create', compact('permohonan'));
     }
 
-    // Submit kuisioner
     public function store(Request $request, $permohonan_id)
     {
         $request->validate([
             'nama_responden' => 'required|string|max:255',
             'telepon_responden' => 'required|string|max:20',
             'jenis_kelamin' => 'required|in:L,P',
-            'usia' => 'required|integer|min:1|max:120',
+            'usia' => 'required|integer|min:1',
             'pendidikan_terakhir' => 'required|string',
             'nama_perusahaan_instansi' => 'required|string|max:255',
             'alamat_perusahaan' => 'required|string',
-            'jabatan' => 'required|string|max:255',
+            'jabatan' => 'required|string',
             'lama_bekerja_tahun' => 'required|integer|min:0',
             'pengujian_pertama' => 'required|boolean',
             'pengujian_ke' => 'nullable|integer|min:2',
@@ -56,29 +50,46 @@ class KuisionerController extends Controller
         ]);
 
         $permohonan = Permohonan::findOrFail($permohonan_id);
-        // Pastikan pemohon yang login adalah pemilik
-        if (auth()->user()->role == 'pemohon' && $permohonan->user_id != auth()->id()) {
-            abort(403);
-        }
-        // Cek apakah sudah ada kuisioner dan sudah submit
-        $kuisioner = Kuisioner::where('permohonan_id', $permohonan_id)->first();
-        if ($kuisioner && $kuisioner->is_submit) {
-            return back()->with('error', 'Kuisioner sudah pernah diisi, tidak bisa diubah.');
-        }
 
-        $data = $request->all();
-        $data['permohonan_id'] = $permohonan_id;
-        $data['is_submit'] = true;
-
-        if ($kuisioner) {
-            $kuisioner->update($data);
-        } else {
-            Kuisioner::create($data);
-        }
+        Kuisioner::create([
+            'permohonan_id' => $permohonan_id,
+            'nama_responden' => $request->nama_responden,
+            'telepon_responden' => $request->telepon_responden,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'usia' => $request->usia,
+            'pendidikan_terakhir' => $request->pendidikan_terakhir,
+            'nama_perusahaan_instansi' => $request->nama_perusahaan_instansi,
+            'alamat_perusahaan' => $request->alamat_perusahaan,
+            'jabatan' => $request->jabatan,
+            'lama_bekerja_tahun' => $request->lama_bekerja_tahun,
+            'pengujian_pertama' => $request->pengujian_pertama,
+            'pengujian_ke' => $request->pengujian_ke,
+            'mewakili' => $request->mewakili,
+            'terakhir_mengajukan' => $request->terakhir_mengajukan,
+            'unit_layanan' => $request->unit_layanan,
+            'hari_laporan_keluar' => $request->hari_laporan_keluar,
+            'servqual_1' => $request->servqual_1,
+            'servqual_2' => $request->servqual_2,
+            'servqual_3' => $request->servqual_3,
+            'servqual_4' => $request->servqual_4,
+            'servqual_5' => $request->servqual_5,
+            'kesan_pesan' => $request->kesan_pesan,
+            'kepuasan_umum' => $request->kepuasan_umum,
+            'rekomendasi' => $request->rekomendasi,
+            'ide_saran' => $request->ide_saran,
+            'is_submit' => true,
+        ]);
 
         $permohonan->kuisioner_selesai = true;
         $permohonan->save();
 
-        return redirect()->route('pemohon.dashboard')->with('success', 'Kuisioner berhasil disubmit, sekarang Anda dapat mendownload test report.');
+        return redirect()->route('dashboard.pemohon')->with('success', 'Kuisioner berhasil disubmit.');
+    }
+
+    public function show($permohonan_id)
+    {
+        $permohonan = Permohonan::findOrFail($permohonan_id);
+        $kuisioner = $permohonan->kuisioner;
+        return view('kuisioner.show', compact('permohonan', 'kuisioner'));
     }
 }

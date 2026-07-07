@@ -7,17 +7,46 @@ use App\Models\Permohonan;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function admin()
+    {
+        $totalPermohonan = Permohonan::count();
+        $menungguTindakan = Permohonan::where('validasi_selesai', false)
+                                    ->orWhere('pengujian_selesai', false)
+                                    ->orWhere('test_report_selesai', false)
+                                    ->count();
+        $menungguKuisioner = Permohonan::where('test_report_selesai', true)
+                                    ->where('kuisioner_selesai', false)
+                                    ->count();
+        $selesai = Permohonan::where('validasi_selesai', true)
+                            ->where('pengujian_selesai', true)
+                            ->where('test_report_selesai', true)
+                            ->where('kuisioner_selesai', true)
+                            ->count();
+        
+        $permohonans = Permohonan::with('user')->orderBy('created_at', 'desc')->get();
+        return view('dashboard.admin', compact('totalPermohonan', 'menungguTindakan', 'menungguKuisioner', 'selesai', 'permohonans'));
+    }
+
+    public function pemohon()
     {
         $user = auth()->user();
-        if ($user->role == 'admin') {
-            // Ambil semua permohonan dengan relasi
-            $permohonans = Permohonan::with('user')->orderBy('created_at', 'desc')->get();
-            return view('admin.dashboard', compact('permohonans'));
-        } else {
-            // Pemohon: ambil miliknya
-            $permohonans = Permohonan::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
-            return view('pemohon.dashboard', compact('permohonans'));
-        }
+        $totalPermohonan = $user->permohonans()->count();
+        $sedangDiproses = $user->permohonans()
+                            ->where(function($q) {
+                                $q->where('validasi_selesai', false)
+                                  ->orWhere('pengujian_selesai', false)
+                                  ->orWhere('test_report_selesai', false)
+                                  ->orWhere('kuisioner_selesai', false);
+                            })
+                            ->count();
+        $selesai = $user->permohonans()
+                        ->where('validasi_selesai', true)
+                        ->where('pengujian_selesai', true)
+                        ->where('test_report_selesai', true)
+                        ->where('kuisioner_selesai', true)
+                        ->count();
+
+        $permohonans = $user->permohonans()->orderBy('created_at', 'desc')->get();
+        return view('dashboard.pemohon', compact('totalPermohonan', 'sedangDiproses', 'selesai', 'permohonans'));
     }
 }
