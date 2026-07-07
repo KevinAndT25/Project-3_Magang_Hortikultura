@@ -83,6 +83,7 @@
                             <td>
                                 <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-info">Lihat</a>
                             </td>
+                            <!-- Kolom Validasi -->
                             <td>
                                 @if($p->validasi_selesai)
                                     <a href="{{ route('validasi.show', $p->id) }}" class="btn btn-sm btn-success">Lihat</a>
@@ -90,18 +91,26 @@
                                     <a href="{{ route('validasi.create', $p->id) }}" class="btn btn-sm btn-warning">Isi</a>
                                 @endif
                             </td>
+
+                            <!-- Kolom Pengujian -->
                             <td>
                                 @if($p->pengujian_selesai)
                                     <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success">Lihat</a>
-                                @else
+                                @elseif($p->validasi_selesai)
                                     <a href="{{ route('pengujian.create', $p->id) }}" class="btn btn-sm btn-warning">Isi</a>
+                                @else
+                                    <span class="badge bg-secondary">Terkunci (isi validasi dulu)</span>
                                 @endif
                             </td>
+
+                            <!-- Kolom Test Report -->
                             <td>
                                 @if($p->test_report_selesai)
                                     <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success">Lihat</a>
-                                @else
+                                @elseif($p->pengujian_selesai)
                                     <a href="{{ route('testreport.create', $p->id) }}" class="btn btn-sm btn-warning">Isi</a>
+                                @else
+                                    <span class="badge bg-secondary">Terkunci (isi pengujian dulu)</span>
                                 @endif
                             </td>
                             <td>

@@ -22,50 +22,32 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// Dashboard (perlu login)
-
+    
+// Dashboard
 Route::middleware(['auth'])->group(function () {
-    Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Route SHOW - bisa diakses oleh admin dan pemohon (dengan pengecekan di controller)
+    Route::get('/permohonan/{id}', [PermohonanController::class, 'show'])->name('permohonan.show');
+    Route::get('/validasi/{permohonan_id}', [ValidasiController::class, 'show'])->name('validasi.show');
+    Route::get('/pengujian/{permohonan_id}', [PengujianController::class, 'show'])->name('pengujian.show');
+    Route::get('/testreport/{permohonan_id}', [TestReportController::class, 'show'])->name('testreport.show');
+    Route::get('/kuisioner/{permohonan_id}', [KuisionerController::class, 'show'])->name('kuisioner.show');
+
+    Route::middleware(['role:admin'])->group(function () {
         Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
-    });
-
-    Route::middleware(['auth', 'role:pemohon'])->group(function () {
-        Route::get('/dashboard/pemohon', [DashboardController::class, 'pemohon'])->name('dashboard.pemohon');
-    });
-
-    // Permohonan (pemohon)
-    Route::middleware(['auth', 'role:pemohon'])->group(function () {
-        Route::get('/permohonan/create', [PermohonanController::class, 'create'])->name('permohonan.create');
-        Route::post('/permohonan', [PermohonanController::class, 'store'])->name('permohonan.store');
-        Route::get('/permohonan/{id}', [PermohonanController::class, 'show'])->name('permohonan.show');
-    });
-
-    // Validasi (admin)
-    Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/validasi/create/{permohonan_id}', [ValidasiController::class, 'create'])->name('validasi.create');
-        Route::post('/validasi/{permohonan_id}', [ValidasiController::class, 'store'])->name('validasi.store');
-        Route::get('/validasi/{permohonan_id}', [ValidasiController::class, 'show'])->name('validasi.show');
-    });
-
-    // Pengujian (admin)
-    Route::middleware(['auth', 'role:admin'])->group(function () {
+        Route::post('/validasi/store/{permohonan_id}', [ValidasiController::class, 'store'])->name('validasi.store');
         Route::get('/pengujian/create/{permohonan_id}', [PengujianController::class, 'create'])->name('pengujian.create');
-        Route::post('/pengujian/{permohonan_id}', [PengujianController::class, 'store'])->name('pengujian.store');
-        Route::get('/pengujian/{permohonan_id}', [PengujianController::class, 'show'])->name('pengujian.show');
-    });
-
-    // Test Report (admin)
-    Route::middleware(['auth', 'role:admin'])->group(function () {
+        Route::post('/pengujian/store/{permohonan_id}', [PengujianController::class, 'store'])->name('pengujian.store');
         Route::get('/testreport/create/{permohonan_id}', [TestReportController::class, 'create'])->name('testreport.create');
-        Route::post('/testreport/{permohonan_id}', [TestReportController::class, 'store'])->name('testreport.store');
-        Route::get('/testreport/{permohonan_id}', [TestReportController::class, 'show'])->name('testreport.show');
+        Route::post('/testreport/store/{permohonan_id}', [TestReportController::class, 'store'])->name('testreport.store');
     });
 
-    /// Kuisioner (pemohon)
-    Route::middleware(['auth', 'role:pemohon'])->group(function () {
+    Route::middleware(['role:pemohon'])->group(function () {
+        Route::get('/dashboard/pemohon', [DashboardController::class, 'pemohon'])->name('dashboard.pemohon');
+        Route::get('/permohonan/create', [PermohonanController::class, 'create'])->name('permohonan.create');
+        Route::post('/permohonan/store', [PermohonanController::class, 'store'])->name('permohonan.store');
         Route::get('/kuisioner/create/{permohonan_id}', [KuisionerController::class, 'create'])->name('kuisioner.create');
-        Route::post('/kuisioner/{permohonan_id}', [KuisionerController::class, 'store'])->name('kuisioner.store');
-        Route::get('/kuisioner/{permohonan_id}', [KuisionerController::class, 'show'])->name('kuisioner.show');
+        Route::post('/kuisioner/store/{permohonan_id}', [KuisionerController::class, 'store'])->name('kuisioner.store');
     });
+    
 });

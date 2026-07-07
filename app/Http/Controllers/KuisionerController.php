@@ -11,6 +11,10 @@ class KuisionerController extends Controller
     public function create($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        // Hanya pemilik permohonan yang bisa mengisi kuisioner
+        if (auth()->user()->role !== 'pemohon' || $permohonan->user_id !== auth()->id()) {
+            abort(403);
+        }
         if (!$permohonan->test_report_selesai) {
             return redirect()->route('dashboard.pemohon')->with('error', 'Test report belum tersedia.');
         }
@@ -89,6 +93,9 @@ class KuisionerController extends Controller
     public function show($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        if (auth()->user()->role !== 'admin' && $permohonan->user_id !== auth()->id()) {
+            abort(403);
+        }
         $kuisioner = $permohonan->kuisioner;
         return view('kuisioner.show', compact('permohonan', 'kuisioner'));
     }

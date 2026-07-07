@@ -11,6 +11,9 @@ class TestReportController extends Controller
     public function create($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        if (!$permohonan->pengujian_selesai) {
+            return redirect()->route('dashboard.admin')->with('error', 'Harap lengkapi pengujian terlebih dahulu.');
+        }
         if ($permohonan->testReport && $permohonan->testReport->is_submit) {
             return redirect()->route('testreport.show', $permohonan_id);
         }
@@ -48,6 +51,9 @@ class TestReportController extends Controller
     public function show($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        if (auth()->user()->role !== 'admin' && $permohonan->user_id !== auth()->id()) {
+            abort(403);
+        }
         $testReport = $permohonan->testReport;
         return view('testreport.show', compact('permohonan', 'testReport'));
     }

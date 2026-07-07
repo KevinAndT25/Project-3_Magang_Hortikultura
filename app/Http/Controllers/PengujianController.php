@@ -11,6 +11,9 @@ class PengujianController extends Controller
     public function create($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        if (!$permohonan->validasi_selesai) {
+            return redirect()->route('dashboard.admin')->with('error', 'Harap lengkapi validasi terlebih dahulu.');
+        }
         if ($permohonan->pengujian && $permohonan->pengujian->is_submit) {
             return redirect()->route('pengujian.show', $permohonan_id);
         }
@@ -34,6 +37,7 @@ class PengujianController extends Controller
             'lokasi' => $request->lokasi,
             'deskripsi' => $request->deskripsi,
             'is_submit' => true,
+            
         ]);
 
         $permohonan->pengujian_selesai = true;
@@ -45,6 +49,9 @@ class PengujianController extends Controller
     public function show($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        if (auth()->user()->role !== 'admin' && $permohonan->user_id !== auth()->id()) {
+            abort(403);
+        }
         $pengujian = $permohonan->pengujian;
         return view('pengujian.show', compact('permohonan', 'pengujian'));
     }

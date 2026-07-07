@@ -50,6 +50,9 @@ class ValidasiController extends Controller
     public function show($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        if (auth()->user()->role !== 'admin' && $permohonan->user_id !== auth()->id()) {
+            abort(403);
+        }
         $validasi = $permohonan->validasi;
         return view('validasi.show', compact('permohonan', 'validasi'));
     }
