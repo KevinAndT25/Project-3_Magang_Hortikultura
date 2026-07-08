@@ -400,6 +400,8 @@
 
 @php
     $isAuthPage = in_array(Route::currentRouteName(), ['login.admin', 'login.pemohon', 'register']);
+    $user = Auth::user();
+    $isAdmin = $user && $user->role === 'admin';
 @endphp
 
 @if($isAuthPage)
@@ -446,7 +448,7 @@
                     <div class="user-role">
                         <span class="role-badge">
                             <i class="bi bi-person-circle me-1"></i>
-                            {{ Auth::user()->role ?? 'Pemohon' }}
+                            {{ ucfirst(Auth::user()->role ?? 'Pemohon') }}
                         </span>
                     </div>
                 </div>
@@ -455,23 +457,29 @@
             <!-- Menu -->
             <ul class="sidebar-menu">
                 <li class="nav-item">
-                    <a href="{{ route('dashboard.pemohon') }}" class="nav-link active">
+                    <a href="{{ $isAdmin ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="nav-link active">
                         <i class="bi bi-speedometer2"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
+                
+                <!-- Menu Permohonan untuk semua user -->
                 <li class="nav-item">
                     <a href="{{ route('permohonan.index') }}" class="nav-link">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Permohonan</span>
                     </a>
                 </li>
+                
+                <!-- Menu khusus Pemohon: Permohonan Baru -->
+                @if(!$isAdmin)
                 <li class="nav-item">
                     <a href="{{ route('permohonan.create') }}" class="nav-link">
                         <i class="bi bi-plus-circle"></i>
                         <span>Permohonan Baru</span>
                     </a>
                 </li>
+                @endif
             </ul>
             
             <!-- Logout -->

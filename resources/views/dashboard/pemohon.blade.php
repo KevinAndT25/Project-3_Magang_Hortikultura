@@ -84,10 +84,10 @@
         margin-bottom: 0;
         font-size: 32px;
     }
-    .widget-total {
-        background: linear-gradient(135deg, #1a6e4a 0%, #27ae60 100%);
+    .widget-draft {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
     }
-    .widget-proses {
+    .widget-aktif {
         background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
     }
     .widget-selesai {
@@ -107,6 +107,7 @@
         align-items: center;
         gap: 8px;
         font-size: 14px;
+        text-decoration: none;
     }
     .btn-permohonan-baru:hover {
         transform: translateY(-2px);
@@ -145,6 +146,10 @@
         vertical-align: middle;
         border-bottom: 1px solid #f0f2f5;
     }
+    .table-dashboard tbody tr {
+        cursor: pointer;
+        transition: background 0.2s;
+    }
     .table-dashboard tbody tr:hover {
         background: #f8f9fa;
     }
@@ -171,13 +176,14 @@
         background: #fff3cd;
         color: #856404;
     }
-    .badge-status.badge-danger {
-        background: #f8d7da;
-        color: #721c24;
-    }
     .badge-status.badge-info {
         background: #d1ecf1;
         color: #0c5460;
+    }
+    .badge-status.badge-draft {
+        background: #e8e8e8;
+        color: #555;
+        border: 1px dashed #999;
     }
     
     /* Status Dot */
@@ -190,9 +196,9 @@
     }
     .status-dot.dot-success { background: #27ae60; }
     .status-dot.dot-warning { background: #f39c12; }
-    .status-dot.dot-danger { background: #e74c3c; }
     .status-dot.dot-secondary { background: #95a5a6; }
     .status-dot.dot-info { background: #3498db; }
+    .status-dot.dot-draft { background: #999; }
     
     /* Empty State */
     .empty-state {
@@ -217,9 +223,24 @@
         border-radius: 6px;
         font-weight: 500;
         transition: all 0.3s;
+        white-space: nowrap;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        cursor: pointer;
     }
     .btn-action:hover {
         transform: scale(1.05);
+    }
+    
+    /* Clickable row */
+    .clickable-row {
+        cursor: pointer;
+    }
+    .clickable-row:hover {
+        background: #f0f2f5 !important;
     }
     
     /* Card Table */
@@ -228,6 +249,11 @@
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         overflow: hidden;
+        margin-bottom: 25px;
+    }
+    .card-table .card-body {
+        padding: 0;
+        overflow-x: auto;
     }
     .card-table .card-header {
         background: white;
@@ -235,10 +261,25 @@
         padding: 12px 20px;
         font-weight: 600;
         font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    .card-table .card-body {
-        padding: 0;
-        overflow-x: auto;
+    .card-table .card-header .badge-count {
+        background: #1a6e4a;
+        color: white;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+    .card-table .card-header .badge-count.draft-badge {
+        background: #7f8c8d;
+    }
+    .card-table .card-header .badge-count.aktif-badge {
+        background: #f39c12;
+    }
+    .card-table .card-header .badge-count.selesai-badge {
+        background: #27ae60;
     }
     
     /* Responsive */
@@ -264,6 +305,10 @@
         .table-dashboard thead th,
         .table-dashboard tbody td {
             padding: 8px 10px;
+        }
+        .btn-action {
+            font-size: 10px;
+            padding: 2px 8px;
         }
         .btn-permohonan-baru {
             width: 100%;
@@ -292,21 +337,21 @@
     <!-- Widget Cards -->
     <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="widget-card widget-total">
+            <div class="widget-card widget-draft">
                 <div class="widget-icon">
-                    <i class="bi bi-clipboard-data"></i>
+                    <i class="bi bi-file-earmark"></i>
                 </div>
-                <h6>Total Permohonan</h6>
-                <h2>{{ $totalPermohonan ?? 0 }}</h2>
+                <h6>Draft</h6>
+                <h2>{{ $draft ?? 0 }}</h2>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="widget-card widget-proses">
+            <div class="widget-card widget-aktif">
                 <div class="widget-icon">
                     <i class="bi bi-hourglass-split"></i>
                 </div>
-                <h6>Sedang Diproses</h6>
-                <h2>{{ $sedangDiproses ?? 0 }}</h2>
+                <h6>Permohonan Aktif</h6>
+                <h2>{{ $permohonanAktif ?? 0 }}</h2>
             </div>
         </div>
         <div class="col-md-4">
@@ -314,8 +359,8 @@
                 <div class="widget-icon">
                     <i class="bi bi-check-circle"></i>
                 </div>
-                <h6>Selesai</h6>
-                <h2>{{ $selesai ?? 0 }}</h2>
+                <h6>Permohonan Selesai</h6>
+                <h2>{{ $permohonanSelesai ?? 0 }}</h2>
             </div>
         </div>
     </div>
@@ -329,11 +374,16 @@
         </div>
     </div>
 
-    <!-- Tabel Permohonan Aktif -->
-    <div class="row mb-4">
+    <!-- ============================================ -->
+    <!-- TABEL DRAFT -->
+    <!-- ============================================ -->
+    <div class="row">
         <div class="col-12">
-            <h5 class="section-title">Permohonan Aktif</h5>
             <div class="card card-table">
+                <div class="card-header">
+                    <span><i class="bi bi-file-earmark me-2"></i>Draft</span>
+                    <span class="badge-count draft-badge">{{ $draftPermohonans->count() }}</span>
+                </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
                         <thead>
@@ -350,82 +400,54 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $activePermohonans = isset($permohonans) ? $permohonans->filter(function($p) {
-                                    return !($p->validasi_selesai && $p->pengujian_selesai && $p->test_report_selesai && $p->kuisioner_selesai);
-                                }) : collect();
-                            @endphp
-                            
-                            @forelse($activePermohonans as $p)
-                            <tr>
+                            @forelse($draftPermohonans as $p)
+                            <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark">
-                                        PMH-{{ str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
+                                        {{ $p->nomor_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
                                     </a>
                                 </td>
-                                <td>{{ $p->created_at->format('d M Y') }}</td>
-                                <td>{{ $p->nama_pemohon ?? 'user raskn' }}</td>
+                                <td>{{ $p->tanggal_surat_permohonan ? \Carbon\Carbon::parse($p->tanggal_surat_permohonan)->format('d M Y') : $p->created_at->format('d M Y') }}</td>
                                 <td>
-                                    <span class="badge bg-light text-dark">{{ $p->alsintan ?? 'Pompa' }}</span>
+                                    <div>{{ $p->nama_pemohon ?? 'Unknown' }}</div>
+                                    <small class="text-muted">{{ $p->status_pemohon ?? 'Pemohon' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action">TDR</a>
+                                    <div>{{ $p->jenis_alsintan ?? '-' }}</div>
+                                    <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    @if($p->validasi_selesai)
-                                        <span class="badge-status badge-success">
-                                            <span class="status-dot dot-success"></span> Selesai
-                                        </span>
-                                    @else
-                                        <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
-                                        </span>
-                                    @endif
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </a>
                                 </td>
                                 <td>
-                                    @if($p->pengujian_selesai)
-                                        <span class="badge-status badge-success">
-                                            <span class="status-dot dot-success"></span> Selesai
-                                        </span>
-                                    @else
-                                        <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
-                                        </span>
-                                    @endif
+                                    <span class="badge-status badge-draft">
+                                        <span class="status-dot dot-draft"></span> Draft
+                                    </span>
                                 </td>
                                 <td>
-                                    @if($p->test_report_selesai)
-                                        <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action">
-                                            <i class="bi bi-download"></i> Download
-                                        </a>
-                                    @elseif($p->pengujian_selesai)
-                                        <span class="badge-status badge-warning">
-                                            <span class="status-dot dot-warning"></span> Proses
-                                        </span>
-                                    @else
-                                        <span class="badge-status badge-waiting">Menunggu</span>
-                                    @endif
+                                    <span class="badge-status badge-draft">
+                                        <span class="status-dot dot-draft"></span> Draft
+                                    </span>
                                 </td>
                                 <td>
-                                    @if($p->test_report_selesai && !$p->kuisioner_selesai)
-                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-primary btn-action">
-                                            <i class="bi bi-pencil"></i> Isi
-                                        </a>
-                                    @elseif($p->kuisioner_selesai)
-                                        <span class="badge-status badge-success">
-                                            <i class="bi bi-check-circle"></i> Terisi
-                                        </span>
-                                    @else
-                                        <span class="badge-status badge-waiting">Menunggu</span>
-                                    @endif
+                                    <span class="badge-status badge-draft">
+                                        <span class="status-dot dot-draft"></span> Draft
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge-status badge-draft">
+                                        <span class="status-dot dot-draft"></span> Draft
+                                    </span>
                                 </td>
                             </tr>
                             @empty
                             <tr>
                                 <td colspan="9">
                                     <div class="empty-state">
-                                        <i class="bi bi-inbox"></i>
-                                        <p>Tidak ada data permohonan aktif</p>
+                                        <i class="bi bi-file-earmark"></i>
+                                        <p>Belum ada draft permohonan</p>
                                     </div>
                                 </td>
                             </tr>
@@ -437,11 +459,16 @@
         </div>
     </div>
 
-    <!-- Tabel Permohonan Selesai -->
+    <!-- ============================================ -->
+    <!-- TABEL PERMOHONAN AKTIF -->
+    <!-- ============================================ -->
     <div class="row">
         <div class="col-12">
-            <h5 class="section-title">Permohonan Selesai</h5>
             <div class="card card-table">
+                <div class="card-header">
+                    <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
+                    <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span>
+                </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
                         <thead>
@@ -458,26 +485,147 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $completedPermohonans = isset($permohonans) ? $permohonans->filter(function($p) {
-                                    return $p->validasi_selesai && $p->pengujian_selesai && $p->test_report_selesai && $p->kuisioner_selesai;
-                                }) : collect();
-                            @endphp
-                            
-                            @forelse($completedPermohonans as $p)
-                            <tr>
+                            @forelse($aktifPermohonans as $p)
+                            <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark">
-                                        PMH-{{ str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
+                                        {{ $p->nomor_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
                                     </a>
                                 </td>
-                                <td>{{ $p->created_at->format('d M Y') }}</td>
-                                <td>{{ $p->nama_pemohon ?? 'user raskn' }}</td>
+                                <td>{{ $p->tanggal_surat_permohonan ? \Carbon\Carbon::parse($p->tanggal_surat_permohonan)->format('d M Y') : $p->created_at->format('d M Y') }}</td>
                                 <td>
-                                    <span class="badge bg-light text-dark">{{ $p->alsintan ?? 'Pompa' }}</span>
+                                    <div>{{ $p->nama_pemohon ?? 'Unknown' }}</div>
+                                    <small class="text-muted">{{ $p->status_pemohon ?? 'Pemohon' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action">TDR</a>
+                                    <div>{{ $p->jenis_alsintan ?? '-' }}</div>
+                                    <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
+                                </td>
+                                <td>
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </a>
+                                </td>
+                                <td>
+                                    @if($p->validasi_selesai)
+                                        <a href="{{ route('validasi.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($p->pengujian_selesai)
+                                        <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Lihat
+                                        </a>
+                                    @elseif($p->validasi_selesai)
+                                        <span class="badge-status badge-warning">
+                                            <span class="status-dot dot-warning"></span> Diproses
+                                        </span>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($p->test_report_selesai)
+                                        <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-download"></i> Download
+                                        </a>
+                                    @elseif($p->pengujian_selesai)
+                                        <span class="badge-status badge-warning">
+                                            <span class="status-dot dot-warning"></span> Diproses
+                                        </span>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($p->kuisioner_selesai)
+                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-eye"></i> Lihat
+                                        </a>
+                                    @elseif($p->test_report_selesai)
+                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-primary btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-pencil"></i> Isi
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="9">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>Tidak ada permohonan aktif</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TABEL PERMOHONAN SELESAI -->
+    <!-- ============================================ -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-table">
+                <div class="card-header">
+                    <span><i class="bi bi-check-circle me-2"></i>Permohonan Selesai</span>
+                    <span class="badge-count selesai-badge">{{ $selesaiPermohonans->count() }}</span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dashboard table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>No. Permohonan</th>
+                                <th>Tanggal</th>
+                                <th>Pemohon</th>
+                                <th>Alsintan</th>
+                                <th>Permohonan</th>
+                                <th>Validasi</th>
+                                <th>Pengujian</th>
+                                <th>Test Report</th>
+                                <th>Kuisioner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($selesaiPermohonans as $p)
+                            <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
+                                <td>
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
+                                        {{ $p->nomor_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
+                                    </a>
+                                </td>
+                                <td>{{ $p->tanggal_surat_permohonan ? \Carbon\Carbon::parse($p->tanggal_surat_permohonan)->format('d M Y') : $p->created_at->format('d M Y') }}</td>
+                                <td>
+                                    <div>{{ $p->nama_pemohon ?? 'Unknown' }}</div>
+                                    <small class="text-muted">{{ $p->status_pemohon ?? 'Pemohon' }}</small>
+                                </td>
+                                <td>
+                                    <div>{{ $p->jenis_alsintan ?? '-' }}</div>
+                                    <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
+                                </td>
+                                <td>
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </a>
                                 </td>
                                 <td>
                                     <span class="badge-status badge-success">
@@ -490,12 +638,12 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action">
+                                    <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-download"></i> Download
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action">
+                                    <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
                                 </td>
@@ -505,7 +653,7 @@
                                 <td colspan="9">
                                     <div class="empty-state">
                                         <i class="bi bi-check-circle"></i>
-                                        <p>Tidak ada data permohonan selesai</p>
+                                        <p>Belum ada permohonan selesai</p>
                                     </div>
                                 </td>
                             </tr>

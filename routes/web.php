@@ -39,6 +39,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ======================
 Route::middleware(['auth'])->group(function () {
     
+    Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
+    
     // --- ROUTE SHOW (BISA DIAKSES ADMIN & PEMOHON) ---
     Route::get('/permohonan/{id}', [PermohonanController::class, 'show'])->name('permohonan.show');
     Route::get('/validasi/{permohonan_id}', [ValidasiController::class, 'show'])->name('validasi.show');
@@ -80,7 +82,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/pemohon', [DashboardController::class, 'pemohon'])->name('dashboard.pemohon');
         
         // Permohonan Baru
-        Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
         Route::get('/permohonan/create', [PermohonanController::class, 'create'])->name('permohonan.create');
         Route::post('/permohonan/store', [PermohonanController::class, 'store'])->name('permohonan.store');
         
