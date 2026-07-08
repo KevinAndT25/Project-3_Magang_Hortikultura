@@ -47,9 +47,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kuisioner/{permohonan_id}', [KuisionerController::class, 'show'])->name('kuisioner.show');
 
     // --- ROUTE KHUSUS ADMIN ---
-    Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+    Route::middleware(['auth', 'ensure.role:admin'])->group(function () {
         // Dashboard
-        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard.admin');
+        Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
+
         
         // Validasi
         Route::get('/validasi/create/{permohonan_id}', [ValidasiController::class, 'create'])->name('validasi.create');
@@ -74,9 +75,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // --- ROUTE KHUSUS PEMOHON ---
-    Route::prefix('pemohon')->middleware(['role:pemohon'])->group(function () {
+    Route::middleware(['auth', 'ensure.role:pemohon'])->group(function () {
         // Dashboard
-        Route::get('/dashboard', [DashboardController::class, 'pemohon'])->name('dashboard.pemohon');
+        Route::get('/dashboard/pemohon', [DashboardController::class, 'pemohon'])->name('dashboard.pemohon');
         
         // Permohonan Baru
         Route::get('/permohonan/create', [PermohonanController::class, 'create'])->name('permohonan.create');

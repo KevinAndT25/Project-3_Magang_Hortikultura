@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Daftarkan middleware alias di sini
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'ensure.role' => \App\Http\Middleware\EnsureUserRole::class,
         ]);
 
         $middleware->group('admin', [

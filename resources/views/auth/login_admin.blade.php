@@ -176,15 +176,16 @@
         <!-- Login Form -->
         <form method="POST" action="{{ route('login') }}">
             @csrf
+            <input type="hidden" name="role" value="admin">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" 
-                       placeholder="Masukkan username" value="{{ old('username') }}" required autofocus>
+                    placeholder="Masukkan username" value="{{ old('username') }}" required autofocus>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" 
-                       placeholder="Masukkan password" required>
+                    placeholder="Masukkan password" required>
             </div>
             <button type="submit" class="btn-login">Masuk</button>
         </form>

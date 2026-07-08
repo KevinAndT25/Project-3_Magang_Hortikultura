@@ -27,29 +27,33 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    // Proses login
+    // Proses login dengan role
     public function login(Request $request)
     {
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'role' => 'required|in:admin,pemohon', // Tambahkan validasi role
         ]);
 
         $credentials = [
             'name' => $request->username,
             'password' => $request->password,
+            'role' => $request->role, // Cek role juga
         ];
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
+            
+            // Redirect berdasarkan role
             if ($user->role === 'admin') {
                 return redirect()->route('dashboard.admin');
             }
             return redirect()->route('dashboard.pemohon');
         }
 
-        return back()->withErrors(['username' => 'Username atau password salah.']);
+        return back()->withErrors(['username' => "Username atau password tidak valid."]);
     }
 
     // Proses register
