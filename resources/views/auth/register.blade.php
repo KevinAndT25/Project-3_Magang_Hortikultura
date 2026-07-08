@@ -141,9 +141,9 @@
         <form method="POST" action="{{ route('register.submit') }}">
             @csrf
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" 
-                       placeholder="Minimal 4 karakter" value="{{ old('username') }}" required>
+                <label for="name" class="form-label">Username</label>
+                <input type="text" class="form-control" id="name" name="name" 
+                       placeholder="Minimal 4 karakter" value="{{ old('name') }}" required>
             </div>
             <div class="mb-3">
                 <label for="no_hp" class="form-label">No. HP</label>
