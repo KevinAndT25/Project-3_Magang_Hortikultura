@@ -9,6 +9,21 @@ use Illuminate\Support\Str;
 
 class PermohonanController extends Controller
 {
+    public function index()
+    {
+        $user = auth()->user();
+        
+        if ($user->isAdmin()) {
+            // Admin melihat semua permohonan
+            $permohonans = Permohonan::with('user')->orderBy('created_at', 'desc')->get();
+        } else {
+            // Pemohon hanya melihat permohonan milik sendiri
+            $permohonans = $user->permohonans()->orderBy('created_at', 'desc')->get();
+        }
+        
+        return view('permohonan.index', compact('permohonans'));
+    }
+    
     public function create()
     {
         return view('permohonan.create');

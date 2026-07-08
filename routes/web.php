@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kuisioner/{permohonan_id}', [KuisionerController::class, 'show'])->name('kuisioner.show');
 
     // --- ROUTE KHUSUS ADMIN ---
-    Route::middleware(['auth', 'ensure.role:admin'])->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'ensure.role:admin'])->group(function () {
         // Dashboard
         Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
 
@@ -75,11 +75,12 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // --- ROUTE KHUSUS PEMOHON ---
-    Route::middleware(['auth', 'ensure.role:pemohon'])->group(function () {
+    Route::prefix('user')->middleware(['auth', 'ensure.role:pemohon'])->group(function () {
         // Dashboard
         Route::get('/dashboard/pemohon', [DashboardController::class, 'pemohon'])->name('dashboard.pemohon');
         
         // Permohonan Baru
+        Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
         Route::get('/permohonan/create', [PermohonanController::class, 'create'])->name('permohonan.create');
         Route::post('/permohonan/store', [PermohonanController::class, 'store'])->name('permohonan.store');
         

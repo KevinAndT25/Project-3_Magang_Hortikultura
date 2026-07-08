@@ -22,4 +22,4 @@ class Kuisioner extends Model
     {
         return $this->belongsTo(Permohonan::class);
     }
-}
+}   
