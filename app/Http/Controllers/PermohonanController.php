@@ -80,10 +80,12 @@ class PermohonanController extends Controller
     public function show($id)
     {
         $permohonan = Permohonan::with(['user', 'validasi', 'pengujian', 'testReport', 'kuisioner'])->findOrFail($id);
-        // Cek akses: hanya pemilik atau admin
+        
+        // Cek akses: hanya admin atau pemilik
         if (auth()->user()->role !== 'admin' && $permohonan->user_id !== auth()->id()) {
             abort(403);
         }
+        
         return view('permohonan.show', compact('permohonan'));
     }
 }

@@ -201,7 +201,7 @@
             <button type="submit" class="btn-login">Masuk</button>
         </form>
 
-        <!-- Footer - TETAP ADA link register untuk pemohon -->
+        <!-- Footer --->
         <div class="login-footer">
             Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
         </div>

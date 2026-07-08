@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Permohonan Labor')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         /* Reset default */
         * {
@@ -83,20 +84,20 @@
             margin: 0;
         }
 
-        /* Background hijau untuk semua halaman auth */
+        /* Background hijau yang lebih tua untuk semua halaman auth */
         .auth-bg {
-            background: linear-gradient(135deg, #1a7a5a 0%, #2ecc71 100%);
+            background: linear-gradient(135deg, #1a6e4a 0%, #2ecc71 100%);
             background-image: 
                 radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
                 radial-gradient(circle at 50% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
-                linear-gradient(135deg, #1a7a5a 0%, #2ecc71 100%);
+                linear-gradient(135deg, #1a6e4a 0%, #2ecc71 100%);
         }
     </style>
     @stack('styles')
 </head>
 <body>
-    <!-- Navbar - akan disembunyikan di halaman auth menggunakan JS atau kondisi -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="mainNavbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url('/') }}">PermohonanLabor</a>
@@ -150,7 +151,7 @@
         // Sembunyikan navbar di halaman auth
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
-            const authPages = ['/login/pemohon', '/login/admin', '/register'];
+            const authPages = ['/login/admin', '/login/pemohon', '/register'];
             
             if (authPages.includes(currentPath)) {
                 const navbar = document.getElementById('mainNavbar');

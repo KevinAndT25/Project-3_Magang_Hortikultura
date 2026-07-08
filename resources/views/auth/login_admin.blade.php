@@ -189,7 +189,7 @@
             <button type="submit" class="btn-login">Masuk</button>
         </form>
 
-        <!-- Footer - TANPA link register untuk admin -->
+        <!-- Footer --->
         <div class="login-footer">
             <span class="text-muted">Hanya untuk Admin</span>
         </div>
