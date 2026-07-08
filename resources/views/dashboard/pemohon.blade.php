@@ -404,7 +404,7 @@
                             <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
-                                        {{ $p->nomor_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
+                                        {{ $p->nomor_surat_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
                                     </a>
                                 </td>
                                 <td>{{ $p->tanggal_surat_permohonan ? \Carbon\Carbon::parse($p->tanggal_surat_permohonan)->format('d M Y') : $p->created_at->format('d M Y') }}</td>
@@ -489,7 +489,7 @@
                             <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
-                                        {{ $p->nomor_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
+                                        {{ $p->nomor_surat_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
                                     </a>
                                 </td>
                                 <td>{{ $p->tanggal_surat_permohonan ? \Carbon\Carbon::parse($p->tanggal_surat_permohonan)->format('d M Y') : $p->created_at->format('d M Y') }}</td>
@@ -507,7 +507,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    @if($p->validasi_selesai)
+                                    @if($p->validasi)
                                         <a href="{{ route('validasi.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
@@ -518,11 +518,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->pengujian_selesai)
+                                    @if($p->pengujian)
                                         <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
-                                    @elseif($p->validasi_selesai)
+                                    @elseif($p->validasi)
                                         <span class="badge-status badge-warning">
                                             <span class="status-dot dot-warning"></span> Diproses
                                         </span>
@@ -533,11 +533,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->test_report_selesai)
+                                    @if($p->testReport)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-download"></i> Download
                                         </a>
-                                    @elseif($p->pengujian_selesai)
+                                    @elseif($p->pengujian)
                                         <span class="badge-status badge-warning">
                                             <span class="status-dot dot-warning"></span> Diproses
                                         </span>
@@ -548,11 +548,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->kuisioner_selesai)
+                                    @if($p->kuisioner)
                                         <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
-                                    @elseif($p->test_report_selesai)
+                                    @elseif($p->testReport)
                                         <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-primary btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-pencil"></i> Isi
                                         </a>
@@ -610,7 +610,7 @@
                             <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
-                                        {{ $p->nomor_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
+                                        {{ $p->nomor_surat_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
                                     </a>
                                 </td>
                                 <td>{{ $p->tanggal_surat_permohonan ? \Carbon\Carbon::parse($p->tanggal_surat_permohonan)->format('d M Y') : $p->created_at->format('d M Y') }}</td>
@@ -628,24 +628,48 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <span class="badge-status badge-success">
-                                        <span class="status-dot dot-success"></span> Selesai
-                                    </span>
+                                    @if($p->validasi)
+                                        <a href="{{ route('validasi.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-success">
+                                            <span class="status-dot dot-success"></span> Selesai
+                                        </span>
+                                    @endif
                                 </td>
                                 <td>
-                                    <span class="badge-status badge-success">
-                                        <span class="status-dot dot-success"></span> Selesai
-                                    </span>
+                                    @if($p->pengujian)
+                                        <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-success">
+                                            <span class="status-dot dot-success"></span> Selesai
+                                        </span>
+                                    @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                        <i class="bi bi-download"></i> Download
-                                    </a>
+                                    @if($p->testReport)
+                                        <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-download"></i> Download
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-success">
+                                            <span class="status-dot dot-success"></span> Selesai
+                                        </span>
+                                    @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
-                                        <i class="bi bi-eye"></i> Lihat
-                                    </a>
+                                    @if($p->kuisioner)
+                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-eye"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-success">
+                                            <i class="bi bi-check-circle"></i> Selesai
+                                        </span>
+                                    @endif
                                 </td>
                             </tr>
                             @empty

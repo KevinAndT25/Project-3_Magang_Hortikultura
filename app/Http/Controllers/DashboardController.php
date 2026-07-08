@@ -9,23 +9,23 @@ class DashboardController extends Controller
 {
     public function admin()
     {
-        // Permohonan Aktif (belum selesai semua tahap)
+        // Permohonan Aktif (belum selesai semua tahap - cek relasi)
         $aktifPermohonans = Permohonan::where(function($q) {
-                $q->where('validasi_selesai', false)
-                  ->orWhere('pengujian_selesai', false)
-                  ->orWhere('test_report_selesai', false)
-                  ->orWhere('kuisioner_selesai', false);
+                $q->whereDoesntHave('validasi')
+                  ->orWhereDoesntHave('pengujian')
+                  ->orWhereDoesntHave('testReport')
+                  ->orWhereDoesntHave('kuisioner');
             })
             ->orderBy('created_at', 'desc')
             ->get();
         
         $permohonanAktif = $aktifPermohonans->count();
         
-        // Permohonan Selesai (semua tahap selesai)
-        $selesaiPermohonans = Permohonan::where('validasi_selesai', true)
-                            ->where('pengujian_selesai', true)
-                            ->where('test_report_selesai', true)
-                            ->where('kuisioner_selesai', true)
+        // Permohonan Selesai (semua tahap selesai - cek relasi)
+        $selesaiPermohonans = Permohonan::whereHas('validasi')
+                            ->whereHas('pengujian')
+                            ->whereHas('testReport')
+                            ->whereHas('kuisioner')
                             ->orderBy('created_at', 'desc')
                             ->get();
         
@@ -43,41 +43,41 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
-        // Draft: permohonan yang belum di-submit (semua tahap false)
+        // Draft: permohonan yang belum memiliki relasi apapun
         $draftPermohonans = $user->permohonans()
-                    ->where('validasi_selesai', false)
-                    ->where('pengujian_selesai', false)
-                    ->where('test_report_selesai', false)
-                    ->where('kuisioner_selesai', false)
+                    ->whereDoesntHave('validasi')
+                    ->whereDoesntHave('pengujian')
+                    ->whereDoesntHave('testReport')
+                    ->whereDoesntHave('kuisioner')
                     ->orderBy('created_at', 'desc')
                     ->get();
         
         $draft = $draftPermohonans->count();
         
-        // Permohonan Aktif: sudah melewati tahap draft, tapi belum selesai
+        // Permohonan Aktif: sudah memiliki beberapa relasi tapi belum semua
         $aktifPermohonans = $user->permohonans()
                             ->where(function($q) {
-                                $q->where('validasi_selesai', true)
-                                  ->orWhere('pengujian_selesai', true)
-                                  ->orWhere('test_report_selesai', true);
+                                $q->whereHas('validasi')
+                                  ->orWhereHas('pengujian')
+                                  ->orWhereHas('testReport');
                             })
                             ->where(function($q) {
-                                $q->where('validasi_selesai', false)
-                                  ->orWhere('pengujian_selesai', false)
-                                  ->orWhere('test_report_selesai', false)
-                                  ->orWhere('kuisioner_selesai', false);
+                                $q->whereDoesntHave('validasi')
+                                  ->orWhereDoesntHave('pengujian')
+                                  ->orWhereDoesntHave('testReport')
+                                  ->orWhereDoesntHave('kuisioner');
                             })
                             ->orderBy('created_at', 'desc')
                             ->get();
         
         $permohonanAktif = $aktifPermohonans->count();
         
-        // Permohonan Selesai: semua tahap selesai
+        // Permohonan Selesai: semua relasi ada
         $selesaiPermohonans = $user->permohonans()
-                            ->where('validasi_selesai', true)
-                            ->where('pengujian_selesai', true)
-                            ->where('test_report_selesai', true)
-                            ->where('kuisioner_selesai', true)
+                            ->whereHas('validasi')
+                            ->whereHas('pengujian')
+                            ->whereHas('testReport')
+                            ->whereHas('kuisioner')
                             ->orderBy('created_at', 'desc')
                             ->get();
         
