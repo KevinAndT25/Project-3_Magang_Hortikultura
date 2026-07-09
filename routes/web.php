@@ -53,6 +53,10 @@ Route::middleware(['auth'])->group(function () {
     // ============================================
     Route::prefix('admin')->middleware(['auth', 'ensure.role:admin'])->group(function () {
         Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
+        // Route untuk update profil
+        Route::middleware(['auth', 'ensure.role:admin'])->group(function () {
+            Route::put('/admin/profile/update', [AuthController::class, 'updateProfile'])->name('admin.profile.update');
+        });
         
         // Validasi
         Route::get('/validasi/create/{permohonan_id}', [ValidasiController::class, 'create'])->name('validasi.create');
@@ -84,8 +88,6 @@ Route::middleware(['auth'])->group(function () {
         // Edit Draft
         Route::get('/permohonan/{id}/edit', [PermohonanController::class, 'edit'])->name('permohonan.edit');
         Route::put('/permohonan/{id}', [PermohonanController::class, 'update'])->name('permohonan.update');
-        
-        // Submit Draft
         Route::post('/permohonan/{id}/submit', [PermohonanController::class, 'submitDraft'])->name('permohonan.submit');
         
         // Kuisioner

@@ -48,6 +48,8 @@
             overflow-y: auto;
             padding: 0;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
         }
         
         .sidebar.collapsed {
@@ -55,6 +57,8 @@
         }
         
         .sidebar.collapsed .sidebar-brand span,
+        .sidebar.collapsed .sidebar-brand small,
+        .sidebar.collapsed .sidebar-brand .brand-text,
         .sidebar.collapsed .sidebar-menu span,
         .sidebar.collapsed .sidebar-user .user-info,
         .sidebar.collapsed .sidebar-user .user-role,
@@ -67,9 +71,13 @@
             padding: 15px 0;
         }
         
-        .sidebar.collapsed .sidebar-brand i {
-            font-size: 24px;
-            margin: 0;
+        .sidebar.collapsed .sidebar-brand .logo-container {
+            margin-right: 0;
+        }
+        
+        .sidebar.collapsed .sidebar-brand .logo-container img {
+            width: 40px;
+            height: 40px;
         }
         
         .sidebar.collapsed .sidebar-menu .nav-link {
@@ -91,6 +99,7 @@
             width: 40px;
             height: 40px;
             margin: 0 auto;
+            font-size: 16px;
         }
         
         .sidebar.collapsed .sidebar-logout {
@@ -107,51 +116,112 @@
         .sidebar-brand {
             display: flex;
             align-items: center;
-            padding: 20px 20px;
+            padding: 20px 20px 15px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             transition: all 0.3s ease;
         }
         
-        .sidebar-brand i {
-            font-size: 28px;
-            color: #27ae60;
+        .sidebar-brand .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-right: 12px;
+            flex-shrink: 0;
         }
         
-        .sidebar-brand span {
-            font-size: 18px;
+        .sidebar-brand .logo-container img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px;
+        }
+        
+        .sidebar-brand .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        
+        .sidebar-brand .brand-text span {
+            font-size: 16px;
             font-weight: 700;
             color: #fff;
             white-space: nowrap;
         }
         
-        .sidebar-brand small {
-            display: block;
+        .sidebar-brand .brand-text small {
             font-size: 10px;
             font-weight: 400;
             color: rgba(255,255,255,0.5);
-            margin-top: -2px;
+            margin-top: 1px;
+            white-space: nowrap;
         }
         
         /* Sidebar User Profile */
         .sidebar-user {
-            padding: 20px;
+            padding: 15px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .sidebar-user:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .sidebar-user .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .sidebar-user .user-avatar {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 8px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .sidebar-user .user-avatar .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: #27ae60;
+            border-radius: 50%;
+            border: 2px solid #1a1a2e;
+        }
+        
+        .sidebar-user .user-avatar .edit-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: #1a6e4a;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border: 2px solid #1a1a2e;
+        }
+        
+        .sidebar-user .user-info {
+            flex: 1;
+            min-width: 0;
         }
         
         .sidebar-user .user-name {
@@ -159,6 +229,9 @@
             font-size: 14px;
             color: #fff;
             margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .sidebar-user .user-role {
@@ -175,10 +248,78 @@
             font-weight: 600;
         }
         
+        .sidebar-user .user-arrow {
+            color: rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+        
+        .sidebar-user .user-arrow.open {
+            transform: rotate(180deg);
+        }
+        
+        /* User Profile Dropdown */
+        .user-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 0 0 50px;
+        }
+        
+        .user-dropdown.open {
+            max-height: 500px;
+            padding: 10px 0 0 50px;
+        }
+        
+        .user-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .user-dropdown .dropdown-item:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+        
+        .user-dropdown .dropdown-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+        }
+        
+        .user-dropdown .dropdown-item.text-danger:hover {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        
+        .user-dropdown .dropdown-item.text-danger:hover i {
+            color: #e74c3c;
+        }
+        
+        .user-dropdown .dropdown-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+            margin: 3px 0;
+        }
+        
         /* Sidebar Menu */
         .sidebar-menu {
             padding: 15px 0;
             list-style: none;
+            flex: 1;
         }
         
         .sidebar-menu .nav-item {
@@ -220,13 +361,10 @@
         
         /* Sidebar Logout */
         .sidebar-logout {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
             padding: 15px 20px;
             border-top: 1px solid rgba(255,255,255,0.05);
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
         
         .sidebar-logout .logout-link {
@@ -239,6 +377,11 @@
             transition: all 0.3s ease;
             padding: 8px 15px;
             border-radius: 8px;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
         }
         
         .sidebar-logout .logout-link:hover {
@@ -336,6 +479,65 @@
             border-radius: 8px;
         }
         
+        /* Modal Styling */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            border-bottom: 1px solid #f0f2f5;
+            padding: 20px 25px;
+        }
+        .modal-header .modal-title {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .modal-body {
+            padding: 25px;
+        }
+        .modal-footer {
+            border-top: 1px solid #f0f2f5;
+            padding: 15px 25px;
+        }
+        .modal .form-control {
+            border-radius: 8px;
+            border: 1px solid #dce1e8;
+            padding: 10px 14px;
+        }
+        .modal .form-control:focus {
+            border-color: #1a6e4a;
+            box-shadow: 0 0 0 3px rgba(26, 110, 74, 0.1);
+        }
+        .modal .form-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+        .modal .btn-primary {
+            background: linear-gradient(135deg, #1a6e4a 0%, #27ae60 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .modal .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(26, 110, 74, 0.4);
+        }
+        .modal .btn-secondary {
+            background: #f0f2f5;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+        .modal .btn-secondary:hover {
+            background: #e0e5ec;
+            color: #2c3e50;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -386,6 +588,14 @@
             .sidebar-overlay.active {
                 display: block;
             }
+            
+            .user-dropdown {
+                padding: 0 0 0 20px;
+            }
+            
+            .user-dropdown.open {
+                padding: 10px 0 10px 20px;
+            }
         }
         
         @media (min-width: 769px) {
@@ -431,33 +641,57 @@
         <nav class="sidebar" id="sidebar">
             <!-- Brand -->
             <div class="sidebar-brand">
-                <i class="bi bi-flask"></i>
-                <div>
+                <div class="logo-container">
+                    <img src="{{ asset('images/logo-sumbar.png') }}" alt="Logo Sumbar" id="sidebarLogo">
+                </div>
+                <div class="brand-text">
                     <span>Lab Mutu Alsintan</span>
-                    <small>UPTD BMSPP</small>
+                    <small>UPTD BMSPP Prov. Sumatera Barat</small>
                 </div>
             </div>
             
             <!-- User Profile -->
-            <div class="sidebar-user">
-                <div class="user-avatar">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                </div>
-                <div class="user-info">
-                    <div class="user-name">{{ Auth::user()->name ?? 'User' }}</div>
-                    <div class="user-role">
-                        <span class="role-badge">
-                            <i class="bi bi-person-circle me-1"></i>
-                            {{ ucfirst(Auth::user()->role ?? 'Pemohon') }}
-                        </span>
+            <div class="sidebar-user" id="userProfileToggle">
+                <div class="user-profile">
+                    <div class="user-avatar" style="background: {{ $user->avatar_color ?? '#1a6e4a' }}">
+                        {{ $user->initials ?? strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                        <span class="online-dot"></span>
                     </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ $user->name ?? 'User' }}</div>
+                        <div class="user-role">
+                            <span class="role-badge">
+                                <i class="bi bi-person-circle me-1"></i>
+                                {{ ucfirst($user->role ?? 'Pemohon') }}
+                            </span>
+                        </div>
+                    </div>
+                    <i class="bi bi-chevron-down user-arrow" id="userArrow"></i>
+                </div>
+                
+                <!-- Dropdown -->
+                <div class="user-dropdown" id="userDropdown">
+                    @if($isAdmin)
+                        <button class="dropdown-item" onclick="openProfileModal()">
+                            <i class="bi bi-person-gear"></i>
+                            <span>Kelola Profil</span>
+                        </button>
+                        <div class="dropdown-divider"></div>
+                    @endif
+                    <form action="{{ route('logout') }}" method="POST" class="w-100">
+                        @csrf
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Log Out</span>
+                        </button>
+                    </form>
                 </div>
             </div>
             
             <!-- Menu -->
             <ul class="sidebar-menu">
                 <li class="nav-item">
-                    <a href="{{ $isAdmin ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="nav-link active">
+                    <a href="{{ $isAdmin ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="nav-link {{ request()->routeIs('dashboard.*') ? 'active' : '' }}">
                         <i class="bi bi-speedometer2"></i>
                         <span>Dashboard</span>
                     </a>
@@ -465,7 +699,7 @@
                 
                 <!-- Menu Permohonan untuk semua user -->
                 <li class="nav-item">
-                    <a href="{{ route('permohonan.index') }}" class="nav-link">
+                    <a href="{{ route('permohonan.index') }}" class="nav-link {{ request()->routeIs('permohonan.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Daftar Permohonan</span>
                     </a>
@@ -474,7 +708,7 @@
                 <!-- Menu khusus Pemohon: Permohonan Baru -->
                 @if(!$isAdmin)
                 <li class="nav-item">
-                    <a href="{{ route('permohonan.create') }}" class="nav-link">
+                    <a href="{{ route('permohonan.create') }}" class="nav-link {{ request()->routeIs('permohonan.create') ? 'active' : '' }}">
                         <i class="bi bi-plus-circle"></i>
                         <span>Permohonan Baru</span>
                     </a>
@@ -486,7 +720,7 @@
             <div class="sidebar-logout">
                 <form action="{{ route('logout') }}" method="POST" class="w-100">
                     @csrf
-                    <button type="submit" class="logout-link w-100" style="background: none; border: none; text-align: left;">
+                    <button type="submit" class="logout-link w-100">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Log Out</span>
                     </button>
@@ -520,6 +754,64 @@
     </div>
 @endif
 
+<!-- ============================================ -->
+<!-- MODAL EDIT PROFIL (khusus admin) -->
+<!-- ============================================ -->
+@if($isAdmin)
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ route('admin.profile.update') }}" method="POST" id="profileForm">
+                @csrf
+                @method('PUT')
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileModalLabel">
+                        <i class="bi bi-person-gear me-2" style="color: #1a6e4a;"></i>
+                        Kelola Profil
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="profile_name" class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" id="profile_name" name="name" 
+                               value="{{ $user->name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="profile_email" name="email" 
+                               value="{{ $user->email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile_no_hp" class="form-label">Nomor Handphone</label>
+                        <input type="text" class="form-control" id="profile_no_hp" name="no_hp" 
+                               value="{{ $user->no_hp ?? '' }}" placeholder="08xxxxxxxxx">
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="profile_password" class="form-label">Password Baru</label>
+                        <input type="password" class="form-control" id="profile_password" name="password" 
+                               placeholder="Kosongkan jika tidak ingin mengubah password">
+                        <div class="form-text">Minimal 6 karakter</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile_password_confirmation" class="form-label">Konfirmasi Password Baru</label>
+                        <input type="password" class="form-control" id="profile_password_confirmation" 
+                               name="password_confirmation" placeholder="Ketik ulang password baru">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -530,19 +822,16 @@
         
         // Toggle sidebar collapse (desktop)
         toggleBtn.addEventListener('click', function() {
-            // Untuk mobile: toggle active class
             if (window.innerWidth <= 768) {
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
                 
-                // Update toggle button position
                 if (sidebar.classList.contains('active')) {
                     toggleBtn.classList.add('shifted');
                 } else {
                     toggleBtn.classList.remove('shifted');
                 }
             } else {
-                // Untuk desktop: toggle collapsed class
                 sidebar.classList.toggle('collapsed');
                 mainContent.classList.toggle('expanded');
             }
@@ -564,16 +853,51 @@
             }
         });
         
-        // Active menu link
+        // ============================================
+        // USER PROFILE DROPDOWN TOGGLE
+        // ============================================
+        const userProfileToggle = document.getElementById('userProfileToggle');
+        const userDropdown = document.getElementById('userDropdown');
+        const userArrow = document.getElementById('userArrow');
+        
+        if (userProfileToggle) {
+            userProfileToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('open');
+                userArrow.classList.toggle('open');
+            });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (userDropdown && userProfileToggle) {
+                if (!userProfileToggle.contains(e.target)) {
+                    userDropdown.classList.remove('open');
+                    userArrow.classList.remove('open');
+                }
+            }
+        });
+        
+        // ============================================
+        // ACTIVE MENU LINK
+        // ============================================
         const currentPath = window.location.pathname;
         document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => {
             if (link.getAttribute('href') === currentPath) {
                 link.classList.add('active');
-            } else {
-                link.classList.remove('active');
             }
         });
     });
+    
+    // ============================================
+    // MODAL FUNCTIONS (khusus admin)
+    // ============================================
+    @if($isAdmin)
+    function openProfileModal() {
+        const modal = new bootstrap.Modal(document.getElementById('profileModal'));
+        modal.show();
+    }
+    @endif
 </script>
 @stack('scripts')
 </body>

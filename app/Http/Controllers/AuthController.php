@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Validation\Rule; 
 
 class AuthController extends Controller
 {
@@ -85,5 +86,40 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    }
+
+    /**
+     * Update profil admin
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Validasi
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'no_hp' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        // Update data
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->no_hp = $request->no_hp;
+        
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }
 }
