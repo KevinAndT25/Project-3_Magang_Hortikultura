@@ -467,7 +467,7 @@
                 <li class="nav-item">
                     <a href="{{ route('permohonan.index') }}" class="nav-link">
                         <i class="bi bi-file-earmark-text"></i>
-                        <span>Permohonan</span>
+                        <span>Daftar Permohonan</span>
                     </a>
                 </li>
                 
@@ -488,7 +488,7 @@
                     @csrf
                     <button type="submit" class="logout-link w-100" style="background: none; border: none; text-align: left;">
                         <i class="bi bi-box-arrow-right"></i>
-                        <span>Keluar</span>
+                        <span>Log Out</span>
                     </button>
                 </form>
             </div>
