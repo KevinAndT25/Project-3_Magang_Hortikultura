@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Permohonan;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage; 
 
 class PermohonanController extends Controller
 {
@@ -302,6 +303,96 @@ class PermohonanController extends Controller
             $missing = $permohonan->getMissingFields();
             return redirect()->route('permohonan.edit', $permohonan->id)
                              ->with('error', 'Mohon lengkapi data berikut sebelum submit: ' . implode(', ', $missing));
+        }
+    }
+
+    /**
+     * Hapus permohonan beserta semua data terkait
+     */
+    public function destroy($id)
+    {
+        $user = auth()->user();
+        $permohonan = Permohonan::findOrFail($id);
+
+        // Cek akses
+        if ($user->isPemohon()) {
+            // Pemohon hanya bisa menghapus draft milik sendiri
+            if ($permohonan->user_id !== $user->id) {
+                abort(403, 'Anda tidak memiliki akses untuk menghapus permohonan ini.');
+            }
+            if (!$permohonan->isDraft()) {
+                return redirect()->back()->with('error', 'Hanya permohonan dengan status draft yang dapat dihapus.');
+            }
+        } elseif ($user->isAdmin()) {
+            // Admin hanya bisa menghapus permohonan aktif (bukan draft dan bukan selesai)
+            if ($permohonan->isDraft()) {
+                return redirect()->back()->with('error', 'Admin tidak dapat menghapus permohonan draft.');
+            }
+            if ($permohonan->isSelesai()) {
+                return redirect()->back()->with('error', 'Admin tidak dapat menghapus permohonan yang sudah selesai.');
+            }
+        } else {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus permohonan ini.');
+        }
+
+        // Hapus file-file terkait
+        $this->deletePermohonanFiles($permohonan);
+
+        // Hapus data relasi
+        if ($permohonan->validasi) {
+            $this->deleteFiles($permohonan->validasi->file_kaji_ulang_multiple ?? []);
+            $permohonan->validasi->delete();
+        }
+
+        if ($permohonan->pengujian) {
+            $permohonan->pengujian->delete();
+        }
+
+        if ($permohonan->testReport) {
+            $this->deleteFiles($permohonan->testReport->file_test_report_multiple ?? []);
+            $permohonan->testReport->delete();
+        }
+
+        if ($permohonan->kuisioner) {
+            $permohonan->kuisioner->delete();
+        }
+
+        // Hapus permohonan
+        $permohonan->delete();
+
+        // Redirect berdasarkan role
+        if ($user->isAdmin()) {
+            return redirect()->route('dashboard.admin')
+                           ->with('success', 'Permohonan berhasil dihapus.');
+        }
+
+        return redirect()->route('dashboard.pemohon')
+                       ->with('success', 'Permohonan draft berhasil dihapus.');
+    }
+
+    /**
+     * Hapus file-file permohonan dari storage
+     */
+    private function deletePermohonanFiles($permohonan)
+    {
+        $fileFields = ['surat_permohonan', 'ktp', 'akte', 'npwp', 'nib'];
+        
+        foreach ($fileFields as $field) {
+            if (!empty($permohonan->$field)) {
+                Storage::disk('public')->delete($permohonan->$field);
+            }
+        }
+    }
+
+    /**
+     * Hapus multiple files dari storage
+     */
+    private function deleteFiles($files)
+    {
+        if (empty($files)) return;
+        
+        foreach ($files as $file) {
+            Storage::disk('public')->delete($file);
         }
     }
 }

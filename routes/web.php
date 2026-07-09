@@ -70,6 +70,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/testreport/create/{permohonan_id}', [TestReportController::class, 'create'])->name('testreport.create');
         Route::post('/testreport/store/{permohonan_id}', [TestReportController::class, 'store'])->name('testreport.store');
 
+        Route::delete('/permohonan/{id}', [PermohonanController::class, 'destroy'])->name('permohonan.destroy');
+
         // Admin Users & Reports
         Route::get('/users', function() { return view('admin.users'); })->name('admin.users');
         Route::get('/reports', function() { return view('admin.reports'); })->name('admin.reports');
@@ -93,5 +95,7 @@ Route::middleware(['auth'])->group(function () {
         // Kuisioner
         Route::get('/kuisioner/create/{permohonan_id}', [KuisionerController::class, 'create'])->name('kuisioner.create');
         Route::post('/kuisioner/store/{permohonan_id}', [KuisionerController::class, 'store'])->name('kuisioner.store');
+
+        Route::delete('/permohonan/{id}', [PermohonanController::class, 'destroy'])->name('draft.destroy');
     });
 });

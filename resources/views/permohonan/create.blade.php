@@ -169,6 +169,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        cursor: pointer;
     }
     
     .btn-draft:hover {
@@ -189,6 +190,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        cursor: pointer;
     }
     
     .btn-submit:hover {
@@ -724,10 +726,10 @@
             <!-- ============================================ -->
             <div class="form-section">
                 <div class="form-actions">
-                    <button type="submit" name="action" value="draft" class="btn-draft">
+                    <button type="submit" name="action" value="draft" class="btn-draft" id="btnDraft">
                         <i class="bi bi-file-earmark"></i> Simpan sebagai Draft
                     </button>
-                    <button type="submit" name="action" value="submit" class="btn-submit">
+                    <button type="submit" name="action" value="submit" class="btn-submit" id="btnSubmit">
                         <i class="bi bi-send"></i> Submit Permohonan
                     </button>
                     <a href="{{ route('dashboard.pemohon') }}" class="btn-cancel">
@@ -850,46 +852,67 @@
         };
         
         // ============================================
-        // VALIDASI SEBELUM SUBMIT
+        // FORM SUBMIT - PERBAIKAN
         // ============================================
-        document.getElementById('formPermohonan').addEventListener('submit', function(e) {
-            const action = document.activeElement.value;
+        const form = document.getElementById('formPermohonan');
+        const btnDraft = document.getElementById('btnDraft');
+        const btnSubmit = document.getElementById('btnSubmit');
+        
+        // Handler untuk tombol Draft
+        btnDraft.addEventListener('click', function(e) {
+            // Hapus required untuk file upload agar bisa save draft tanpa file
+            const fileInputs = form.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(input => {
+                input.required = false;
+            });
             
-            // Jika Submit, pastikan semua required terisi
-            if (action === 'submit') {
-                const requiredFields = this.querySelectorAll('[required]');
-                let isValid = true;
-                
-                requiredFields.forEach(field => {
-                    if (!field.value || field.value.trim() === '') {
-                        isValid = false;
-                        field.classList.add('is-invalid');
-                    } else {
-                        field.classList.remove('is-invalid');
+            // Form akan submit normal
+            return true;
+        });
+        
+        // Handler untuk tombol Submit
+        btnSubmit.addEventListener('click', function(e) {
+            // Cek semua field required
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            let firstInvalid = null;
+            
+            requiredFields.forEach(field => {
+                // Skip file input yang tidak visible
+                if (field.type === 'file') {
+                    const parentField = field.closest('.mb-3');
+                    if (parentField && parentField.classList.contains('d-none')) {
+                        return; // Skip hidden file inputs
                     }
-                });
-                
-                if (!isValid) {
-                    e.preventDefault();
-                    alert('Mohon lengkapi semua field yang bertanda (*) sebelum submit.');
-                    return false;
                 }
                 
-                // Konfirmasi submit
-                if (!confirm('Apakah Anda yakin ingin mensubmit permohonan ini? Permohonan tidak dapat diubah setelah disubmit.')) {
-                    e.preventDefault();
-                    return false;
+                if (!field.value || field.value.trim() === '') {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                    if (!firstInvalid) {
+                        firstInvalid = field;
+                    }
+                } else {
+                    field.classList.remove('is-invalid');
                 }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Mohon lengkapi semua field yang bertanda (*) sebelum submit.');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                }
+                return false;
             }
             
-            // Jika Draft, tidak perlu validasi ketat
-            if (action === 'draft') {
-                // Hapus required untuk file upload agar bisa save draft tanpa file
-                const fileInputs = this.querySelectorAll('input[type="file"]');
-                fileInputs.forEach(input => {
-                    input.required = false;
-                });
+            // Konfirmasi submit
+            if (!confirm('Apakah Anda yakin ingin mensubmit permohonan ini? Permohonan tidak dapat diubah setelah disubmit.')) {
+                e.preventDefault();
+                return false;
             }
+            
+            return true;
         });
         
         // ============================================
@@ -897,6 +920,9 @@
         // ============================================
         document.querySelectorAll('.form-control, .form-select').forEach(el => {
             el.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+            el.addEventListener('change', function() {
                 this.classList.remove('is-invalid');
             });
         });

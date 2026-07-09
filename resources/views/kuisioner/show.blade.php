@@ -244,7 +244,7 @@
                 <a href="{{ route('kuisioner.create', $permohonan->id) }}" class="btn-back" style="background: #fff3cd; color: #856404;">
                     <i class="bi bi-pencil"></i> Isi Kuisioner
                 </a>
-            @endif
+            @endif  
         </div>
     </div>
 </div>

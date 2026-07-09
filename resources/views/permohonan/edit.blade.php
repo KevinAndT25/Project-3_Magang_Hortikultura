@@ -252,22 +252,6 @@
         color: white;
     }
     
-    .btn-cancel {
-        background: #f0f2f5;
-        color: #7f8c8d;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.3s;
-        text-decoration: none;
-    }
-    
-    .btn-cancel:hover {
-        background: #e0e5ec;
-        color: #2c3e50;
-    }
-    
     /* Alert */
     .alert-draft-info {
         background: #fff3cd;
@@ -923,9 +907,15 @@
                     <button type="submit" name="action" value="submit" class="btn-submit">
                         <i class="bi bi-send"></i> Submit Permohonan
                     </button>
-                    <a href="{{ route('permohonan.show', $permohonan->id) }}" class="btn-cancel">
-                        <i class="bi bi-x-circle"></i> Batal
-                    </a>
+                    <form action="{{ route('permohonan.destroy', $permohonan->id) }}" method="POST" 
+                        style="display: inline-block;"
+                        onsubmit="return confirm('Yakin ingin menghapus draft ini? Semua data akan hilang permanen.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger" style="padding: 10px 25px; border-radius: 8px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; border: none;">
+                            <i class="bi bi-trash"></i> Hapus Draft
+                        </button>
+                    </form>
                 </div>
                 <div class="mt-3">
                     <small class="text-muted">

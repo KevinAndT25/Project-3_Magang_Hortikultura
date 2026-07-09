@@ -81,12 +81,6 @@
     .table-dashboard tbody tr:hover {
         background: #f8f9fa !important;
     }
-    .table-dashboard tbody tr.tr-highlight {
-        background: #fff8e1;
-    }
-    .table-dashboard tbody tr.tr-highlight:hover {
-        background: #fff3cd !important;
-    }
     
     /* Badge Status */
     .badge-status {
@@ -433,7 +427,7 @@
                         </thead>
                         <tbody>
                             @forelse($aktifPermohonans as $p)
-                            <tr class="clickable-row {{ auth()->user()->isAdmin() && (!$p->validasi_selesai || !$p->pengujian_selesai || !$p->test_report_selesai) ? 'tr-highlight' : '' }}" 
+                            <tr class="clickable-row {{ auth()->user()->isAdmin() && (!$p->validasi_selesai || !$p->pengujian_selesai || !$p->test_report_selesai)}}" 
                                 data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
@@ -455,39 +449,54 @@
                                     </a>
                                 </td>
                                 <td>
-                                    @if($p->validasi)
+                                    @if($p->validasi_selesai)
                                         <a href="{{ route('validasi.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
-                                        <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
-                                        </span>
+                                        <a href="{{ route('validasi.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action btn-urgent" onclick="event.stopPropagation();">
+                                            <span class="blink-dot dot-warning"></span> Isi
+                                        </a>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->pengujian)
+                                    @if($p->pengujian_selesai)
                                         <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
-                                    @elseif($p->validasi)
-                                        <span class="badge-status badge-warning">
-                                            <span class="status-dot dot-warning"></span> Diproses
-                                        </span>
+                                    @elseif($p->validasi_selesai)
+                                        <a href="{{ route('pengujian.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action btn-urgent" onclick="event.stopPropagation();">
+                                            <span class="blink-dot dot-warning"></span> Isi
+                                        </a>
                                     @else
                                         <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                            <span class="status-dot dot-secondary"></span> Terkunci
                                         </span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->testReport)
+                                    @if($p->test_report_selesai)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-download"></i> Download
                                         </a>
-                                    @elseif($p->pengujian)
+                                    @elseif($p->pengujian_selesai)
+                                        <a href="{{ route('testreport.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action btn-urgent" onclick="event.stopPropagation();">
+                                            <span class="blink-dot dot-warning"></span> Isi
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Terkunci
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($p->kuisioner_selesai)
+                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-eye"></i> Lihat
+                                        </a>
+                                    @elseif($p->test_report_selesai)
                                         <span class="badge-status badge-warning">
-                                            <span class="status-dot dot-warning"></span> Diproses
+                                            <span class="status-dot dot-warning"></span> Menunggu
                                         </span>
                                     @else
                                         <span class="badge-status badge-waiting">
@@ -496,19 +505,15 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->kuisioner)
-                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-eye"></i> Lihat
-                                        </a>
-                                    @elseif($p->testReport)
-                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-primary btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-pencil"></i> Isi
-                                        </a>
-                                    @else
-                                        <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
-                                        </span>
-                                    @endif
+                                    <form action="{{ route('permohonan.destroy', $p->id) }}" method="POST" 
+                                        onsubmit="event.stopPropagation(); return confirm('Yakin ingin menghapus permohonan ini? Semua data terkait akan hilang permanen.');"
+                                        onclick="event.stopPropagation();">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger btn-action" title="Hapus Permohonan">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             @empty

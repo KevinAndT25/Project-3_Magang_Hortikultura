@@ -126,6 +126,7 @@
         box-shadow: 0 4px 20px rgba(26, 110, 74, 0.4);
         color: white;
     }
+
     .progress-custom {
         height: 25px;
         border-radius: 8px;
@@ -196,17 +197,6 @@
                     <i class="bi bi-info-circle me-2"></i>
                     <strong>Permohonan ini masih dalam status DRAFT.</strong>
                     <span class="text-muted ms-2">Lengkapi data dan submit untuk diproses admin.</span>
-                </div>
-                <div class="mt-2 mt-sm-0">
-                    <a href="{{ route('permohonan.edit', $permohonan->id) }}" class="btn-edit-draft">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <form action="{{ route('permohonan.submit', $permohonan->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn-submit-draft" onclick="return confirm('Yakin ingin mensubmit permohonan ini?')">
-                            <i class="bi bi-send"></i> Submit
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -412,8 +402,8 @@
         <!-- TOMBOL KEMBALI -->
         <!-- ============================================ -->
         <div class="d-flex gap-2 mb-4">
-            <a href="{{ url()->previous() }}" class="btn-back">
-                <i class="bi bi-arrow-left"></i> Kembali
+            <a href="{{ auth()->user()->isAdmin() ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
             
             @if($permohonan->isDraft())
@@ -424,6 +414,15 @@
                     @csrf
                     <button type="submit" class="btn-submit-draft" onclick="return confirm('Yakin ingin mensubmit permohonan ini?')">
                         <i class="bi bi-send"></i> Submit
+                    </button>
+                </form>
+                <form action="{{ route('permohonan.destroy', $permohonan->id) }}" method="POST" 
+                    style="display: inline-block;"
+                    onsubmit="return confirm('Yakin ingin menghapus draft ini? Semua data akan hilang permanen.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" style="padding: 10px 25px; border-radius: 8px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; border: none;">
+                        <i class="bi bi-trash"></i> Hapus Draft
                     </button>
                 </form>
             @endif

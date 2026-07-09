@@ -202,7 +202,7 @@
 
         <!-- Tombol Kembali -->
         <div class="d-flex gap-2 mb-4">
-            <a href="{{ route('dashboard.admin') }}" class="btn-back">
+            <a href="{{ auth()->user()->isAdmin() ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="btn-back">
                 <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
         </div>

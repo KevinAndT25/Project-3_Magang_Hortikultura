@@ -396,7 +396,7 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- TABEL PERMOHONAN AKTIF -->
+    <!-- TABEL PERMOHONAN AKTIF (UNTUK ADMIN) -->
     <!-- ============================================ -->
     <div class="row">
         <div class="col-12">
@@ -418,11 +418,12 @@
                                 <th>Pengujian</th>
                                 <th>Test Report</th>
                                 <th>Kuisioner</th>
+                                <th style="width: 60px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($aktifPermohonans as $p)
-                            <tr class="clickable-row {{ (!$p->validasi || !$p->pengujian || !$p->testReport) }}" 
+                            <tr class="clickable-row {{ (!$p->validasi_selesai || !$p->pengujian_selesai || !$p->test_report_selesai) ? 'tr-highlight' : '' }}" 
                                 data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
@@ -444,7 +445,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    @if($p->validasi)
+                                    @if($p->validasi_selesai)
                                         <a href="{{ route('validasi.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
@@ -455,11 +456,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->pengujian)
+                                    @if($p->pengujian_selesai)
                                         <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
-                                    @elseif($p->validasi)
+                                    @elseif($p->validasi_selesai)
                                         <a href="{{ route('pengujian.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action btn-urgent" onclick="event.stopPropagation();">
                                             <span class="blink-dot dot-warning"></span> Isi
                                         </a>
@@ -470,11 +471,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->testReport)
+                                    @if($p->test_report_selesai)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-check-circle"></i> Lihat
+                                            <i class="bi bi-download"></i> Download
                                         </a>
-                                    @elseif($p->pengujian)
+                                    @elseif($p->pengujian_selesai)
                                         <a href="{{ route('testreport.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action btn-urgent" onclick="event.stopPropagation();">
                                             <span class="blink-dot dot-warning"></span> Isi
                                         </a>
@@ -485,11 +486,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->kuisioner)
+                                    @if($p->kuisioner_selesai)
                                         <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
-                                    @elseif($p->testReport)
+                                    @elseif($p->test_report_selesai)
                                         <span class="badge-status badge-warning">
                                             <span class="status-dot dot-warning"></span> Menunggu
                                         </span>
@@ -499,10 +500,21 @@
                                         </span>
                                     @endif
                                 </td>
+                                <td>
+                                    <form action="{{ route('permohonan.destroy', $p->id) }}" method="POST" 
+                                        onsubmit="event.stopPropagation(); return confirm('Yakin ingin menghapus permohonan ini? Semua data terkait akan hilang permanen.');"
+                                        onclick="event.stopPropagation();">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger btn-action" title="Hapus Permohonan">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="9">
+                                <td colspan="10">
                                     <div class="empty-state">
                                         <i class="bi bi-inbox"></i>
                                         <p>Tidak ada permohonan aktif</p>

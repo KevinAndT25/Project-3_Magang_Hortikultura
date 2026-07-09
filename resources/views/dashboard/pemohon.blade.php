@@ -375,7 +375,7 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- TABEL DRAFT -->
+    <!-- TABEL DRAFT (UNTUK PEMOHON) -->
     <!-- ============================================ -->
     <div class="row">
         <div class="col-12">
@@ -397,9 +397,9 @@
                                 <th>Pengujian</th>
                                 <th>Test Report</th>
                                 <th>Kuisioner</th>
+                                <th style="width: 60px;">Aksi</th>
                             </tr>
                         </thead>
-                        <!-- Tabel Draft -->
                         <tbody>
                             @forelse($draftPermohonans as $p)
                             <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
@@ -419,7 +419,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-warning btn-action" onclick="event.stopPropagation();">
-                                        <i class="bi bi-pencil"></i> Edit Draft
+                                        <i class="bi bi-eye"></i> Lihat
                                     </a>
                                 </td>
                                 <td>
@@ -442,10 +442,21 @@
                                         <span class="status-dot dot-draft"></span> Draft
                                     </span>
                                 </td>
+                                <td>
+                                    <form action="{{ route('draft.destroy', $p->id) }}" method="POST" 
+                                        onsubmit="event.stopPropagation(); return confirm('Yakin ingin menghapus draft ini? Semua data akan hilang permanen.');"
+                                        onclick="event.stopPropagation();">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger btn-action" title="Hapus Draft">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="9">
+                                <td colspan="10">
                                     <div class="empty-state">
                                         <i class="bi bi-file-earmark"></i>
                                         <p>Belum ada draft permohonan</p>
