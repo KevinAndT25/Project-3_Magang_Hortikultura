@@ -536,7 +536,7 @@
                                 <td>
                                     @if($p->testReport)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-download"></i> Download
+                                            <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @elseif($p->pengujian)
                                         <span class="badge-status badge-warning">
@@ -554,7 +554,7 @@
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
                                     @elseif($p->testReport)
-                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-primary btn-action" onclick="event.stopPropagation();">
+                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-warning btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-pencil"></i> Isi
                                         </a>
                                     @else
