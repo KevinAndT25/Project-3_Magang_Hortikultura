@@ -1,7 +1,6 @@
-{{-- resources/views/permohonan/create.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Form Permohonan Baru')
+@section('title', 'Edit Draft Permohonan')
 
 @section('content')
 <style>
@@ -136,6 +135,10 @@
         color: #2c3e50;
     }
     
+    .file-item .file-name i {
+        color: #1a6e4a;
+    }
+    
     .file-item .file-size {
         font-size: 12px;
         color: #95a5a6;
@@ -147,6 +150,58 @@
         background: none;
         padding: 0 5px;
         cursor: pointer;
+    }
+    
+    .file-item .btn-remove-file:hover {
+        color: #c0392b;
+    }
+    
+    /* Existing File */
+    .file-existing {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: #e8f5e9;
+        border-radius: 6px;
+        margin-bottom: 5px;
+        border-left: 3px solid #27ae60;
+    }
+    
+    .file-existing .file-name {
+        font-size: 13px;
+        color: #2c3e50;
+    }
+    
+    .file-existing .file-name i {
+        color: #27ae60;
+    }
+    
+    .file-existing .file-action {
+        margin-left: auto;
+    }
+    
+    .file-existing .file-action a {
+        color: #1a6e4a;
+        text-decoration: none;
+        font-size: 13px;
+        margin-right: 10px;
+    }
+    
+    .file-existing .file-action a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-existing .file-action .btn-remove-existing {
+        color: #e74c3c;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    
+    .file-existing .file-action .btn-remove-existing:hover {
+        text-decoration: underline;
     }
     
     /* Action Buttons */
@@ -213,6 +268,16 @@
         color: #2c3e50;
     }
     
+    /* Alert */
+    .alert-draft-info {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        color: #856404;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
         .form-section {
@@ -236,20 +301,33 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="fw-bold text-dark mb-1">
-                    <i class="bi bi-file-earmark-plus me-2" style="color: #1a6e4a;"></i>
-                    Form Permohonan Baru
+                    <i class="bi bi-pencil-square me-2" style="color: #f39c12;"></i>
+                    Edit Draft Permohonan
                 </h4>
                 <p class="text-muted mb-0" style="font-size: 14px;">
-                    Laboratorium Penguji Mutu Alsintan UPTD BMSPP
+                    {{ $permohonan->no_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
-            <a href="{{ route('dashboard.pemohon') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+            <a href="{{ route('permohonan.show', $permohonan->id) }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Kembali ke Detail
             </a>
         </div>
 
-        <form method="POST" action="{{ route('permohonan.store') }}" enctype="multipart/form-data" id="formPermohonan">
+        <!-- Alert Info -->
+        <div class="alert-draft-info">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle me-2" style="font-size: 18px;"></i>
+                <div>
+                    <strong>Draft sedang diedit.</strong>
+                    <span class="text-muted ms-2">Simpan sebagai draft untuk melanjutkan nanti, atau Submit untuk mengirim ke admin.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form method="POST" action="{{ route('permohonan.update', $permohonan->id) }}" enctype="multipart/form-data" id="formPermohonan">
             @csrf
+            @method('PUT')
             
             <!-- ============================================ -->
             <!-- I. DATA PEMOHON UJI -->
@@ -271,7 +349,7 @@
                         <input type="text" class="form-control @error('nama_pemohon') is-invalid @enderror" 
                                id="nama_pemohon" name="nama_pemohon" 
                                placeholder="Nama lengkap pemohon"
-                               value="{{ old('nama_pemohon') }}" required>
+                               value="{{ old('nama_pemohon', $permohonan->nama_pemohon) }}" required>
                         @error('nama_pemohon')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -284,13 +362,13 @@
                         <select class="form-select @error('status_pemohon') is-invalid @enderror" 
                                 id="status_pemohon" name="status_pemohon" required>
                             <option value="">-- Pilih Status Pemohon --</option>
-                            <option value="UMKM" {{ old('status_pemohon') == 'UMKM' ? 'selected' : '' }}>
+                            <option value="UMKM" {{ old('status_pemohon', $permohonan->status_pemohon) == 'UMKM' ? 'selected' : '' }}>
                                 Bengkel Pengrajin Alsintan (UMKM) / Pembeli / Pengguna
                             </option>
-                            <option value="Pemerintah" {{ old('status_pemohon') == 'Pemerintah' ? 'selected' : '' }}>
+                            <option value="Pemerintah" {{ old('status_pemohon', $permohonan->status_pemohon) == 'Pemerintah' ? 'selected' : '' }}>
                                 Instansi Pemerintah
                             </option>
-                            <option value="Produsen" {{ old('status_pemohon') == 'Produsen' ? 'selected' : '' }}>
+                            <option value="Produsen" {{ old('status_pemohon', $permohonan->status_pemohon) == 'Produsen' ? 'selected' : '' }}>
                                 Produsen / Distributor / Penyedia
                             </option>
                         </select>
@@ -306,7 +384,7 @@
                         <input type="text" class="form-control @error('perusahaan_instansi') is-invalid @enderror" 
                                id="perusahaan_instansi" name="perusahaan_instansi" 
                                placeholder="Nama perusahaan atau instansi"
-                               value="{{ old('perusahaan_instansi') }}" required>
+                               value="{{ old('perusahaan_instansi', $permohonan->perusahaan_instansi) }}" required>
                         @error('perusahaan_instansi')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -319,7 +397,7 @@
                         <input type="text" class="form-control @error('alamat') is-invalid @enderror" 
                                id="alamat" name="alamat" 
                                placeholder="Alamat lengkap"
-                               value="{{ old('alamat') }}" required>
+                               value="{{ old('alamat', $permohonan->alamat) }}" required>
                         @error('alamat')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -332,7 +410,7 @@
                         <input type="text" class="form-control @error('telepon') is-invalid @enderror" 
                                id="telepon" name="telepon" 
                                placeholder="08xxxxxxxxx"
-                               value="{{ old('telepon') }}" required>
+                               value="{{ old('telepon', $permohonan->telepon) }}" required>
                         @error('telepon')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -345,7 +423,7 @@
                         <input type="text" class="form-control @error('nomor_surat_permohonan') is-invalid @enderror" 
                                id="nomor_surat_permohonan" name="nomor_surat_permohonan" 
                                placeholder="001/XX/2024"
-                               value="{{ old('nomor_surat_permohonan') }}" required>
+                               value="{{ old('nomor_surat_permohonan', $permohonan->nomor_surat_permohonan) }}" required>
                         @error('nomor_surat_permohonan')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -357,7 +435,7 @@
                         </label>
                         <input type="date" class="form-control @error('tanggal_surat_permohonan') is-invalid @enderror" 
                                id="tanggal_surat_permohonan" name="tanggal_surat_permohonan" 
-                               value="{{ old('tanggal_surat_permohonan') }}" required>
+                               value="{{ old('tanggal_surat_permohonan', $permohonan->tanggal_surat_permohonan ? $permohonan->tanggal_surat_permohonan->format('Y-m-d') : '') }}" required>
                         @error('tanggal_surat_permohonan')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -385,7 +463,7 @@
                         <input type="text" class="form-control @error('jenis_alsintan') is-invalid @enderror" 
                                id="jenis_alsintan" name="jenis_alsintan" 
                                placeholder="Contoh: Traktor Tangan, Pompa Semprot"
-                               value="{{ old('jenis_alsintan') }}" required>
+                               value="{{ old('jenis_alsintan', $permohonan->jenis_alsintan) }}" required>
                         @error('jenis_alsintan')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -398,9 +476,9 @@
                         <select class="form-select @error('status_alsintan') is-invalid @enderror" 
                                 id="status_alsintan" name="status_alsintan" required>
                             <option value="">-- Pilih --</option>
-                            <option value="prototipe" {{ old('status_alsintan') == 'prototipe' ? 'selected' : '' }}>Prototipe</option>
-                            <option value="produk_massal" {{ old('status_alsintan') == 'produk_massal' ? 'selected' : '' }}>Produk Massal</option>
-                            <option value="impor" {{ old('status_alsintan') == 'impor' ? 'selected' : '' }}>Impor</option>
+                            <option value="prototipe" {{ old('status_alsintan', $permohonan->status_alsintan) == 'prototipe' ? 'selected' : '' }}>Prototipe</option>
+                            <option value="produk_massal" {{ old('status_alsintan', $permohonan->status_alsintan) == 'produk_massal' ? 'selected' : '' }}>Produk Massal</option>
+                            <option value="impor" {{ old('status_alsintan', $permohonan->status_alsintan) == 'impor' ? 'selected' : '' }}>Impor</option>
                         </select>
                         @error('status_alsintan')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -414,8 +492,8 @@
                         <select class="form-select @error('status_produksi') is-invalid @enderror" 
                                 id="status_produksi" name="status_produksi" required>
                             <option value="">-- Pilih --</option>
-                            <option value="produk_lokal" {{ old('status_produksi') == 'produk_lokal' ? 'selected' : '' }}>Produk Lokal</option>
-                            <option value="impor" {{ old('status_produksi') == 'impor' ? 'selected' : '' }}>Impor</option>
+                            <option value="produk_lokal" {{ old('status_produksi', $permohonan->status_produksi) == 'produk_lokal' ? 'selected' : '' }}>Produk Lokal</option>
+                            <option value="impor" {{ old('status_produksi', $permohonan->status_produksi) == 'impor' ? 'selected' : '' }}>Impor</option>
                         </select>
                         @error('status_produksi')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -429,7 +507,7 @@
                         <input type="text" class="form-control @error('merek_model_tipe') is-invalid @enderror" 
                                id="merek_model_tipe" name="merek_model_tipe" 
                                placeholder="Contoh: Quick TL800"
-                               value="{{ old('merek_model_tipe') }}" required>
+                               value="{{ old('merek_model_tipe', $permohonan->merek_model_tipe) }}" required>
                         @error('merek_model_tipe')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -443,7 +521,7 @@
                                id="tahun_pembuatan" name="tahun_pembuatan" 
                                placeholder="2024"
                                min="1900" max="{{ date('Y') }}"
-                               value="{{ old('tahun_pembuatan', date('Y')) }}">
+                               value="{{ old('tahun_pembuatan', $permohonan->tahun_pembuatan) }}">
                         @error('tahun_pembuatan')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -457,7 +535,7 @@
                                id="jumlah_unit" name="jumlah_unit" 
                                placeholder="0"
                                min="1"
-                               value="{{ old('jumlah_unit', 1) }}" required>
+                               value="{{ old('jumlah_unit', $permohonan->jumlah_unit) }}" required>
                         <div class="form-text">unit</div>
                         @error('jumlah_unit')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -476,7 +554,7 @@
                             <input type="text" class="form-control @error('daya_maksimal') is-invalid @enderror" 
                                    id="daya_maksimal" name="daya_maksimal" 
                                    placeholder="Contoh: 8,5 Hp / 6,3 kW"
-                                   value="{{ old('daya_maksimal') }}">
+                                   value="{{ old('daya_maksimal', $permohonan->daya_maksimal) }}">
                             @error('daya_maksimal')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -489,7 +567,7 @@
                             <input type="text" class="form-control @error('putaran_mesin') is-invalid @enderror" 
                                    id="putaran_mesin" name="putaran_mesin" 
                                    placeholder="Contoh: 2400 RPM"
-                                   value="{{ old('putaran_mesin') }}">
+                                   value="{{ old('putaran_mesin', $permohonan->putaran_mesin) }}">
                             @error('putaran_mesin')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -502,7 +580,7 @@
                             <input type="text" class="form-control @error('bahan_bakar') is-invalid @enderror" 
                                    id="bahan_bakar" name="bahan_bakar" 
                                    placeholder="Solar, Bensin, dll."
-                                   value="{{ old('bahan_bakar') }}">
+                                   value="{{ old('bahan_bakar', $permohonan->bahan_bakar) }}">
                             @error('bahan_bakar')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -515,7 +593,7 @@
                             <input type="text" class="form-control @error('sistem_pendinginan') is-invalid @enderror" 
                                    id="sistem_pendinginan" name="sistem_pendinginan" 
                                    placeholder="Udara, Air, dll."
-                                   value="{{ old('sistem_pendinginan') }}">
+                                   value="{{ old('sistem_pendinginan', $permohonan->sistem_pendinginan) }}">
                             @error('sistem_pendinginan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -533,7 +611,7 @@
                             <input type="text" class="form-control @error('dimensi') is-invalid @enderror" 
                                    id="dimensi" name="dimensi" 
                                    placeholder="Contoh: 220 x 85 x 115 cm"
-                                   value="{{ old('dimensi') }}">
+                                   value="{{ old('dimensi', $permohonan->dimensi) }}">
                             @error('dimensi')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -546,7 +624,7 @@
                             <input type="text" class="form-control @error('berat') is-invalid @enderror" 
                                    id="berat" name="berat" 
                                    placeholder="0 kg"
-                                   value="{{ old('berat', '0') }}">
+                                   value="{{ old('berat', $permohonan->berat) }}">
                             @error('berat')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -559,7 +637,7 @@
                             <input type="text" class="form-control @error('kapasitas_kerja') is-invalid @enderror" 
                                    id="kapasitas_kerja" name="kapasitas_kerja" 
                                    placeholder="Contoh: 0.08–0.12 ha/jam"
-                                   value="{{ old('kapasitas_kerja') }}">
+                                   value="{{ old('kapasitas_kerja', $permohonan->kapasitas_kerja) }}">
                             @error('kapasitas_kerja')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -572,7 +650,7 @@
                             <input type="text" class="form-control @error('perlengkapan') is-invalid @enderror" 
                                    id="perlengkapan" name="perlengkapan" 
                                    placeholder="Bajak, garu, dll."
-                                   value="{{ old('perlengkapan') }}">
+                                   value="{{ old('perlengkapan', $permohonan->perlengkapan) }}">
                             @error('perlengkapan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -598,12 +676,35 @@
                     <label for="file_surat_permohonan" class="form-label">
                         Surat Permohonan Pengujian <span class="required">*</span>
                     </label>
+                    
+                    <!-- File existing -->
+                    @if(!empty($permohonan->surat_permohonan))
+                    <div class="file-existing">
+                        <span class="file-name">
+                            <i class="bi bi-file-earmark-check"></i>
+                            {{ basename($permohonan->surat_permohonan) }}
+                        </span>
+                        <span class="file-action">
+                            <a href="{{ asset('storage/' . $permohonan->surat_permohonan) }}" target="_blank">
+                                <i class="bi bi-eye"></i> Lihat
+                            </a>
+                            <button type="button" class="btn-remove-existing" onclick="removeExistingFile('surat_permohonan', 'field-surat', this)">
+                                <i class="bi bi-x-circle"></i> Hapus
+                            </button>
+                        </span>
+                    </div>
+                    <input type="hidden" id="remove_surat_permohonan" name="remove_surat_permohonan" value="0">
+                    @endif
+                    
                     <div class="upload-area" onclick="document.getElementById('file_surat_permohonan').click()">
                         <div class="upload-icon">
                             <i class="bi bi-cloud-arrow-up"></i>
                         </div>
                         <div class="upload-text">
                             <strong>Klik untuk upload</strong> atau drag and drop
+                            @if(!empty($permohonan->surat_permohonan))
+                            <span class="text-muted">(Upload file baru untuk mengganti)</span>
+                            @endif
                         </div>
                         <div class="upload-formats">
                             Format: PDF / JPG / PNG (Maks. 5MB)
@@ -611,7 +712,7 @@
                     </div>
                     <input type="file" class="d-none" id="file_surat_permohonan" 
                            name="file_surat_permohonan" 
-                           accept=".pdf,.jpg,.jpeg,.png" required>
+                           accept=".pdf,.jpg,.jpeg,.png">
                     <div id="file_surat_info" class="file-list"></div>
                     @error('file_surat_permohonan')
                         <div class="text-danger mt-1" style="font-size: 13px;">{{ $message }}</div>
@@ -619,16 +720,39 @@
                 </div>
                 
                 <!-- Upload KTP (UMKM & Produsen) -->
-                <div class="mb-3 d-none" id="field-ktp">
+                <div class="mb-3 {{ old('status_pemohon', $permohonan->status_pemohon) == 'UMKM' || old('status_pemohon', $permohonan->status_pemohon) == 'Produsen' ? '' : 'd-none' }}" id="field-ktp">
                     <label for="file_ktp" class="form-label">
-                        KTP Pemohon <span class="required">*</span>
+                        KTP Pemohon <span class="required" id="ktp-required">*</span>
                     </label>
+                    
+                    <!-- File existing -->
+                    @if(!empty($permohonan->ktp))
+                    <div class="file-existing">
+                        <span class="file-name">
+                            <i class="bi bi-file-earmark-check"></i>
+                            {{ basename($permohonan->ktp) }}
+                        </span>
+                        <span class="file-action">
+                            <a href="{{ asset('storage/' . $permohonan->ktp) }}" target="_blank">
+                                <i class="bi bi-eye"></i> Lihat
+                            </a>
+                            <button type="button" class="btn-remove-existing" onclick="removeExistingFile('ktp', 'field-ktp', this)">
+                                <i class="bi bi-x-circle"></i> Hapus
+                            </button>
+                        </span>
+                    </div>
+                    <input type="hidden" id="remove_ktp" name="remove_ktp" value="0">
+                    @endif
+                    
                     <div class="upload-area" onclick="document.getElementById('file_ktp').click()">
                         <div class="upload-icon">
                             <i class="bi bi-cloud-arrow-up"></i>
                         </div>
                         <div class="upload-text">
                             <strong>Klik untuk upload</strong> atau drag and drop
+                            @if(!empty($permohonan->ktp))
+                            <span class="text-muted">(Upload file baru untuk mengganti)</span>
+                            @endif
                         </div>
                         <div class="upload-formats">
                             Format: PDF / JPG / PNG (Maks. 5MB)
@@ -644,16 +768,39 @@
                 </div>
                 
                 <!-- Upload Akte (Produsen) -->
-                <div class="mb-3 d-none" id="field-akte">
+                <div class="mb-3 {{ old('status_pemohon', $permohonan->status_pemohon) == 'Produsen' ? '' : 'd-none' }}" id="field-akte">
                     <label for="file_akte" class="form-label">
-                        Akte Pendirian Perusahaan dan Perubahannya <span class="required">*</span>
+                        Akte Pendirian Perusahaan dan Perubahannya <span class="required" id="akte-required">*</span>
                     </label>
+                    
+                    <!-- File existing -->
+                    @if(!empty($permohonan->akte))
+                    <div class="file-existing">
+                        <span class="file-name">
+                            <i class="bi bi-file-earmark-check"></i>
+                            {{ basename($permohonan->akte) }}
+                        </span>
+                        <span class="file-action">
+                            <a href="{{ asset('storage/' . $permohonan->akte) }}" target="_blank">
+                                <i class="bi bi-eye"></i> Lihat
+                            </a>
+                            <button type="button" class="btn-remove-existing" onclick="removeExistingFile('akte', 'field-akte', this)">
+                                <i class="bi bi-x-circle"></i> Hapus
+                            </button>
+                        </span>
+                    </div>
+                    <input type="hidden" id="remove_akte" name="remove_akte" value="0">
+                    @endif
+                    
                     <div class="upload-area" onclick="document.getElementById('file_akte').click()">
                         <div class="upload-icon">
                             <i class="bi bi-cloud-arrow-up"></i>
                         </div>
                         <div class="upload-text">
                             <strong>Klik untuk upload</strong> atau drag and drop
+                            @if(!empty($permohonan->akte))
+                            <span class="text-muted">(Upload file baru untuk mengganti)</span>
+                            @endif
                         </div>
                         <div class="upload-formats">
                             Format: PDF / JPG / PNG (Maks. 5MB)
@@ -669,16 +816,39 @@
                 </div>
                 
                 <!-- Upload NPWP (Produsen) -->
-                <div class="mb-3 d-none" id="field-npwp">
+                <div class="mb-3 {{ old('status_pemohon', $permohonan->status_pemohon) == 'Produsen' ? '' : 'd-none' }}" id="field-npwp">
                     <label for="file_npwp" class="form-label">
-                        NPWP <span class="required">*</span>
+                        NPWP <span class="required" id="npwp-required">*</span>
                     </label>
+                    
+                    <!-- File existing -->
+                    @if(!empty($permohonan->npwp))
+                    <div class="file-existing">
+                        <span class="file-name">
+                            <i class="bi bi-file-earmark-check"></i>
+                            {{ basename($permohonan->npwp) }}
+                        </span>
+                        <span class="file-action">
+                            <a href="{{ asset('storage/' . $permohonan->npwp) }}" target="_blank">
+                                <i class="bi bi-eye"></i> Lihat
+                            </a>
+                            <button type="button" class="btn-remove-existing" onclick="removeExistingFile('npwp', 'field-npwp', this)">
+                                <i class="bi bi-x-circle"></i> Hapus
+                            </button>
+                        </span>
+                    </div>
+                    <input type="hidden" id="remove_npwp" name="remove_npwp" value="0">
+                    @endif
+                    
                     <div class="upload-area" onclick="document.getElementById('file_npwp').click()">
                         <div class="upload-icon">
                             <i class="bi bi-cloud-arrow-up"></i>
                         </div>
                         <div class="upload-text">
                             <strong>Klik untuk upload</strong> atau drag and drop
+                            @if(!empty($permohonan->npwp))
+                            <span class="text-muted">(Upload file baru untuk mengganti)</span>
+                            @endif
                         </div>
                         <div class="upload-formats">
                             Format: PDF / JPG / PNG (Maks. 5MB)
@@ -694,16 +864,39 @@
                 </div>
                 
                 <!-- Upload NIB (Produsen) -->
-                <div class="mb-3 d-none" id="field-nib">
+                <div class="mb-3 {{ old('status_pemohon', $permohonan->status_pemohon) == 'Produsen' ? '' : 'd-none' }}" id="field-nib">
                     <label for="file_nib" class="form-label">
-                        NIB (Nomor Induk Berusaha) <span class="required">*</span>
+                        NIB (Nomor Induk Berusaha) <span class="required" id="nib-required">*</span>
                     </label>
+                    
+                    <!-- File existing -->
+                    @if(!empty($permohonan->nib))
+                    <div class="file-existing">
+                        <span class="file-name">
+                            <i class="bi bi-file-earmark-check"></i>
+                            {{ basename($permohonan->nib) }}
+                        </span>
+                        <span class="file-action">
+                            <a href="{{ asset('storage/' . $permohonan->nib) }}" target="_blank">
+                                <i class="bi bi-eye"></i> Lihat
+                            </a>
+                            <button type="button" class="btn-remove-existing" onclick="removeExistingFile('nib', 'field-nib', this)">
+                                <i class="bi bi-x-circle"></i> Hapus
+                            </button>
+                        </span>
+                    </div>
+                    <input type="hidden" id="remove_nib" name="remove_nib" value="0">
+                    @endif
+                    
                     <div class="upload-area" onclick="document.getElementById('file_nib').click()">
                         <div class="upload-icon">
                             <i class="bi bi-cloud-arrow-up"></i>
                         </div>
                         <div class="upload-text">
                             <strong>Klik untuk upload</strong> atau drag and drop
+                            @if(!empty($permohonan->nib))
+                            <span class="text-muted">(Upload file baru untuk mengganti)</span>
+                            @endif
                         </div>
                         <div class="upload-formats">
                             Format: PDF / JPG / PNG (Maks. 5MB)
@@ -725,20 +918,20 @@
             <div class="form-section">
                 <div class="form-actions">
                     <button type="submit" name="action" value="draft" class="btn-draft">
-                        <i class="bi bi-file-earmark"></i> Simpan sebagai Draft
+                        <i class="bi bi-file-earmark"></i> Simpan Draft
                     </button>
                     <button type="submit" name="action" value="submit" class="btn-submit">
                         <i class="bi bi-send"></i> Submit Permohonan
                     </button>
-                    <a href="{{ route('dashboard.pemohon') }}" class="btn-cancel">
+                    <a href="{{ route('permohonan.show', $permohonan->id) }}" class="btn-cancel">
                         <i class="bi bi-x-circle"></i> Batal
                     </a>
                 </div>
                 <div class="mt-3">
                     <small class="text-muted">
                         <i class="bi bi-info-circle"></i> 
-                        <strong>Draft:</strong> Permohonan disimpan dan dapat diedit kembali. 
-                        <strong>Submit:</strong> Permohonan dikirim ke admin dan tidak dapat diubah.
+                        <strong>Simpan Draft:</strong> Menyimpan perubahan dan tetap dalam status draft. 
+                        <strong>Submit:</strong> Mengirim permohonan ke admin dan tidak dapat diubah lagi.
                     </small>
                 </div>
             </div>
@@ -752,39 +945,48 @@
         // LOGIC: Dynamic Upload Fields berdasarkan Status Pemohon
         // ============================================
         const statusSelect = document.getElementById('status_pemohon');
-        const fieldSurat = document.getElementById('field-surat');
         const fieldKtp = document.getElementById('field-ktp');
         const fieldAkte = document.getElementById('field-akte');
         const fieldNpwp = document.getElementById('field-npwp');
         const fieldNib = document.getElementById('field-nib');
         
         // File inputs
-        const fileSurat = document.getElementById('file_surat_permohonan');
         const fileKtp = document.getElementById('file_ktp');
         const fileAkte = document.getElementById('file_akte');
         const fileNpwp = document.getElementById('file_npwp');
         const fileNib = document.getElementById('file_nib');
         
+        // Required indicators
+        const ktpRequired = document.getElementById('ktp-required');
+        const akteRequired = document.getElementById('akte-required');
+        const npwpRequired = document.getElementById('npwp-required');
+        const nibRequired = document.getElementById('nib-required');
+        
         function updateFields() {
             const status = statusSelect.value;
             
             // Reset semua
-            fieldSurat.classList.remove('d-none');
             fieldKtp.classList.add('d-none');
             fieldAkte.classList.add('d-none');
             fieldNpwp.classList.add('d-none');
             fieldNib.classList.add('d-none');
             
             // Reset required
-            fileSurat.required = true;
             fileKtp.required = false;
             fileAkte.required = false;
             fileNpwp.required = false;
             fileNib.required = false;
             
+            // Reset required indicators
+            ktpRequired.style.display = 'none';
+            akteRequired.style.display = 'none';
+            npwpRequired.style.display = 'none';
+            nibRequired.style.display = 'none';
+            
             if (status === 'UMKM') {
                 fieldKtp.classList.remove('d-none');
                 fileKtp.required = true;
+                ktpRequired.style.display = 'inline';
             } else if (status === 'Produsen') {
                 fieldKtp.classList.remove('d-none');
                 fieldAkte.classList.remove('d-none');
@@ -794,12 +996,14 @@
                 fileAkte.required = true;
                 fileNpwp.required = true;
                 fileNib.required = true;
+                ktpRequired.style.display = 'inline';
+                akteRequired.style.display = 'inline';
+                npwpRequired.style.display = 'inline';
+                nibRequired.style.display = 'inline';
             }
-            // Pemerintah: hanya surat
         }
         
         statusSelect.addEventListener('change', updateFields);
-        updateFields();
         
         // ============================================
         // FILE UPLOAD HANDLER (Preview)
@@ -808,18 +1012,24 @@
             const infoContainer = document.getElementById(infoContainerId);
             
             fileInput.addEventListener('change', function() {
-                infoContainer.innerHTML = '';
-                
+                // Hanya tampilkan file baru, jangan hapus existing
+                // Tapi kita append ke container
                 if (this.files && this.files.length > 0) {
                     const file = this.files[0];
                     const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                    
+                    // Cek apakah sudah ada file item untuk input ini
+                    let existingItem = infoContainer.querySelector('.file-item');
+                    if (existingItem) {
+                        existingItem.remove();
+                    }
                     
                     const fileItem = document.createElement('div');
                     fileItem.className = 'file-item';
                     fileItem.innerHTML = `
                         <span class="file-name">
                             <i class="bi bi-file-earmark me-2" style="color: #1a6e4a;"></i>
-                            ${file.name}
+                            ${file.name} <span class="text-muted">(baru)</span>
                         </span>
                         <span class="file-size">${fileSize} MB</span>
                         <button type="button" class="btn-remove-file" onclick="removeFile('${fileInput.id}', '${infoContainerId}')">
@@ -832,14 +1042,14 @@
         }
         
         // Setup semua file upload
-        setupFileUpload(fileSurat, 'file_surat_info');
+        setupFileUpload(document.getElementById('file_surat_permohonan'), 'file_surat_info');
         setupFileUpload(fileKtp, 'file_ktp_info');
         setupFileUpload(fileAkte, 'file_akte_info');
         setupFileUpload(fileNpwp, 'file_npwp_info');
         setupFileUpload(fileNib, 'file_nib_info');
         
         // ============================================
-        // REMOVE FILE FUNCTION
+        // REMOVE FILE FUNCTION (untuk file baru)
         // ============================================
         window.removeFile = function(inputId, containerId) {
             const fileInput = document.getElementById(inputId);
@@ -850,6 +1060,35 @@
         };
         
         // ============================================
+        // REMOVE EXISTING FILE FUNCTION
+        // ============================================
+        window.removeExistingFile = function(fieldName, fieldId, buttonElement) {
+            // Tandai untuk dihapus
+            const hiddenInput = document.getElementById('remove_' + fieldName);
+            if (hiddenInput) {
+                hiddenInput.value = '1';
+            }
+            
+            // Sembunyikan file existing
+            const fileExisting = buttonElement.closest('.file-existing');
+            if (fileExisting) {
+                fileExisting.style.display = 'none';
+            }
+            
+            // Tampilkan upload area dengan jelas
+            const fieldContainer = document.getElementById(fieldId);
+            const uploadArea = fieldContainer.querySelector('.upload-area');
+            if (uploadArea) {
+                uploadArea.style.borderColor = '#e74c3c';
+                uploadArea.style.background = '#fdf2f2';
+                setTimeout(() => {
+                    uploadArea.style.borderColor = '#dce1e8';
+                    uploadArea.style.background = '#fafbfc';
+                }, 2000);
+            }
+        };
+        
+        // ============================================
         // VALIDASI SEBELUM SUBMIT
         // ============================================
         document.getElementById('formPermohonan').addEventListener('submit', function(e) {
@@ -857,21 +1096,48 @@
             
             // Jika Submit, pastikan semua required terisi
             if (action === 'submit') {
-                const requiredFields = this.querySelectorAll('[required]');
-                let isValid = true;
+                // Cek file yang diperlukan berdasarkan status
+                const status = document.getElementById('status_pemohon').value;
+                let missingFiles = [];
                 
-                requiredFields.forEach(field => {
-                    if (!field.value || field.value.trim() === '') {
-                        isValid = false;
-                        field.classList.add('is-invalid');
-                    } else {
-                        field.classList.remove('is-invalid');
+                // Cek surat (wajib)
+                const suratInput = document.getElementById('file_surat_permohonan');
+                const suratExisting = document.querySelector('#field-surat .file-existing');
+                if (!suratExisting && (!suratInput.files || suratInput.files.length === 0)) {
+                    missingFiles.push('Surat Permohonan');
+                }
+                
+                if (status === 'UMKM' || status === 'Produsen') {
+                    const ktpInput = document.getElementById('file_ktp');
+                    const ktpExisting = document.querySelector('#field-ktp .file-existing');
+                    if (!ktpExisting && (!ktpInput.files || ktpInput.files.length === 0)) {
+                        missingFiles.push('KTP Pemohon');
                     }
-                });
+                }
                 
-                if (!isValid) {
+                if (status === 'Produsen') {
+                    const akteInput = document.getElementById('file_akte');
+                    const akteExisting = document.querySelector('#field-akte .file-existing');
+                    if (!akteExisting && (!akteInput.files || akteInput.files.length === 0)) {
+                        missingFiles.push('Akte Perusahaan');
+                    }
+                    
+                    const npwpInput = document.getElementById('file_npwp');
+                    const npwpExisting = document.querySelector('#field-npwp .file-existing');
+                    if (!npwpExisting && (!npwpInput.files || npwpInput.files.length === 0)) {
+                        missingFiles.push('NPWP');
+                    }
+                    
+                    const nibInput = document.getElementById('file_nib');
+                    const nibExisting = document.querySelector('#field-nib .file-existing');
+                    if (!nibExisting && (!nibInput.files || nibInput.files.length === 0)) {
+                        missingFiles.push('NIB');
+                    }
+                }
+                
+                if (missingFiles.length > 0) {
                     e.preventDefault();
-                    alert('Mohon lengkapi semua field yang bertanda (*) sebelum submit.');
+                    alert('Mohon lengkapi file berikut sebelum submit:\n- ' + missingFiles.join('\n- '));
                     return false;
                 }
                 
@@ -880,15 +1146,6 @@
                     e.preventDefault();
                     return false;
                 }
-            }
-            
-            // Jika Draft, tidak perlu validasi ketat
-            if (action === 'draft') {
-                // Hapus required untuk file upload agar bisa save draft tanpa file
-                const fileInputs = this.querySelectorAll('input[type="file"]');
-                fileInputs.forEach(input => {
-                    input.required = false;
-                });
             }
         });
         

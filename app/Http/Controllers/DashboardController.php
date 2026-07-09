@@ -7,25 +7,26 @@ use App\Models\Permohonan;
 
 class DashboardController extends Controller
 {
+    /**
+     * Dashboard untuk Admin
+     */
     public function admin()
     {
-        // Permohonan Aktif (belum selesai semua tahap - cek relasi)
-        $aktifPermohonans = Permohonan::where(function($q) {
-                $q->whereDoesntHave('validasi')
-                  ->orWhereDoesntHave('pengujian')
-                  ->orWhereDoesntHave('testReport')
-                  ->orWhereDoesntHave('kuisioner');
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Permohonan Aktif (status aktif dan belum selesai semua tahap)
+        $aktifPermohonans = Permohonan::aktif()
+                            ->where(function($q) {
+                                $q->whereDoesntHave('validasi')
+                                  ->orWhereDoesntHave('pengujian')
+                                  ->orWhereDoesntHave('testReport')
+                                  ->orWhereDoesntHave('kuisioner');
+                            })
+                            ->orderBy('created_at', 'desc')
+                            ->get();
         
         $permohonanAktif = $aktifPermohonans->count();
         
-        // Permohonan Selesai (semua tahap selesai - cek relasi)
-        $selesaiPermohonans = Permohonan::whereHas('validasi')
-                            ->whereHas('pengujian')
-                            ->whereHas('testReport')
-                            ->whereHas('kuisioner')
+        // Permohonan Selesai (status selesai)
+        $selesaiPermohonans = Permohonan::selesai()
                             ->orderBy('created_at', 'desc')
                             ->get();
         
@@ -39,45 +40,32 @@ class DashboardController extends Controller
         ));
     }
 
+    /**
+     * Dashboard untuk Pemohon
+     */
     public function pemohon()
     {
         $user = auth()->user();
         
-        // Draft: permohonan yang belum memiliki relasi apapun
+        // Draft: permohonan dengan status draft
         $draftPermohonans = $user->permohonans()
-                    ->whereDoesntHave('validasi')
-                    ->whereDoesntHave('pengujian')
-                    ->whereDoesntHave('testReport')
-                    ->whereDoesntHave('kuisioner')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+                            ->draft()
+                            ->orderBy('created_at', 'desc')
+                            ->get();
         
         $draft = $draftPermohonans->count();
         
-        // Permohonan Aktif: sudah memiliki beberapa relasi tapi belum semua
+        // Permohonan Aktif: status aktif
         $aktifPermohonans = $user->permohonans()
-                            ->where(function($q) {
-                                $q->whereHas('validasi')
-                                  ->orWhereHas('pengujian')
-                                  ->orWhereHas('testReport');
-                            })
-                            ->where(function($q) {
-                                $q->whereDoesntHave('validasi')
-                                  ->orWhereDoesntHave('pengujian')
-                                  ->orWhereDoesntHave('testReport')
-                                  ->orWhereDoesntHave('kuisioner');
-                            })
+                            ->aktif()
                             ->orderBy('created_at', 'desc')
                             ->get();
         
         $permohonanAktif = $aktifPermohonans->count();
         
-        // Permohonan Selesai: semua relasi ada
+        // Permohonan Selesai: status selesai
         $selesaiPermohonans = $user->permohonans()
-                            ->whereHas('validasi')
-                            ->whereHas('pengujian')
-                            ->whereHas('testReport')
-                            ->whereHas('kuisioner')
+                            ->selesai()
                             ->orderBy('created_at', 'desc')
                             ->get();
         

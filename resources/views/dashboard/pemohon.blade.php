@@ -399,6 +399,7 @@
                                 <th>Kuisioner</th>
                             </tr>
                         </thead>
+                        <!-- Tabel Draft -->
                         <tbody>
                             @forelse($draftPermohonans as $p)
                             <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
@@ -420,6 +421,12 @@
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
+                                    <form action="{{ route('permohonan.submit', $p->id) }}" method="POST" class="d-inline" onclick="event.stopPropagation();">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success btn-action" onclick="return confirm('Yakin ingin mengirim permohonan ini?')">
+                                            <i class="bi bi-send"></i> Kirim
+                                        </button>
+                                    </form>
                                 </td>
                                 <td>
                                     <span class="badge-status badge-draft">

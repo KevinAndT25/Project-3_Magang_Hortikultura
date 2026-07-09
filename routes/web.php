@@ -23,9 +23,8 @@ Route::get('/', function () {
     return redirect()->route('login.pemohon');
 });
 
-
 // ======================
-// LOGIN & REGISTER (TANPA AUTH)
+// LOGIN & REGISTER
 // ======================
 Route::get('/login/admin', [AuthController::class, 'showLoginAdmin'])->name('login.admin');
 Route::get('/login/pemohon', [AuthController::class, 'showLoginPemohon'])->name('login.pemohon');
@@ -35,24 +34,25 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.su
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ======================
-// ROUTE YANG MEMBUTUHKAN AUTH (LOGIN)
+// ROUTE DENGAN AUTH
 // ======================
 Route::middleware(['auth'])->group(function () {
     
+    // Permohonan Index
     Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
     
-    // --- ROUTE SHOW (BISA DIAKSES ADMIN & PEMOHON) ---
+    // Show routes (semua user dengan akses)
     Route::get('/permohonan/{id}', [PermohonanController::class, 'show'])->name('permohonan.show');
     Route::get('/validasi/{permohonan_id}', [ValidasiController::class, 'show'])->name('validasi.show');
     Route::get('/pengujian/{permohonan_id}', [PengujianController::class, 'show'])->name('pengujian.show');
     Route::get('/testreport/{permohonan_id}', [TestReportController::class, 'show'])->name('testreport.show');
     Route::get('/kuisioner/{permohonan_id}', [KuisionerController::class, 'show'])->name('kuisioner.show');
 
-    // --- ROUTE KHUSUS ADMIN ---
+    // ============================================
+    // ROUTE ADMIN
+    // ============================================
     Route::prefix('admin')->middleware(['auth', 'ensure.role:admin'])->group(function () {
-        // Dashboard
         Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
-
         
         // Validasi
         Route::get('/validasi/create/{permohonan_id}', [ValidasiController::class, 'create'])->name('validasi.create');
@@ -66,24 +66,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/testreport/create/{permohonan_id}', [TestReportController::class, 'create'])->name('testreport.create');
         Route::post('/testreport/store/{permohonan_id}', [TestReportController::class, 'store'])->name('testreport.store');
 
-        // Admin Users & Reports (tambahan untuk menu sidebar)
-        Route::get('/users', function() {
-            return view('admin.users');
-        })->name('admin.users');
-        
-        Route::get('/reports', function() {
-            return view('admin.reports');
-        })->name('admin.reports');
+        // Admin Users & Reports
+        Route::get('/users', function() { return view('admin.users'); })->name('admin.users');
+        Route::get('/reports', function() { return view('admin.reports'); })->name('admin.reports');
     });
 
-    // --- ROUTE KHUSUS PEMOHON ---
+    // ============================================
+    // ROUTE PEMOHON
+    // ============================================
     Route::prefix('user')->middleware(['auth', 'ensure.role:pemohon'])->group(function () {
-        // Dashboard
         Route::get('/dashboard/pemohon', [DashboardController::class, 'pemohon'])->name('dashboard.pemohon');
         
-        // Permohonan Baru
+        // Permohonan Create
         Route::get('/permohonan/create', [PermohonanController::class, 'create'])->name('permohonan.create');
         Route::post('/permohonan/store', [PermohonanController::class, 'store'])->name('permohonan.store');
+        
+        // Edit Draft
+        Route::get('/permohonan/{id}/edit', [PermohonanController::class, 'edit'])->name('permohonan.edit');
+        Route::put('/permohonan/{id}', [PermohonanController::class, 'update'])->name('permohonan.update');
+        
+        // Submit Draft
+        Route::post('/permohonan/{id}/submit', [PermohonanController::class, 'submitDraft'])->name('permohonan.submit');
         
         // Kuisioner
         Route::get('/kuisioner/create/{permohonan_id}', [KuisionerController::class, 'create'])->name('kuisioner.create');
