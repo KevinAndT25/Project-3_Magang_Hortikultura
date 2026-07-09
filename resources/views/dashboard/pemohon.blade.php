@@ -418,15 +418,9 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
-                                        <i class="bi bi-eye"></i> Lihat
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-warning btn-action" onclick="event.stopPropagation();">
+                                        <i class="bi bi-pencil"></i> Edit Draft
                                     </a>
-                                    <form action="{{ route('permohonan.submit', $p->id) }}" method="POST" class="d-inline" onclick="event.stopPropagation();">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-success btn-action" onclick="return confirm('Yakin ingin mengirim permohonan ini?')">
-                                            <i class="bi bi-send"></i> Kirim
-                                        </button>
-                                    </form>
                                 </td>
                                 <td>
                                     <span class="badge-status badge-draft">
@@ -659,7 +653,7 @@
                                 <td>
                                     @if($p->testReport)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-download"></i> Download
+                                            <i class="bi bi-download"></i> Lihat
                                         </a>
                                     @else
                                         <span class="badge-status badge-success">

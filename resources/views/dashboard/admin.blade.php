@@ -147,12 +147,12 @@
     .table-dashboard tbody tr:hover {
         background: #f8f9fa;
     }
-    .table-dashboard tbody tr.tr-highlight {
+    /* .table-dashboard tbody tr.tr-highlight {
         background: #fff8e1;
     }
     .table-dashboard tbody tr.tr-highlight:hover {
         background: #fff3cd;
-    }
+    } */
     
     /* Badge Status */
     .badge-status {
@@ -422,7 +422,7 @@
                         </thead>
                         <tbody>
                             @forelse($aktifPermohonans as $p)
-                            <tr class="clickable-row {{ (!$p->validasi || !$p->pengujian || !$p->testReport) ? 'tr-highlight' : '' }}" 
+                            <tr class="clickable-row {{ (!$p->validasi || !$p->pengujian || !$p->testReport) }}" 
                                 data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
