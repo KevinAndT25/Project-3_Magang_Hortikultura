@@ -238,6 +238,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        cursor: pointer;
     }
     
     .btn-submit-validasi:hover {
@@ -391,7 +392,7 @@
                     <input type="file" class="d-none" id="file_kaji_ulang" 
                            name="file_kaji_ulang[]" 
                            accept=".pdf,.jpg,.jpeg,.png"
-                           multiple required>
+                           multiple>
                     
                     @error('file_kaji_ulang')
                         <div class="text-danger mt-1" style="font-size: 13px;">{{ $message }}</div>
@@ -449,246 +450,247 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // ============================================
-        // VARIABLES
-        // ============================================
-        const fileInput = document.getElementById('file_kaji_ulang');
-        const uploadArea = document.getElementById('uploadArea');
-        const fileListContainer = document.getElementById('fileListContainer');
-        const fileList = document.getElementById('fileList');
-        const fileCount = document.getElementById('fileCount');
-        const filePreviewContainer = document.getElementById('filePreviewContainer');
-        const filePreview = document.getElementById('filePreview');
-        const form = document.getElementById('formValidasi');
-        const btnSubmit = document.getElementById('btnSubmit');
+document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // VARIABLES
+    // ============================================
+    const fileInput = document.getElementById('file_kaji_ulang');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileListContainer = document.getElementById('fileListContainer');
+    const fileList = document.getElementById('fileList');
+    const fileCount = document.getElementById('fileCount');
+    const filePreviewContainer = document.getElementById('filePreviewContainer');
+    const filePreview = document.getElementById('filePreview');
+    const form = document.getElementById('formValidasi');
+    
+    let selectedFiles = [];
+    let previewFileIndex = null;
+
+    // ============================================
+    // FILE HANDLING
+    // ============================================
+    function updateFileList() {
+        fileList.innerHTML = '';
         
-        let selectedFiles = [];
-        let previewFileIndex = null;
-
-        // ============================================
-        // FILE HANDLING
-        // ============================================
-        function updateFileList() {
-            fileList.innerHTML = '';
-            
-            if (selectedFiles.length === 0) {
-                fileListContainer.style.display = 'none';
-                filePreviewContainer.style.display = 'none';
-                return;
-            }
-            
-            fileListContainer.style.display = 'block';
-            fileCount.textContent = selectedFiles.length;
-            
-            selectedFiles.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                
-                const fileSize = (file.size / 1024 / 1024).toFixed(2);
-                const fileExtension = file.name.split('.').pop().toLowerCase();
-                const iconMap = {
-                    'pdf': 'bi-file-earmark-pdf',
-                    'jpg': 'bi-file-earmark-image',
-                    'jpeg': 'bi-file-earmark-image',
-                    'png': 'bi-file-earmark-image',
-                    'doc': 'bi-file-earmark-word',
-                    'docx': 'bi-file-earmark-word'
-                };
-                const iconClass = iconMap[fileExtension] || 'bi-file-earmark';
-                
-                fileItem.innerHTML = `
-                    <div class="file-info">
-                        <span class="file-icon"><i class="bi ${iconClass}"></i></span>
-                        <span class="file-name" title="${file.name}">${file.name}</span>
-                        <span class="file-size">${fileSize} MB</span>
-                    </div>
-                    <div class="file-actions">
-                        <button type="button" class="btn-file-action btn-view" onclick="previewFile(${index})">
-                            <i class="bi bi-eye"></i> Lihat
-                        </button>
-                        <button type="button" class="btn-file-action btn-remove" onclick="removeFile(${index})">
-                            <i class="bi bi-x"></i> Hapus
-                        </button>
-                    </div>
-                `;
-                
-                fileList.appendChild(fileItem);
-            });
-            
-            // Jika preview aktif dan index valid, refresh preview
-            if (previewFileIndex !== null && previewFileIndex < selectedFiles.length) {
-                previewFile(previewFileIndex);
-            } else if (selectedFiles.length > 0) {
-                previewFile(0);
-            }
-            
-            // Update submit button
-            btnSubmit.disabled = selectedFiles.length === 0;
+        if (selectedFiles.length === 0) {
+            fileListContainer.style.display = 'none';
+            filePreviewContainer.style.display = 'none';
+            return;
         }
-
-        function addFiles(files) {
-            const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        fileListContainer.style.display = 'block';
+        fileCount.textContent = selectedFiles.length;
+        
+        selectedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
             
-            for (let file of files) {
-                // Cek duplikat
-                const exists = selectedFiles.some(f => 
-                    f.name === file.name && f.size === file.size
-                );
-                if (exists) continue;
-                
-                // Cek ukuran
-                if (file.size > maxSize) {
-                    alert(`File "${file.name}" melebihi batas 5MB.`);
-                    continue;
-                }
-                
-                // Cek ekstensi
-                const validExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-                const ext = file.name.split('.').pop().toLowerCase();
-                if (!validExtensions.includes(ext)) {
-                    alert(`File "${file.name}" format tidak didukung. Gunakan PDF, JPG, atau PNG.`);
-                    continue;
-                }
-                
-                selectedFiles.push(file);
-            }
-            
-            updateFileList();
-            
-            // Update file input
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            fileInput.files = dataTransfer.files;
-        }
-
-        function removeFile(index) {
-            selectedFiles.splice(index, 1);
-            
-            if (previewFileIndex === index) {
-                previewFileIndex = null;
-                filePreviewContainer.style.display = 'none';
-            } else if (previewFileIndex > index) {
-                previewFileIndex--;
-            }
-            
-            updateFileList();
-            
-            // Update file input
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            fileInput.files = dataTransfer.files;
-        }
-
-        // ============================================
-        // PREVIEW FUNCTION (global)
-        // ============================================
-        window.previewFile = function(index) {
-            previewFileIndex = index;
-            const file = selectedFiles[index];
-            if (!file) return;
-            
-            filePreviewContainer.style.display = 'block';
-            
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
             const fileExtension = file.name.split('.').pop().toLowerCase();
-            const isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
-            const isPDF = fileExtension === 'pdf';
+            const iconMap = {
+                'pdf': 'bi-file-earmark-pdf',
+                'jpg': 'bi-file-earmark-image',
+                'jpeg': 'bi-file-earmark-image',
+                'png': 'bi-file-earmark-image',
+                'doc': 'bi-file-earmark-word',
+                'docx': 'bi-file-earmark-word'
+            };
+            const iconClass = iconMap[fileExtension] || 'bi-file-earmark';
             
-            if (isImage) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    filePreview.innerHTML = `
-                        <div style="text-align: center;">
-                            <img src="${e.target.result}" alt="${file.name}" style="max-width: 100%; max-height: 350px; border-radius: 4px;">
-                            <p class="text-muted mt-2" style="font-size: 12px;">${file.name}</p>
-                        </div>
-                    `;
-                };
-                reader.readAsDataURL(file);
-            } else if (isPDF) {
-                const url = URL.createObjectURL(file);
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <span class="file-icon"><i class="bi ${iconClass}"></i></span>
+                    <span class="file-name" title="${file.name}">${file.name}</span>
+                    <span class="file-size">${fileSize} MB</span>
+                </div>
+                <div class="file-actions">
+                    <button type="button" class="btn-file-action btn-view" onclick="previewFile(${index})">
+                        <i class="bi bi-eye"></i> Lihat
+                    </button>
+                    <button type="button" class="btn-file-action btn-remove" onclick="removeFile(${index})">
+                        <i class="bi bi-x"></i> Hapus
+                    </button>
+                </div>
+            `;
+            
+            fileList.appendChild(fileItem);
+        });
+        
+        if (previewFileIndex !== null && previewFileIndex < selectedFiles.length) {
+            previewFile(previewFileIndex);
+        } else if (selectedFiles.length > 0) {
+            previewFile(0);
+        }
+    }
+
+    function addFiles(files) {
+        const maxSize = 5 * 1024 * 1024;
+        
+        for (let file of files) {
+            const exists = selectedFiles.some(f => 
+                f.name === file.name && f.size === file.size
+            );
+            if (exists) continue;
+            
+            if (file.size > maxSize) {
+                alert(`File "${file.name}" melebihi batas 5MB.`);
+                continue;
+            }
+            
+            const validExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(ext)) {
+                alert(`File "${file.name}" format tidak didukung. Gunakan PDF, JPG, atau PNG.`);
+                continue;
+            }
+            
+            selectedFiles.push(file);
+        }
+        
+        updateFileList();
+        
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+    }
+
+    window.removeFile = function(index) {
+        selectedFiles.splice(index, 1);
+        
+        if (previewFileIndex === index) {
+            previewFileIndex = null;
+            filePreviewContainer.style.display = 'none';
+        } else if (previewFileIndex > index) {
+            previewFileIndex--;
+        }
+        
+        updateFileList();
+        
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+    };
+
+    // ============================================
+    // PREVIEW FUNCTION
+    // ============================================
+    window.previewFile = function(index) {
+        previewFileIndex = index;
+        const file = selectedFiles[index];
+        if (!file) return;
+        
+        filePreviewContainer.style.display = 'block';
+        
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        const isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
+        const isPDF = fileExtension === 'pdf';
+        
+        if (isImage) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
                 filePreview.innerHTML = `
-                    <iframe src="${url}" style="width: 100%; height: 350px; border: none; border-radius: 6px;"></iframe>
-                    <p class="text-muted mt-2" style="font-size: 12px; text-align: center;">${file.name}</p>
-                `;
-                // Revoke URL setelah iframe dimuat
-                setTimeout(() => URL.revokeObjectURL(url), 10000);
-            } else {
-                filePreview.innerHTML = `
-                    <div class="preview-placeholder">
-                        <i class="bi bi-file-earmark"></i>
-                        <p>Preview tidak tersedia untuk file ini</p>
-                        <p class="text-muted" style="font-size: 12px;">${file.name}</p>
+                    <div style="text-align: center;">
+                        <img src="${e.target.result}" alt="${file.name}" style="max-width: 100%; max-height: 350px; border-radius: 4px;">
+                        <p class="text-muted mt-2" style="font-size: 12px;">${file.name}</p>
                     </div>
                 `;
-            }
-            
-            // Scroll ke preview
-            filePreviewContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        };
-
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
+            };
+            reader.readAsDataURL(file);
+        } else if (isPDF) {
+            const url = URL.createObjectURL(file);
+            filePreview.innerHTML = `
+                <iframe src="${url}" style="width: 100%; height: 350px; border: none; border-radius: 6px;"></iframe>
+                <p class="text-muted mt-2" style="font-size: 12px; text-align: center;">${file.name}</p>
+            `;
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+        } else {
+            filePreview.innerHTML = `
+                <div class="preview-placeholder">
+                    <i class="bi bi-file-earmark"></i>
+                    <p>Preview tidak tersedia untuk file ini</p>
+                    <p class="text-muted" style="font-size: 12px;">${file.name}</p>
+                </div>
+            `;
+        }
         
-        // Click upload area
-        uploadArea.addEventListener('click', function() {
-            fileInput.click();
-        });
+        filePreviewContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
-        // File input change
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                addFiles(this.files);
-            }
-            this.value = '';
-        });
-
-        // Drag and drop
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-            
-            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                addFiles(e.dataTransfer.files);
-            }
-        });
-
-        // Form submit validation
-        form.addEventListener('submit', function(e) {
-            if (selectedFiles.length === 0) {
-                e.preventDefault();
-                alert('Silakan upload minimal 1 file sebelum menyimpan.');
-                return false;
-            }
-            
-            if (!confirm('Apakah Anda yakin ingin menyimpan validasi ini? Data tidak dapat diedit kembali.')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // ============================================
-        // DRAG & DROP FROM EXPLORER
-        // ============================================
-        // Prevent default drag behavior on page
-        document.addEventListener('dragover', function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener('drop', function(e) {
-            e.preventDefault();
-        });
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
     });
+
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            addFiles(this.files);
+        }
+        this.value = '';
+    });
+
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            addFiles(e.dataTransfer.files);
+        }
+    });
+
+    // ============================================
+    // FORM SUBMIT
+    // ============================================
+    form.addEventListener('submit', function(e) {
+        if (selectedFiles.length === 0) {
+            e.preventDefault();
+            alert('Silakan upload minimal 1 file sebelum menyimpan.');
+            
+            uploadArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            uploadArea.style.borderColor = '#e74c3c';
+            uploadArea.style.background = '#fdf2f2';
+            setTimeout(() => {
+                uploadArea.style.borderColor = '#dce1e8';
+                uploadArea.style.background = '#fafbfc';
+            }, 3000);
+            
+            return false;
+        }
+        
+        if (!confirm('Apakah Anda yakin ingin menyimpan validasi ini? Data tidak dapat diedit kembali.')) {
+            e.preventDefault();
+            return false;
+        }
+        
+        if (fileInput.files.length === 0 && selectedFiles.length > 0) {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+        
+        return true;
+    });
+
+    // Prevent default drag behavior on page
+    document.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('drop', function(e) {
+        e.preventDefault();
+    });
+});
 </script>
 @endsection

@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Validasi;
 use App\Models\Permohonan;
-use Illuminate\Support\Facades\Storage; // <-- TAMBAHKAN INI
+use Illuminate\Support\Facades\Storage;
 
 class ValidasiController extends Controller
 {
+    /**
+     * Menampilkan form validasi untuk permohonan tertentu
+     */
     public function create($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
@@ -27,13 +30,17 @@ class ValidasiController extends Controller
         return view('validasi.create', compact('permohonan'));
     }
 
+    /**
+     * Menyimpan validasi permohonan
+     */
     public function store(Request $request, $permohonan_id)
     {
-        // Cek akses
+        // Cek akses: hanya admin
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Hanya admin yang dapat melakukan validasi.');
         }
         
+        // Validasi file
         $request->validate([
             'file_kaji_ulang' => 'required|array',
             'file_kaji_ulang.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
@@ -51,14 +58,23 @@ class ValidasiController extends Controller
         $paths = [];
         if ($request->hasFile('file_kaji_ulang')) {
             foreach ($request->file('file_kaji_ulang') as $file) {
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('validasi/' . $permohonan_id, $filename, 'public');
-                $paths[] = $path;
+                if ($file->isValid()) {
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $path = $file->storeAs('validasi/' . $permohonan_id, $filename, 'public');
+                    $paths[] = $path;
+                }
             }
         }
 
+        // Jika tidak ada file yang tersimpan
+        if (empty($paths)) {
+            return redirect()->back()
+                           ->with('error', 'Gagal mengupload file. Silakan coba lagi.')
+                           ->withInput();
+        }
+
         // Buat atau update validasi
-        $validasi = Validasi::updateOrCreate(
+        Validasi::updateOrCreate(
             ['permohonan_id' => $permohonan_id],
             [
                 'file_kaji_ulang_multiple' => $paths,
@@ -74,6 +90,9 @@ class ValidasiController extends Controller
                        ->with('success', 'Validasi berhasil disimpan dan dikirim ke pemohon.');
     }
 
+    /**
+     * Menampilkan detail validasi
+     */
     public function show($permohonan_id)
     {
         $permohonan = Permohonan::with('validasi')->findOrFail($permohonan_id);

@@ -209,7 +209,7 @@
                         </div>
                         <div class="file-actions">
                             <a href="{{ asset('storage/' . $file) }}" target="_blank" class="btn-download">
-                                <i class="bi bi-download"></i> Download
+                                <i class="bi bi-eye"></i> Lihat
                             </a>
                         </div>
                     </div>
@@ -227,11 +227,6 @@
             <a href="{{ route('dashboard.' . auth()->user()->role) }}" class="btn-back">
                 <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
-            {{-- @if(auth()->user()->isAdmin())
-                <a href="{{ route('validasi.create', $permohonan->id) }}" class="btn-back" style="background: #fff3cd; color: #856404;">
-                    <i class="bi bi-pencil"></i> Edit Validasi
-                </a>
-            @endif --}}
         </div>
     </div>
 </div>
