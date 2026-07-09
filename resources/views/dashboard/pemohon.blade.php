@@ -382,7 +382,7 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-file-earmark me-2"></i>Draft</span>
-                    <span class="badge-count draft-badge">{{ $draftPermohonans->count() }}</span>
+                    {{-- <span class="badge-count draft-badge">{{ $draftPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -479,7 +479,7 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
-                    <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span>
+                    {{-- <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -596,7 +596,7 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-check-circle me-2"></i>Permohonan Selesai</span>
-                    <span class="badge-count selesai-badge">{{ $selesaiPermohonans->count() }}</span>
+                    {{-- <span class="badge-count selesai-badge">{{ $selesaiPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">

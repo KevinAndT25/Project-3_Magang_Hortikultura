@@ -491,7 +491,7 @@
                                 </td>
                                 <td>
                                     @if($p->kuisioner_selesai)
-                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
+                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
                                     @elseif($p->test_report_selesai)
@@ -615,7 +615,7 @@
                                 </td>
                                 <td>
                                     @if($p->kuisioner)
-                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
+                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
                                     @else
