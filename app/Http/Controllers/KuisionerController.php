@@ -8,22 +8,36 @@ use App\Models\Permohonan;
 
 class KuisionerController extends Controller
 {
+    /**
+     * Menampilkan form kuisioner untuk permohonan tertentu
+     */
     public function create($permohonan_id)
     {
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        
         // Hanya pemilik permohonan yang bisa mengisi kuisioner
         if (auth()->user()->role !== 'pemohon' || $permohonan->user_id !== auth()->id()) {
-            abort(403);
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
+        
+        // Cek apakah test report sudah selesai
         if (!$permohonan->test_report_selesai) {
-            return redirect()->route('dashboard.pemohon')->with('error', 'Test report belum tersedia.');
+            return redirect()->route('dashboard.pemohon')
+                           ->with('error', 'Test report belum tersedia.');
         }
+        
+        // Cek apakah kuisioner sudah disubmit
         if ($permohonan->kuisioner && $permohonan->kuisioner->is_submit) {
-            return redirect()->route('kuisioner.show', $permohonan_id);
+            return redirect()->route('kuisioner.show', $permohonan_id)
+                           ->with('info', 'Kuisioner sudah disubmit dan tidak dapat diubah.');
         }
+        
         return view('kuisioner.create', compact('permohonan'));
     }
 
+    /**
+     * Menyimpan data kuisioner
+     */
     public function store(Request $request, $permohonan_id)
     {
         $request->validate([
@@ -41,7 +55,7 @@ class KuisionerController extends Controller
             'mewakili' => 'required|in:diri_sendiri,perusahaan',
             'terakhir_mengajukan' => 'nullable|string|max:255',
             'unit_layanan' => 'required|in:uji_awal,uji_ulang,uji_perpanjangan',
-            'hari_laporan_keluar' => 'required|integer|min:1',
+            'hari_laporan_keluar' => 'required|integer|min:0',
             'servqual_1' => 'required|integer|min:1|max:5',
             'servqual_2' => 'required|integer|min:1|max:5',
             'servqual_3' => 'required|integer|min:1|max:5',
@@ -54,49 +68,73 @@ class KuisionerController extends Controller
         ]);
 
         $permohonan = Permohonan::findOrFail($permohonan_id);
+        
+        // Cek apakah kuisioner sudah ada
+        if ($permohonan->kuisioner && $permohonan->kuisioner->is_submit) {
+            return redirect()->route('kuisioner.show', $permohonan_id)
+                           ->with('error', 'Kuisioner sudah disubmit dan tidak dapat diubah.');
+        }
 
-        Kuisioner::create([
-            'permohonan_id' => $permohonan_id,
-            'nama_responden' => $request->nama_responden,
-            'telepon_responden' => $request->telepon_responden,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'usia' => $request->usia,
-            'pendidikan_terakhir' => $request->pendidikan_terakhir,
-            'nama_perusahaan_instansi' => $request->nama_perusahaan_instansi,
-            'alamat_perusahaan' => $request->alamat_perusahaan,
-            'jabatan' => $request->jabatan,
-            'lama_bekerja_tahun' => $request->lama_bekerja_tahun,
-            'pengujian_pertama' => $request->pengujian_pertama,
-            'pengujian_ke' => $request->pengujian_ke,
-            'mewakili' => $request->mewakili,
-            'terakhir_mengajukan' => $request->terakhir_mengajukan,
-            'unit_layanan' => $request->unit_layanan,
-            'hari_laporan_keluar' => $request->hari_laporan_keluar,
-            'servqual_1' => $request->servqual_1,
-            'servqual_2' => $request->servqual_2,
-            'servqual_3' => $request->servqual_3,
-            'servqual_4' => $request->servqual_4,
-            'servqual_5' => $request->servqual_5,
-            'kesan_pesan' => $request->kesan_pesan,
-            'kepuasan_umum' => $request->kepuasan_umum,
-            'rekomendasi' => $request->rekomendasi,
-            'ide_saran' => $request->ide_saran,
-            'is_submit' => true,
-        ]);
+        // Buat atau update kuisioner
+        Kuisioner::updateOrCreate(
+            ['permohonan_id' => $permohonan_id],
+            [
+                'nama_responden' => $request->nama_responden,
+                'telepon_responden' => $request->telepon_responden,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'usia' => $request->usia,
+                'pendidikan_terakhir' => $request->pendidikan_terakhir,
+                'nama_perusahaan_instansi' => $request->nama_perusahaan_instansi,
+                'alamat_perusahaan' => $request->alamat_perusahaan,
+                'jabatan' => $request->jabatan,
+                'lama_bekerja_tahun' => $request->lama_bekerja_tahun,
+                'pengujian_pertama' => $request->pengujian_pertama,
+                'pengujian_ke' => $request->pengujian_ke,
+                'mewakili' => $request->mewakili,
+                'terakhir_mengajukan' => $request->terakhir_mengajukan,
+                'unit_layanan' => $request->unit_layanan,
+                'hari_laporan_keluar' => $request->hari_laporan_keluar,
+                'servqual_1' => $request->servqual_1,
+                'servqual_2' => $request->servqual_2,
+                'servqual_3' => $request->servqual_3,
+                'servqual_4' => $request->servqual_4,
+                'servqual_5' => $request->servqual_5,
+                'kesan_pesan' => $request->kesan_pesan,
+                'kepuasan_umum' => $request->kepuasan_umum,
+                'rekomendasi' => $request->rekomendasi,
+                'ide_saran' => $request->ide_saran,
+                'is_submit' => true,
+            ]
+        );
 
+        // Update status permohonan
         $permohonan->kuisioner_selesai = true;
+        
+        // ==========================================
+        // PERUBAHAN: Ubah status permohonan menjadi SELESAI
+        // ==========================================
+        $permohonan->status = 'selesai';
+        
         $permohonan->save();
 
-        return redirect()->route('dashboard.pemohon')->with('success', 'Kuisioner berhasil disubmit.');
+        return redirect()->route('dashboard.pemohon')
+                       ->with('success', 'Kuisioner berhasil disubmit. Terima kasih atas partisipasi Anda!');
     }
 
+    /**
+     * Menampilkan detail kuisioner
+     */
     public function show($permohonan_id)
     {
-        $permohonan = Permohonan::findOrFail($permohonan_id);
+        $permohonan = Permohonan::with('kuisioner')->findOrFail($permohonan_id);
+        
+        // Cek akses: admin atau pemilik permohonan
         if (auth()->user()->role !== 'admin' && $permohonan->user_id !== auth()->id()) {
-            abort(403);
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
+        
         $kuisioner = $permohonan->kuisioner;
+        
         return view('kuisioner.show', compact('permohonan', 'kuisioner'));
     }
 }
