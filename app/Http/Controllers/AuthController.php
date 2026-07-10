@@ -88,8 +88,8 @@ class AuthController extends Controller
         return redirect('/');
     }
 
-    /**
-     * Update profil admin
+     /**
+     * Update profil untuk semua user (admin dan pemohon)
      */
     public function updateProfile(Request $request)
     {
@@ -120,6 +120,11 @@ class AuthController extends Controller
         
         $user->save();
 
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
+        // Redirect berdasarkan role
+        if ($user->isAdmin()) {
+            return redirect()->route('dashboard.admin')->with('success', 'Profil berhasil diperbarui!');
+        }
+        
+        return redirect()->route('dashboard.pemohon')->with('success', 'Profil berhasil diperbarui!');
     }
 }

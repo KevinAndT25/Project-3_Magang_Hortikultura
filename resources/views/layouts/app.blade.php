@@ -656,6 +656,9 @@
                     <div class="user-avatar" style="background: {{ $user->avatar_color ?? '#1a6e4a' }}">
                         {{ $user->initials ?? strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                         <span class="online-dot"></span>
+                        <span class="edit-badge">
+                            <i class="bi bi-pencil" style="font-size: 8px;"></i>
+                        </span>
                     </div>
                     <div class="user-info">
                         <div class="user-name">{{ $user->name ?? 'User' }}</div>
@@ -669,15 +672,13 @@
                     <i class="bi bi-chevron-down user-arrow" id="userArrow"></i>
                 </div>
                 
-                <!-- Dropdown -->
+                <!-- Dropdown - SEMUA USER BISA KELOLA AKUN -->
                 <div class="user-dropdown" id="userDropdown">
-                    @if($isAdmin)
-                        <button class="dropdown-item" onclick="openProfileModal()">
-                            <i class="bi bi-person-gear"></i>
-                            <span>Kelola Profil</span>
-                        </button>
-                        <div class="dropdown-divider"></div>
-                    @endif
+                    <button class="dropdown-item" onclick="openProfileModal()">
+                        <i class="bi bi-person-gear"></i>
+                        <span>Kelola Akun</span>
+                    </button>
+                    <div class="dropdown-divider"></div>
                     <form action="{{ route('logout') }}" method="POST" class="w-100">
                         @csrf
                         <button type="submit" class="dropdown-item text-danger">
@@ -755,48 +756,65 @@
 @endif
 
 <!-- ============================================ -->
-<!-- MODAL EDIT PROFIL (khusus admin) -->
+<!-- MODAL KELOLA AKUN (UNTUK SEMUA USER) -->
 <!-- ============================================ -->
-@if($isAdmin)
+@auth
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form action="{{ route('admin.profile.update') }}" method="POST" id="profileForm">
+            <form action="{{ route('profile.update') }}" method="POST" id="profileForm">
                 @csrf
                 @method('PUT')
                 <div class="modal-header">
                     <h5 class="modal-title" id="profileModalLabel">
                         <i class="bi bi-person-gear me-2" style="color: #1a6e4a;"></i>
-                        Kelola Profil
+                        Kelola Akun
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="profile_name" class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-control" id="profile_name" name="name" 
-                               value="{{ $user->name }}" required>
+                        <label for="profile_name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                               id="profile_name" name="name" 
+                               value="{{ old('name', Auth::user()->name) }}" required>
+                        @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="profile_email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="profile_email" name="email" 
-                               value="{{ $user->email }}" required>
+                        <label for="profile_email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                               id="profile_email" name="email" 
+                               value="{{ old('email', Auth::user()->email) }}" required>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="profile_no_hp" class="form-label">Nomor Handphone</label>
-                        <input type="text" class="form-control" id="profile_no_hp" name="no_hp" 
-                               value="{{ $user->no_hp ?? '' }}" placeholder="08xxxxxxxxx">
+                        <input type="text" class="form-control @error('no_hp') is-invalid @enderror" 
+                               id="profile_no_hp" name="no_hp" 
+                               value="{{ old('no_hp', Auth::user()->no_hp ?? '') }}" placeholder="08xxxxxxxxx">
+                        @error('no_hp')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <hr>
+                    <p class="text-muted" style="font-size: 13px;">Kosongkan kolom password jika tidak ingin mengubah password.</p>
                     <div class="mb-3">
                         <label for="profile_password" class="form-label">Password Baru</label>
-                        <input type="password" class="form-control" id="profile_password" name="password" 
-                               placeholder="Kosongkan jika tidak ingin mengubah password">
-                        <div class="form-text">Minimal 6 karakter</div>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                               id="profile_password" name="password" 
+                               placeholder="Minimal 6 karakter">
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="profile_password_confirmation" class="form-label">Konfirmasi Password Baru</label>
-                        <input type="password" class="form-control" id="profile_password_confirmation" 
+                        <input type="password" class="form-control" 
+                               id="profile_password_confirmation" 
                                name="password_confirmation" placeholder="Ketik ulang password baru">
                     </div>
                 </div>
@@ -810,7 +828,7 @@
         </div>
     </div>
 </div>
-@endif
+@endauth
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -890,15 +908,13 @@
     });
     
     // ============================================
-    // MODAL FUNCTIONS (khusus admin)
+    // MODAL FUNCTIONS (UNTUK SEMUA USER)
     // ============================================
-    @if($isAdmin)
     function openProfileModal() {
         const modal = new bootstrap.Modal(document.getElementById('profileModal'));
         modal.show();
     }
-    @endif
 </script>
 @stack('scripts')
 </body>
-</html>
+</html> 

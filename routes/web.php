@@ -37,7 +37,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ROUTE DENGAN AUTH
 // ======================
 Route::middleware(['auth'])->group(function () {
-    
+
+    // Route untuk update profil
+    Route::put('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+
     // Permohonan Index
     Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
     
@@ -53,10 +56,6 @@ Route::middleware(['auth'])->group(function () {
     // ============================================
     Route::prefix('admin')->middleware(['auth', 'ensure.role:admin'])->group(function () {
         Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
-        // Route untuk update profil
-        Route::middleware(['auth', 'ensure.role:admin'])->group(function () {
-            Route::put('/admin/profile/update', [AuthController::class, 'updateProfile'])->name('admin.profile.update');
-        });
         
         // Validasi
         Route::get('/validasi/create/{permohonan_id}', [ValidasiController::class, 'create'])->name('validasi.create');
