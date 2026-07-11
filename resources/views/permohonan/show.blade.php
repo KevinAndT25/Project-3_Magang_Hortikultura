@@ -401,9 +401,14 @@
         <!-- ============================================ -->
         <!-- TOMBOL KEMBALI -->
         <!-- ============================================ -->
-        <div class="d-flex gap-2 mb-4">
+        <div class="d-flex gap-2 flex-wrap mb-4">
             <a href="{{ auth()->user()->isAdmin() ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="btn-back">
                 <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+            </a>
+            
+            <!-- Tombol Download PDF - TAMPILKAN UNTUK SEMUA STATUS -->
+            <a href="{{ route('permohonan.pdf', $permohonan->id) }}" target="_blank" class="btn" style="background: #e74c3c; color: white; padding: 10px 25px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; border: none; text-decoration: none;">
+                <i class="bi bi-file-pdf"></i> Download PDF
             </a>
             
             @if($permohonan->isDraft())

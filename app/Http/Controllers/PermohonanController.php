@@ -80,7 +80,8 @@ class PermohonanController extends Controller
      */
     public function create()
     {
-        return view('permohonan.create');
+        $user = auth()->user();
+        return view('permohonan.create', compact('user'));
     }
 
     /**
@@ -107,7 +108,9 @@ class PermohonanController extends Controller
             'putaran_mesin' => 'nullable|string|max:100',
             'bahan_bakar' => 'nullable|string|max:100',
             'sistem_pendinginan' => 'nullable|string|max:100',
-            'dimensi' => 'nullable|string|max:100',
+            'dimensi_p' => 'nullable|string|max:50',
+            'dimensi_l' => 'nullable|string|max:50',
+            'dimensi_t' => 'nullable|string|max:50',
             'berat' => 'nullable|string|max:50',
             'kapasitas_kerja' => 'nullable|string|max:100',
             'perlengkapan' => 'nullable|string|max:255',
@@ -162,7 +165,9 @@ class PermohonanController extends Controller
         $permohonan->putaran_mesin = $request->putaran_mesin;
         $permohonan->bahan_bakar = $request->bahan_bakar;
         $permohonan->sistem_pendinginan = $request->sistem_pendinginan;
-        $permohonan->dimensi = $request->dimensi;
+        $permohonan->dimensi_p = $request->dimensi_p;
+        $permohonan->dimensi_l = $request->dimensi_l;
+        $permohonan->dimensi_t = $request->dimensi_t;
         $permohonan->berat = $request->berat;
         $permohonan->kapasitas_kerja = $request->kapasitas_kerja;
         $permohonan->perlengkapan = $request->perlengkapan;

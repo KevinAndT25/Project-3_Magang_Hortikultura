@@ -11,8 +11,8 @@ class Permohonan extends Model
 
     protected $fillable = [
         'user_id', 
-        'no_permohonan',  // <-- BERUBAH DARI 'nomor_permohonan'
-        'status',         // <-- BARU
+        'no_permohonan',  
+        'status',         
         'nama_pemohon', 
         'status_pemohon', 
         'perusahaan_instansi',
@@ -30,31 +30,20 @@ class Permohonan extends Model
         'putaran_mesin',
         'bahan_bakar', 
         'sistem_pendinginan', 
-        'dimensi', 
+        'dimensi_p', 'dimensi_l', 'dimensi_t',  
         'berat', 
         'kapasitas_kerja',
         'perlengkapan', 
-        'surat_permohonan',  // <-- BERUBAH
-        'akte',              // <-- BERUBAH
-        'ktp',               // <-- BERUBAH
-        'npwp',              // <-- BERUBAH
-        'nib',               // <-- BERUBAH
+        'surat_permohonan',  
+        'akte',              
+        'ktp',               
+        'npwp',              
+        'nib',               
         'validasi_selesai', 
         'pengujian_selesai',
         'test_report_selesai', 
         'kuisioner_selesai'
     ];
-    // protected $fillable = [
-    //     'user_id', 'no_permohonan', 'status', 'nama_pemohon',
-    //     'status_pemohon', 'perusahaan_instansi', 'alamat', 'telepon',
-    //     'nomor_surat_permohonan', 'tanggal_surat_permohonan', 'jenis_alsintan', 'status_alsintan',
-    //     'status_produksi', 'merek_model_tipe', 'tahun_pembuatan', 'jumlah_unit',
-    //     'daya_maksimal', 'putaran_mesin', 'bahan_bakar', 'sistem_pendinginan',
-    //     'dimensi', 'berat', 'kapasitas_kerja', 'perlengkapan',
-    //     'surat_permohonan', 'akte', 'ktp', 'npwp',
-    //     'nib', 'validasi_selesai', 'pengujian_selesai', 'test_report_selesai',
-    //     'kuisioner_selesai'
-    // ];
 
     protected $casts = [
         'tanggal_surat_permohonan' => 'date',
@@ -65,6 +54,17 @@ class Permohonan extends Model
         'test_report_selesai' => 'boolean',
         'kuisioner_selesai' => 'boolean',
     ];
+
+    // Accessor untuk menggabungkan dimensi
+    public function getDimensiAttribute()
+    {
+        $parts = [];
+        if ($this->dimensi_p) $parts[] = $this->dimensi_p;
+        if ($this->dimensi_l) $parts[] = $this->dimensi_l;
+        if ($this->dimensi_t) $parts[] = $this->dimensi_t;
+        
+        return !empty($parts) ? implode(' x ', $parts) : null;
+    }
 
     public function user()
     {

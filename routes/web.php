@@ -10,6 +10,8 @@ use App\Http\Controllers\PengujianController;
 use App\Http\Controllers\TestReportController;
 use App\Http\Controllers\KuisionerController;
 
+use App\Http\Controllers\PermohonanPdfController; 
+
 // ======================
 // HALAMAN UTAMA
 // ======================
@@ -43,6 +45,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Permohonan Index
     Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
+    Route::get('/permohonan/{id}/pdf', [PermohonanPdfController::class, 'download'])
+        ->name('permohonan.pdf')
+        ->middleware('auth');
     
     // Show routes (semua user dengan akses)
     Route::get('/permohonan/{id}', [PermohonanController::class, 'show'])->name('permohonan.show');

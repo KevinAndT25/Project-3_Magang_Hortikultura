@@ -32,7 +32,9 @@ return new class extends Migration
             $table->string('bahan_bakar')->nullable();
             $table->string('sistem_pendinginan')->nullable();
             // Spesifikasi unit alat
-            $table->string('dimensi')->nullable();
+            $table->string('dimensi_p')->nullable();  // Panjang
+            $table->string('dimensi_l')->nullable();  // Lebar
+            $table->string('dimensi_t')->nullable();  // Tinggi
             $table->string('berat')->nullable();
             $table->string('kapasitas_kerja')->nullable();
             $table->string('perlengkapan')->nullable();

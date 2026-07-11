@@ -266,6 +266,8 @@
                 </div>
                 
                 <div class="row g-3">
+                    {{-- Hidden Input User account --}}
+                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
                     <div class="col-md-6">
                         <label for="nama_pemohon" class="form-label">
                             Nama Pemohon Uji <span class="required">*</span>
@@ -273,7 +275,7 @@
                         <input type="text" class="form-control @error('nama_pemohon') is-invalid @enderror" 
                                id="nama_pemohon" name="nama_pemohon" 
                                placeholder="Nama lengkap pemohon"
-                               value="{{ old('nama_pemohon') }}" required>
+                               value="{{ old('nama_pemohon', $user->name ?? '') }}" required>
                         @error('nama_pemohon')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -334,7 +336,7 @@
                         <input type="text" class="form-control @error('telepon') is-invalid @enderror" 
                                id="telepon" name="telepon" 
                                placeholder="08xxxxxxxxx"
-                               value="{{ old('telepon') }}" required>
+                               value="{{ old('telepon', $user->no_hp ?? '') }}" required>
                         @error('telepon')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -359,7 +361,7 @@
                         </label>
                         <input type="date" class="form-control @error('tanggal_surat_permohonan') is-invalid @enderror" 
                                id="tanggal_surat_permohonan" name="tanggal_surat_permohonan" 
-                               value="{{ old('tanggal_surat_permohonan') }}" required>
+                               value="{{ old('tanggal_surat_permohonan', date('Y-m-d')) }}" required>
                         @error('tanggal_surat_permohonan')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -467,18 +469,21 @@
                     </div>
                 </div>
                 
-                <!-- Spesifikasi -->
+                <!-- Spesifikasi Motor Penggerak -->
                 <div class="mt-4">
                     <h6 class="fw-bold text-dark mb-3">SPESIFIKASI MOTOR PENGGERAK</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="daya_maksimal" class="form-label">
-                                Daya Maksimal (Hp/kW)
+                                Daya Maksimal
                             </label>
                             <input type="text" class="form-control @error('daya_maksimal') is-invalid @enderror" 
-                                   id="daya_maksimal" name="daya_maksimal" 
-                                   placeholder="Contoh: 8,5 Hp / 6,3 kW"
-                                   value="{{ old('daya_maksimal') }}">
+                                id="daya_maksimal" name="daya_maksimal" 
+                                placeholder="Contoh: 22 kW atau 30 HP"
+                                value="{{ old('daya_maksimal') }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Isi dengan angka dan satuan (contoh: 22 kW / 30 HP)
+                            </div>
                             @error('daya_maksimal')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -486,12 +491,15 @@
                         
                         <div class="col-md-6">
                             <label for="putaran_mesin" class="form-label">
-                                Putaran Mesin (RPM)
+                                Putaran Mesin
                             </label>
                             <input type="text" class="form-control @error('putaran_mesin') is-invalid @enderror" 
-                                   id="putaran_mesin" name="putaran_mesin" 
-                                   placeholder="Contoh: 2400 RPM"
-                                   value="{{ old('putaran_mesin') }}">
+                                id="putaran_mesin" name="putaran_mesin" 
+                                placeholder="Contoh: 2400 RPM"
+                                value="{{ old('putaran_mesin') }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Isi dengan angka dan satuan RPM (contoh: 2400 RPM)
+                            </div>
                             @error('putaran_mesin')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -502,9 +510,12 @@
                                 Bahan Bakar
                             </label>
                             <input type="text" class="form-control @error('bahan_bakar') is-invalid @enderror" 
-                                   id="bahan_bakar" name="bahan_bakar" 
-                                   placeholder="Solar, Bensin, dll."
-                                   value="{{ old('bahan_bakar') }}">
+                                id="bahan_bakar" name="bahan_bakar" 
+                                placeholder="Contoh: Solar / Bensin / Diesel"
+                                value="{{ old('bahan_bakar') }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Jenis bahan bakar yang digunakan
+                            </div>
                             @error('bahan_bakar')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -515,16 +526,20 @@
                                 Sistem Pendinginan
                             </label>
                             <input type="text" class="form-control @error('sistem_pendinginan') is-invalid @enderror" 
-                                   id="sistem_pendinginan" name="sistem_pendinginan" 
-                                   placeholder="Udara, Air, dll."
-                                   value="{{ old('sistem_pendinginan') }}">
+                                id="sistem_pendinginan" name="sistem_pendinginan" 
+                                placeholder="Contoh: Udara / Air"
+                                value="{{ old('sistem_pendinginan') }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Sistem pendinginan mesin
+                            </div>
                             @error('sistem_pendinginan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- Spesifikasi Unit Alat -->
                 <div class="mt-4">
                     <h6 class="fw-bold text-dark mb-3">SPESIFIKASI UNIT ALAT</h6>
                     <div class="row g-3">
@@ -532,11 +547,36 @@
                             <label for="dimensi" class="form-label">
                                 Dimensi (P x L x T)
                             </label>
-                            <input type="text" class="form-control @error('dimensi') is-invalid @enderror" 
-                                   id="dimensi" name="dimensi" 
-                                   placeholder="Contoh: 220 x 85 x 115 cm"
-                                   value="{{ old('dimensi') }}">
-                            @error('dimensi')
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <input type="text" class="form-control @error('dimensi_p') is-invalid @enderror" 
+                                        id="dimensi_p" name="dimensi_p" 
+                                        placeholder="P"
+                                        value="{{ old('dimensi_p') }}">
+                                </div>
+                                <div class="col-4">
+                                    <input type="text" class="form-control @error('dimensi_l') is-invalid @enderror" 
+                                        id="dimensi_l" name="dimensi_l" 
+                                        placeholder="L"
+                                        value="{{ old('dimensi_l') }}">
+                                </div>
+                                <div class="col-4">
+                                    <input type="text" class="form-control @error('dimensi_t') is-invalid @enderror" 
+                                        id="dimensi_t" name="dimensi_t" 
+                                        placeholder="T"
+                                        value="{{ old('dimensi_t') }}">
+                                </div>
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Isi dengan angka dan satuan per dimensi (contoh: 220 cm, 85 cm, 115 cm)
+                            </div>
+                            @error('dimensi_p')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @error('dimensi_l')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @error('dimensi_t')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -546,9 +586,12 @@
                                 Berat
                             </label>
                             <input type="text" class="form-control @error('berat') is-invalid @enderror" 
-                                   id="berat" name="berat" 
-                                   placeholder="0 kg"
-                                   value="{{ old('berat', '0') }}">
+                                id="berat" name="berat" 
+                                placeholder="Contoh: 150 kg"
+                                value="{{ old('berat') }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Isi dengan angka dan satuan berat (contoh: 150 kg)
+                            </div>
                             @error('berat')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -559,9 +602,12 @@
                                 Kapasitas Kerja
                             </label>
                             <input type="text" class="form-control @error('kapasitas_kerja') is-invalid @enderror" 
-                                   id="kapasitas_kerja" name="kapasitas_kerja" 
-                                   placeholder="Contoh: 0.08–0.12 ha/jam"
-                                   value="{{ old('kapasitas_kerja') }}">
+                                id="kapasitas_kerja" name="kapasitas_kerja" 
+                                placeholder="Contoh: 0.08 - 0.12 ha/jam"
+                                value="{{ old('kapasitas_kerja') }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Isi dengan rentang kapasitas kerja dan satuan (contoh: 0.08 - 0.12 ha/jam)
+                            </div>
                             @error('kapasitas_kerja')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -572,9 +618,12 @@
                                 Perlengkapan
                             </label>
                             <input type="text" class="form-control @error('perlengkapan') is-invalid @enderror" 
-                                   id="perlengkapan" name="perlengkapan" 
-                                   placeholder="Bajak, garu, dll."
-                                   value="{{ old('perlengkapan') }}">
+                                id="perlengkapan" name="perlengkapan" 
+                                placeholder="Contoh: Bajak / Garu / Rotari"
+                                value="{{ old('perlengkapan') }}">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Perlengkapan yang disertakan
+                            </div>
                             @error('perlengkapan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
