@@ -238,58 +238,75 @@
         }
         
         /* ============================================
-           FOOTER - TANDA TANGAN
+           PAGE BREAK - UNTUK HALAMAN KEDUA
            ============================================ */
-        .footer {
+        .page-break {
+            page-break-before: always;
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 2px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
         }
-        .footer .info-left {
-            font-size: 11px;
-            color: #555;
+        
+        /* ============================================
+           TANDA TANGAN - DENGAN TABEL 2 KOLOM
+           ============================================ */
+        .signature-table {
+            width: 100%;
+            margin-top: 40px;
+            border-collapse: collapse;
         }
-        .footer .info-left p {
-            margin: 2px 0;
+        .signature-table td {
+            vertical-align: bottom;
+            padding: 10px 0;
         }
-        .footer .signature {
+        .signature-table .col-left {
+            width: 50%;
+        }
+        .signature-table .col-right {
+            width: 50%;
+            text-align: right;
+        }
+        
+        .signature-box {
+            display: inline-block;
             text-align: center;
-            width: 250px;
+            min-width: 250px;
+            padding: 0 20px;
         }
-        .footer .signature .label-sign {
+        .signature-box .label-sign {
             font-size: 12px;
             font-weight: 600;
             color: #1a6e4a;
+            display: block;
+            margin-bottom: 8px;
         }
-        .footer .signature .sign-line {
-            margin-top: 35px;
-            border-top: 1px solid #333;
-            padding-top: 4px;
+        .signature-box .sign-space {
+            height: 60px;
+            /* Ruang kosong untuk tanda tangan */
+        }
+        .signature-box .sign-line {
+            padding-top: 6px;
             font-size: 11px;
             color: #555;
         }
         
+        /* ============================================
+           FOOTER BAWAH
+           ============================================ */
         .footer-bottom {
-            margin-top: 12px;
+            margin-top: 30px;
             text-align: center;
             font-size: 9px;
             color: #aaa;
             border-top: 1px solid #eee;
             padding-top: 10px;
         }
-        
-        /* ============================================
-           PAGE BREAK
-           ============================================ */
-        .page-break {
-            page-break-before: always;
-        }
     </style>
 </head>
 <body>
+
+    <!-- ================================================================ -->
+    <!-- HALAMAN 1 -->
+    <!-- ================================================================ -->
 
     <!-- ============================================ -->
     <!-- KOP SURAT / HEADER -->
@@ -327,7 +344,6 @@
     <!-- INFO DOKUMEN -->
     <!-- ============================================ -->
     <div class="document-info">
-        &nbsp;&nbsp; 
         <strong>No. Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
         &nbsp;|&nbsp;
         <strong>Tanggal Cetak:</strong> {{ $tanggal_cetak }}
@@ -449,106 +465,142 @@
         </div>
     </div>
 
-    <!-- ============================================ -->
-    <!-- III. DAFTAR PENGECEKAN PERSYARATAN -->
-    <!-- ============================================ -->
-    <div class="section">
-        <div class="section-title">Daftar Pengecekan Persyaratan Permohonan Uji</div>
-        
-        <table class="table-checklist">
-            <thead>
+    <!-- ================================================================ -->
+    <!-- HALAMAN 2 - PAGE BREAK -->
+    <!-- ================================================================ -->
+    <div class="page-break">
+        <!-- ============================================ -->
+        <!-- KOP SURAT / HEADER -->
+        <!-- ============================================ -->
+        <div class="header" style="margin-top: -40px;">
+            <table class="header-table">
                 <tr>
-                    <th style="width: 50px; text-align: center;">No</th>
-                    <th>Uraian</th>
-                    <th style="width: 130px; text-align: center;">Checklist</th>
+                    <td class="header-logo">
+                        <img src="{{ public_path('images/logo-sumbar.png') }}" alt="Logo Sumbar">
+                    </td>
+                    <td class="header-text">
+                        <div class="title-main">LABORATORIUM PENGUJI MUTU ALSINTAN</div>
+                        <div class="title-sub">UPTD BALAI MEKANISASI DAN SARANA PRASARANA PERTANIAN</div>
+                        <div class="title-instansi">DINAS PERKEBUNAN, TANAMAN PANGAN DAN HORTIKULTURA</div>
+                        <div class="title-instansi">PROVINSI SUMATERA BARAT</div>
+                        <div class="title-alamat">
+                            Jln. Syech Djamil Djambek Landbouw Kota Bukittinggi, email : lpma.bmptph@gmail.com
+                        </div>
+                    </td>
+                    <td class="header-right">
+                        <!-- Kosong di kanan -->
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @php
-                    $files = [
-                        ['no' => 1, 'label' => 'Surat Permohonan Pengujian', 'field' => 'surat_permohonan'],
-                        ['no' => 2, 'label' => 'Akte Pendirian Perusahaan dan perubahannya', 'field' => 'akte'],
-                        ['no' => 3, 'label' => 'Kartu Tanda Penduduk (KTP)', 'field' => 'ktp'],
-                        ['no' => 4, 'label' => 'Nomor Pokok Wajib Pajak (NPWP)', 'field' => 'npwp'],
-                        ['no' => 5, 'label' => 'Surat Izin Usaha/Nomor Induk Berusaha (NIB)', 'field' => 'nib'],
-                    ];
-                    
-                    // Tentukan persyaratan yang wajib berdasarkan status pemohon
-                    $requiredFields = ['surat_permohonan'];
-                    if ($permohonan->status_pemohon === 'UMKM') {
-                        $requiredFields[] = 'ktp';
-                    } elseif ($permohonan->status_pemohon === 'Produsen') {
-                        $requiredFields = array_merge($requiredFields, ['ktp', 'akte', 'npwp', 'nib']);
-                    }
-                    // Pemerintah: hanya surat
-                @endphp
-                
-                @foreach($files as $file)
-                    @php
-                        $isUploaded = !empty($permohonan->{$file['field']});
-                        $isRequired = in_array($file['field'], $requiredFields);
-                    @endphp
-                    <tr>
-                        <td class="text-center">{{ $file['no'] }}</td>
-                        <td>
-                            {{ $file['label'] }}
-                            @if($isRequired)
-                                <span style="color: #e74c3c; font-size: 10px;">*</span>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            @if($isUploaded)
-                                <span class="check-yes">Tersedia</span>
-                            @elseif($isRequired)
-                                <span class="check-no">Belum</span>
-                            @else
-                                <span class="text-muted">-</span>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        
-        <!-- Keterangan -->
-        <div class="keterangan">
-            <strong>Keterangan :</strong>
-            <ul>
-                <li>
-                    <span class="highlight">1.</span> Bengkel Pengrajin (UMKM) / Pembeli/Pengguna (perorangan) 
-                    <span style="color: #1a6e4a; font-weight: 600;">:</span> Point 1 dan 3
-                </li>
-                <li>
-                    <span class="highlight">2.</span> Pemerintah 
-                    <span style="color: #1a6e4a; font-weight: 600;">:</span> Point 1
-                </li>
-                <li>
-                    <span class="highlight">3.</span> Produsen/Distributor/Penyedia berbadan Hukum 
-                    <span style="color: #1a6e4a; font-weight: 600;">:</span> Point 1, 2, 3, 4 dan 5
-                </li>
-            </ul>
+            </table>
         </div>
-    </div>
+            {{-- <div style="height: 50px;"></div> --}}
 
-    <!-- ============================================ -->
-    <!-- FOOTER - TANDA TANGAN -->
-    <!-- ============================================ -->
-    <div class="footer">
-        <div class="info-left">
-            <p><strong>Status Pemohon:</strong> {{ $permohonan->status_pemohon }}</p>
-            <p><strong>Dicetak pada:</strong> {{ $tanggal_cetak }}</p>
-        </div>
-        <div class="signature">
-            <div class="label-sign">Petugas Verifikasi Permohonan Uji</div>
-            <div class="sign-line">
-                ( ................................ )<br>
-                <span style="font-size: 10px; color: #666;">Tanda Tangan / Nama Jelas</span>
+        <!-- ============================================ -->
+        <!-- III. DAFTAR PENGECEKAN PERSYARATAN -->
+        <!-- ============================================ -->
+        <div class="section">
+            <div class="section-title">Daftar Pengecekan Persyaratan Permohonan Uji</div>
+            
+            <table class="table-checklist">
+                <thead>
+                    <tr>
+                        <th style="width: 50px; text-align: center;">No</th>
+                        <th>Uraian</th>
+                        <th style="width: 130px; text-align: center;">Checklist</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $files = [
+                            ['no' => 1, 'label' => 'Surat Permohonan Pengujian', 'field' => 'surat_permohonan'],
+                            ['no' => 2, 'label' => 'Akte Pendirian Perusahaan dan perubahannya', 'field' => 'akte'],
+                            ['no' => 3, 'label' => 'Kartu Tanda Penduduk (KTP)', 'field' => 'ktp'],
+                            ['no' => 4, 'label' => 'Nomor Pokok Wajib Pajak (NPWP)', 'field' => 'npwp'],
+                            ['no' => 5, 'label' => 'Surat Izin Usaha/Nomor Induk Berusaha (NIB)', 'field' => 'nib'],
+                        ];
+                        
+                        // Tentukan persyaratan yang wajib berdasarkan status pemohon
+                        $requiredFields = ['surat_permohonan'];
+                        if ($permohonan->status_pemohon === 'UMKM') {
+                            $requiredFields[] = 'ktp';
+                        } elseif ($permohonan->status_pemohon === 'Produsen') {
+                            $requiredFields = array_merge($requiredFields, ['ktp', 'akte', 'npwp', 'nib']);
+                        }
+                        // Pemerintah: hanya surat
+                    @endphp
+                    
+                    @foreach($files as $file)
+                        @php
+                            $isUploaded = !empty($permohonan->{$file['field']});
+                            $isRequired = in_array($file['field'], $requiredFields);
+                        @endphp
+                        <tr>
+                            <td class="text-center">{{ $file['no'] }}</td>
+                            <td>
+                                {{ $file['label'] }}
+                                @if($isRequired)
+                                    <span style="color: #e74c3c; font-size: 10px;">*</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($isUploaded)
+                                    <span class="check-yes">Tersedia</span>
+                                @elseif($isRequired)
+                                    <span class="check-no">Belum</span>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            
+            <!-- Keterangan -->
+            <div class="keterangan">
+                <strong>Keterangan :</strong>
+                <ul>
+                    <li>
+                        <span class="highlight">1.</span> Bengkel Pengrajin (UMKM) / Pembeli/Pengguna (perorangan) 
+                        <span style="color: #1a6e4a; font-weight: 600;">:</span> Point 1 dan 3
+                    </li>
+                    <li>
+                        <span class="highlight">2.</span> Pemerintah 
+                        <span style="color: #1a6e4a; font-weight: 600;">:</span> Point 1
+                    </li>
+                    <li>
+                        <span class="highlight">3.</span> Produsen/Distributor/Penyedia berbadan Hukum 
+                        <span style="color: #1a6e4a; font-weight: 600;">:</span> Point 1, 2, 3, 4 dan 5
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
 
-    <div class="footer-bottom">
-        Dokumen ini dihasilkan secara otomatis dari sistem Permohonan Laboratorium UPTD BMSPP
+        <!-- TANDA TANGAN -->
+        <table class="signature-table">
+            <tr>
+                <td class="col-left">
+                    
+                </td>
+                <td class="col-right">
+                    <div class="signature-box">
+                        <span class="label-sign">Petugas Verifikasi Permohonan Uji</span>
+                        
+                        <!-- Ruang kosong untuk tanda tangan (60px) -->
+                        <div class="sign-space"></div>
+                        
+                        <div class="sign-line">
+                            ( ................................ )<br>
+                            <span style="font-size: 10px; color: #666;">Tanda Tangan / Nama Jelas</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        {{-- <div class="footer-bottom">
+            Dokumen ini dihasilkan secara otomatis dari sistem Permohonan Laboratorium UPTD BMSPP
+        </div> --}}
     </div>
 
 </body>

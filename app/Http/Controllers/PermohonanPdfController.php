@@ -40,6 +40,6 @@ class PermohonanPdfController extends Controller
         $safeFilename = preg_replace('/[\/\\\\]/', '-', $nomorSurat);
         $safeFilename = preg_replace('/\s+/', '_', $safeFilename);
         
-        return $pdf->download('Permohonan_Pengujian_' . $safeFilename . '.pdf');
+        return $pdf->download('Permohonan_' . $safeFilename . '.pdf');
     }
 }

@@ -406,11 +406,6 @@
                 <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
             
-            <!-- Tombol Download PDF - TAMPILKAN UNTUK SEMUA STATUS -->
-            <a href="{{ route('permohonan.pdf', $permohonan->id) }}" target="_blank" class="btn" style="background: #e74c3c; color: white; padding: 10px 25px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; border: none; text-decoration: none;">
-                <i class="bi bi-file-pdf"></i> Download PDF
-            </a>
-            
             @if($permohonan->isDraft())
                 <a href="{{ route('permohonan.edit', $permohonan->id) }}" class="btn-edit-draft">
                     <i class="bi bi-pencil"></i> Edit Draft
@@ -421,13 +416,13 @@
                         <i class="bi bi-send"></i> Submit
                     </button>
                 </form>
-                <form action="{{ route('permohonan.destroy', $permohonan->id) }}" method="POST" 
-                    style="display: inline-block;"
-                    onsubmit="return confirm('Yakin ingin menghapus draft ini? Semua data akan hilang permanen.');">
+                <form action="{{ route('draft.destroy', $permohonan->id) }}" method="POST" 
+                    onsubmit="event.stopPropagation(); return confirm('Yakin ingin menghapus draft ini? Semua data akan hilang permanen.');"
+                    onclick="event.stopPropagation();">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger" style="padding: 10px 25px; border-radius: 8px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; border: none;">
-                        <i class="bi bi-trash"></i> Hapus Draft
+                    <button type="submit" class="btn btn-danger" title="Hapus Draft" style="padding: 10px 25px; border-radius: 8px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; border: none;">
+                        <i class="bi bi-trash"></i>Hapus Draft
                     </button>
                 </form>
             @endif
