@@ -84,7 +84,7 @@
                     Detail Kuisioner
                 </h4>
                 <p class="text-muted mb-0" style="font-size: 14px;">
-                    Permohonan: {{ $permohonan->no_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
+                    <strong>Nomor Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
             <span class="badge-status badge-success">

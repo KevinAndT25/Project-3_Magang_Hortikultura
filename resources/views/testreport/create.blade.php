@@ -315,7 +315,7 @@
                     Form Test Report
                 </h4>
                 <p class="text-muted mb-0" style="font-size: 14px;">
-                    Laboratorium Penguji Mutu Alsintan UPTD BMSPP
+                    <strong>Nomor Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
             <a href="{{ route('dashboard.admin') }}" class="btn btn-outline-secondary btn-sm">

@@ -189,7 +189,7 @@
                     Form Pengujian
                 </h4>
                 <p class="text-muted mb-0" style="font-size: 14px;">
-                    Isi data pengujian berdasarkan permohonan yang sudah divalidasi
+                    <strong>Nomor Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
             <a href="{{ route('dashboard.admin') }}" class="btn btn-outline-secondary btn-sm">
@@ -270,7 +270,7 @@
                     Form Pengujian
                 </div>
                 <div class="section-subtitle">
-                    Berdasarkan Permohonan Uji No. <strong>{{ $permohonan->no_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}</strong>
+                    Berdasarkan Permohonan Uji No. <strong>{{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}</strong>
                 </div>
 
                 <!-- Berdasarkan Permohonan Uji No. -->
@@ -280,7 +280,7 @@
                     </label>
                     <input type="text" class="form-control" id="nomor_permohonan_uji" 
                            name="nomor_permohonan_uji" 
-                           value="{{ $permohonan->no_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}" 
+                           value="{{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}" 
                            readonly>
                 </div>
 

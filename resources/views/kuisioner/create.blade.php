@@ -275,7 +275,7 @@
                     Kuisioner Kepuasan Pengguna
                 </h4>
                 <p class="text-muted mb-0" style="font-size: 14px;">
-                    Laboratorium Penguji Mutu Alsintan UPTD BMSPP
+                    <strong>Nomor Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
             <a href="{{ route('dashboard.pemohon') }}" class="btn btn-outline-secondary btn-sm">
@@ -293,7 +293,7 @@
                 <div class="col-md-4">
                     <label class="form-label text-muted">Nomor Permohonan</label>
                     <p class="fw-semibold mb-0">
-                        {{ $permohonan->no_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
+                        {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                     </p>
                 </div>
                 <div class="col-md-4">
@@ -717,15 +717,15 @@
             </div>
 
             <!-- Info Alert -->
-            <div class="alert-warning-custom">
+            <div class="alert-warning-custom" style="margin-bottom: 20px">
                 <i class="bi bi-exclamation-triangle-fill"></i>
                 <strong>Perhatian:</strong>
-                Lengkap semua kolom wajib (*) dan semua penilaian Servqual untuk mengirim kuisioner.
+                Lengkapi semua kolom wajib (*) dan semua penilaian Servqual untuk mengirim kuisioner.
             </div>
 
             <!-- Action Buttons -->
             <div class="form-section">
-                <div class="form-actions">
+                <div class="form-actions" style="margin-top: -25px;">
                     <button type="submit" class="btn-submit-kuisioner" id="btnSubmit">
                         <i class="bi bi-send"></i> Kirim Kuisioner
                     </button>

@@ -56,6 +56,10 @@
         color: #2c3e50;
         font-size: 14px;
     }
+    .file-item-wrapper {
+        display: inline-block;
+        margin: 3px 5px 3px 0;
+    }
     .file-link {
         display: inline-flex;
         align-items: center;
@@ -66,12 +70,24 @@
         color: #1a6e4a;
         text-decoration: none;
         font-size: 13px;
-        margin: 3px 5px 3px 0;
         transition: all 0.3s;
+        border: 1px solid #c8e6c9;
     }
     .file-link:hover {
         background: #1a6e4a;
         color: white;
+        border-color: #1a6e4a;
+        transform: translateY(-1px);
+    }
+    .file-link .badge {
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+    .file-link .badge.bg-success {
+        background: #27ae60 !important;
+    }
+    .file-link .badge.bg-danger {
+        background: #e74c3c !important;
     }
     .btn-back {
         background: #f0f2f5;
@@ -335,15 +351,52 @@
             @endphp
             
             @foreach($files as $file)
-                @if(!empty($permohonan->{$file['field']}))
-                    @php $hasFiles = true; @endphp
-                    <a href="{{ asset('storage/' . $permohonan->{$file['field']}) }}" target="_blank" class="file-link">
-                        <i class="bi bi-file-earmark-{{ 
-                            str_ends_with($permohonan->{$file['field']}, '.pdf') ? 'pdf' : 
-                            (str_ends_with($permohonan->{$file['field']}, '.jpg') || str_ends_with($permohonan->{$file['field']}, '.jpeg') || str_ends_with($permohonan->{$file['field']}, '.png') ? 'image' : 'text') 
-                        }}"></i>
-                        {{ $file['label'] }}
-                    </a>
+                @php
+                    $filePath = $permohonan->{$file['field']} ?? null;
+                    $fileExists = !empty($filePath) && Storage::disk('public')->exists($filePath);
+                @endphp
+                
+                @if(!empty($filePath))
+                    @php 
+                        $hasFiles = true;
+                        $fileUrl = asset('storage/' . $filePath);
+                        $fileName = basename($filePath);
+                        $fileSize = $fileExists ? Storage::disk('public')->size($filePath) : 0;
+                        $fileSizeFormatted = $fileSize > 0 ? number_format($fileSize / 1024, 0) . ' KB' : '0 KB';
+                        
+                        // Tentukan icon berdasarkan ekstensi
+                        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                        $iconClass = 'bi-file-earmark';
+                        if (in_array($extension, ['pdf'])) {
+                            $iconClass = 'bi-file-earmark-pdf';
+                        } elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'])) {
+                            $iconClass = 'bi-file-earmark-image';
+                        } elseif (in_array($extension, ['doc', 'docx'])) {
+                            $iconClass = 'bi-file-earmark-word';
+                        } elseif (in_array($extension, ['xls', 'xlsx'])) {
+                            $iconClass = 'bi-file-earmark-excel';
+                        } elseif (in_array($extension, ['zip', 'rar', '7z'])) {
+                            $iconClass = 'bi-file-earmark-zip';
+                        }
+                    @endphp
+                    
+                    <div class="file-item-wrapper" style="display: inline-block; margin: 3px 5px 3px 0;">
+                        @if($fileExists)
+                            <a href="{{ $fileUrl }}" 
+                            target="_blank" 
+                            class="file-link" 
+                            data-file="{{ $fileName }}"
+                            onclick="openFile(event, '{{ $fileUrl }}', '{{ $fileName }}')">
+                                <i class="bi {{ $iconClass }}"></i>
+                                {{ $file['label'] }}
+                            </a>
+                        @else
+                            <span class="file-link file-missing" style="background: #fce4ec; color: #c62828; border-color: #ef9a9a; cursor: default;">
+                                <i class="bi {{ $iconClass }}"></i>
+                                {{ $file['label'] }}
+                            </span>
+                        @endif
+                    </div>
                 @endif
             @endforeach
             
@@ -405,6 +458,11 @@
             <a href="{{ auth()->user()->isAdmin() ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="btn-back">
                 <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
+            @if($permohonan->status !== 'draft')
+                <a href="{{ route('permohonan.pdf', $permohonan->id) }}" target="_blank" class="btn" style="background: #e74c3c; color: white; padding: 10px 25px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; border: none; text-decoration: none;">
+                    <i class="bi bi-file-pdf"></i> Download PDF
+                </a>
+            @endif
             
             @if($permohonan->isDraft())
                 <a href="{{ route('permohonan.edit', $permohonan->id) }}" class="btn-edit-draft">

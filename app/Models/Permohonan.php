@@ -55,7 +55,7 @@ class Permohonan extends Model
         'kuisioner_selesai' => 'boolean',
     ];
 
-    // Accessor untuk menggabungkan dimensi
+    // Accessor untuk menggabungkan dimensi 
     public function getDimensiAttribute()
     {
         $parts = [];
@@ -451,5 +451,131 @@ class Permohonan extends Model
         }
 
         return $files;
+    }
+
+    // ============================================
+    // HELPER METHODS (Tambahan untuk File)
+    // ============================================
+
+    /**
+     * Cek apakah file ada di storage
+     */
+    public function fileExists($field)
+    {
+        if (empty($this->$field)) {
+            return false;
+        }
+        return \Illuminate\Support\Facades\Storage::disk('public')->exists($this->$field);
+    }
+
+    /**
+     * Mendapatkan URL file
+     */
+    public function getFileUrl($field)
+    {
+        if (empty($this->$field)) {
+            return null;
+        }
+        return asset('storage/' . $this->$field);
+    }
+
+    /**
+     * Mendapatkan icon Bootstrap untuk file berdasarkan ekstensi
+     */
+    public function getFileIcon($field)
+    {
+        if (empty($this->$field)) {
+            return 'bi-file-earmark';
+        }
+        
+        $extension = strtolower(pathinfo($this->$field, PATHINFO_EXTENSION));
+        
+        $icons = [
+            'pdf' => 'bi-file-earmark-pdf',
+            'jpg' => 'bi-file-earmark-image',
+            'jpeg' => 'bi-file-earmark-image',
+            'png' => 'bi-file-earmark-image',
+            'gif' => 'bi-file-earmark-image',
+            'svg' => 'bi-file-earmark-image',
+            'webp' => 'bi-file-earmark-image',
+            'bmp' => 'bi-file-earmark-image',
+            'doc' => 'bi-file-earmark-word',
+            'docx' => 'bi-file-earmark-word',
+            'xls' => 'bi-file-earmark-excel',
+            'xlsx' => 'bi-file-earmark-excel',
+            'ppt' => 'bi-file-earmark-slides',
+            'pptx' => 'bi-file-earmark-slides',
+            'zip' => 'bi-file-earmark-zip',
+            'rar' => 'bi-file-earmark-zip',
+            '7z' => 'bi-file-earmark-zip',
+            'txt' => 'bi-file-earmark-text',
+            'csv' => 'bi-file-earmark-text',
+            'json' => 'bi-file-earmark-code',
+            'xml' => 'bi-file-earmark-code',
+            'html' => 'bi-file-earmark-code',
+            'css' => 'bi-file-earmark-code',
+            'js' => 'bi-file-earmark-code',
+            'php' => 'bi-file-earmark-code',
+        ];
+        
+        return $icons[$extension] ?? 'bi-file-earmark';
+    }
+
+    /**
+     * Mendapatkan label file yang sudah diupload
+     */
+    public function getFileLabel($field)
+    {
+        $labels = [
+            'surat_permohonan' => 'Surat Permohonan',
+            'ktp' => 'KTP Pemohon',
+            'akte' => 'Akte Perusahaan',
+            'npwp' => 'NPWP',
+            'nib' => 'NIB'
+        ];
+        
+        return $labels[$field] ?? ucfirst(str_replace('_', ' ', $field));
+    }
+
+    /**
+     * Mendapatkan semua file yang diupload dengan informasi lengkap
+     */
+    public function getFilesInfoAttribute()
+    {
+        $fileFields = ['surat_permohonan', 'ktp', 'akte', 'npwp', 'nib'];
+        $files = [];
+        
+        foreach ($fileFields as $field) {
+            if (!empty($this->$field)) {
+                $files[] = [
+                    'field' => $field,
+                    'label' => $this->getFileLabel($field),
+                    'path' => $this->$field,
+                    'url' => $this->getFileUrl($field),
+                    'icon' => $this->getFileIcon($field),
+                    'exists' => $this->fileExists($field),
+                    'filename' => basename($this->$field),
+                    'extension' => strtolower(pathinfo($this->$field, PATHINFO_EXTENSION)),
+                ];
+            }
+        }
+        
+        return $files;
+    }
+
+    /**
+     * Cek apakah permohonan memiliki file
+     */
+    public function hasFiles()
+    {
+        $fileFields = ['surat_permohonan', 'ktp', 'akte', 'npwp', 'nib'];
+        
+        foreach ($fileFields as $field) {
+            if (!empty($this->$field)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
