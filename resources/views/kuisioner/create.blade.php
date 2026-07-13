@@ -722,6 +722,19 @@
                     <span>4 = Puas</span>
                     <span>5 = Sangat Puas</span>
                 </div>
+
+                <!-- Kesan Pesan -->
+                <div class="mt-4">
+                    <label for="kesan_pesan" class="form-label">
+                        Kesan dan Pesan
+                    </label>
+                    <textarea class="form-control @error('kesan_pesan') is-invalid @enderror" 
+                              id="kesan_pesan" name="kesan_pesan" rows="4"
+                              placeholder="Tuliskan kesan dan pesan Anda selama menggunakan layanan pengujian di LPMA UPTD BMSPP...">{{ old('kesan_pesan') }}</textarea>
+                    @error('kesan_pesan')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
 
             <!-- ============================================ -->

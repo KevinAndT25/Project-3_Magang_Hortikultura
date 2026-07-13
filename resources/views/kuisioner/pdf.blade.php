@@ -181,6 +181,46 @@
         .rating-4 { color: #2ecc71; }
         .rating-5 { color: #27ae60; }
         
+        /* TANDA TANGAN */
+        .signature-table {
+            width: 100%;
+            margin-top: 40px;
+            border-collapse: collapse;
+        }
+        .signature-table td {
+            vertical-align: bottom;
+            padding: 10px 0;
+        }
+        .signature-table .col-left {
+            width: 50%;
+        }
+        .signature-table .col-right {
+            width: 50%;
+            text-align: right;
+        }
+        .signature-box {
+            display: inline-block;
+            text-align: center;
+            min-width: 250px;
+            padding: 0 20px;
+        }
+        .signature-box .label-sign {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a6e4a;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .signature-box .sign-space {
+            height: 60px;
+            /* Ruang kosong untuk tanda tangan */
+        }
+        .signature-box .sign-line {
+            padding-top: 6px;
+            font-size: 11px;
+            color: #555;
+        }
+
         /* ============================================
            FOOTER
            ============================================ */
@@ -435,6 +475,26 @@
             </div>
             @endif
         </div>
+        <!-- TANDA TANGAN -->
+        <table class="signature-table">
+            <tr>
+                <td class="col-left">
+                    
+                </td>
+                <td class="col-right">
+                    <div class="signature-box">
+                        <span class="label-sign">................., ......................</span>
+                        
+                        <!-- Ruang kosong untuk tanda tangan (60px) -->
+                        <div class="sign-space"></div>
+                        
+                        <div class="sign-line">
+                            ( ................................ )<br>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     {{-- <div class="footer-bottom">

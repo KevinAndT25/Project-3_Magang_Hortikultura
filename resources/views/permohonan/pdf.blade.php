@@ -251,9 +251,7 @@
             padding-top: 20px;
         }
         
-        /* ============================================
-           TANDA TANGAN - DENGAN TABEL 2 KOLOM
-           ============================================ */
+        /* TANDA TANGAN */
         .signature-table {
             width: 100%;
             margin-top: 40px;
@@ -270,7 +268,6 @@
             width: 50%;
             text-align: right;
         }
-        
         .signature-box {
             display: inline-block;
             text-align: center;

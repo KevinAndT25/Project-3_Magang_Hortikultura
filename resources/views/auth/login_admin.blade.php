@@ -150,6 +150,39 @@
         margin-bottom: 20px;
         border: none;
     }
+
+    /* Password Toggle Wrapper */
+    .password-wrapper {
+        position: relative;
+    }
+    .password-wrapper .form-control {
+        padding-right: 45px;
+    }
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #95a5a6;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 18px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .password-toggle:hover {
+        color: #1a6e4a;
+    }
+    .password-toggle:focus {
+        outline: none;
+    }
+    .password-toggle .bi {
+        font-size: 20px;
+    }
 </style>
 
 <div class="login-container">
@@ -184,8 +217,14 @@
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" 
-                    placeholder="Masukkan password" required>
+                <div class="password-wrapper">
+                    <input type="password" class="form-control" id="password" name="password" 
+                        placeholder="Masukkan password" required>
+                    <button type="button" class="password-toggle" id="togglePassword" 
+                            title="Tampilkan/Sembunyikan password">
+                        <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                    </button>
+                </div>
             </div>
             <button type="submit" class="btn-login">Masuk</button>
         </form>
