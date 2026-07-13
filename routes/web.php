@@ -11,6 +11,7 @@ use App\Http\Controllers\TestReportController;
 use App\Http\Controllers\KuisionerController;
 
 use App\Http\Controllers\PermohonanPdfController; 
+use App\Http\Controllers\KuisionerPdfController;
 
 // ======================
 // HALAMAN UTAMA
@@ -47,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
     Route::get('/permohonan/{id}/pdf', [PermohonanPdfController::class, 'download'])
         ->name('permohonan.pdf')
+        ->middleware('auth');
+    Route::get('/kuisioner/{permohonan_id}/pdf', [KuisionerPdfController::class, 'download'])
+        ->name('kuisioner.pdf')
         ->middleware('auth');
     
     // Show routes (semua user dengan akses)

@@ -245,6 +245,13 @@
                     <i class="bi bi-pencil"></i> Isi Kuisioner
                 </a>
             @endif  
+            @if($kuisioner && $kuisioner->is_submit)
+            <a href="{{ route('kuisioner.pdf', $permohonan->id) }}" target="_blank" 
+            class="btn btn-danger btn-sm" 
+            style="padding: 8px 16px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; border: none; background: #e74c3c; color: white; text-decoration: none;">
+                <i class="bi bi-file-pdf"></i> Download PDF
+            </a>
+            @endif
         </div>
     </div>
 </div>

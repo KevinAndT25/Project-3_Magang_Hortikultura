@@ -21,23 +21,31 @@
         border-bottom: 2px solid #f0f2f5;
     }
     
-    .detail-item {
+    .info-card {
         display: flex;
-        padding: 8px 0;
-        border-bottom: 1px solid #f8f9fa;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 10px;
     }
     
-    .detail-item .label {
-        font-weight: 600;
+    .info-card .info-icon {
+        font-size: 20px;
+        color: #1a6e4a;
+    }
+    
+    .info-card .info-label {
+        font-size: 12px;
         color: #7f8c8d;
-        width: 180px;
-        flex-shrink: 0;
-        font-size: 14px;
+        font-weight: 500;
     }
     
-    .detail-item .value {
-        color: #2c3e50;
+    .info-card .info-value {
         font-size: 14px;
+        color: #2c3e50;
+        font-weight: 600;
     }
     
     .file-card {
@@ -94,11 +102,68 @@
         align-items: center;
         gap: 6px;
         transition: all 0.3s;
+        cursor: pointer;
     }
     
     .file-card .btn-download:hover {
         background: #1a6e4a;
         color: white;
+    }
+    
+    .file-card .btn-download:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #e0e5ec;
+        color: #95a5a6;
+    }
+    
+    .file-card .btn-download:disabled:hover {
+        background: #e0e5ec;
+        color: #95a5a6;
+        transform: none;
+    }
+    
+    .file-card .btn-view {
+        background: #e3f2fd;
+        color: #1565c0;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .file-card .btn-view:hover {
+        background: #1565c0;
+        color: white;
+    }
+    
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .badge-status.badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+    .badge-status.badge-warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .badge-status.badge-info {
+        background: #d1ecf1;
+        color: #0c5460;
     }
     
     .btn-back {
@@ -120,18 +185,18 @@
         color: #2c3e50;
     }
     
-    .badge-status {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-weight: 500;
-        font-size: 12px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
+    .alert-warning-custom {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        color: #856404;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-top: 15px;
     }
-    .badge-status.badge-success {
-        background: #d4edda;
-        color: #155724;
+    
+    .alert-warning-custom i {
+        font-size: 18px;
+        margin-right: 10px;
     }
 </style>
 
@@ -145,7 +210,7 @@
                     Detail Validasi
                 </h4>
                 <p class="text-muted mb-0" style="font-size: 14px;">
-                    <strong>Nomor Permohonan: </strong>{{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
+                    <strong>Nomor Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
             <span class="badge-status badge-success">
@@ -153,31 +218,59 @@
             </span>
         </div>
 
-        <!-- Detail Permohonan -->
+        <!-- Info Permohonan -->
         <div class="detail-section">
             <div class="section-title">
                 <i class="bi bi-file-earmark-text me-2" style="color: #1a6e4a;"></i>
                 Informasi Permohonan
             </div>
-            <div class="detail-item">
-                <span class="label">Nomor Permohonan</span>
-                <span class="value">{{ $permohonan->no_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}</span>
-            </div>
-            <div class="detail-item">
-                <span class="label">Nama Pemohon</span>
-                <span class="value">{{ $permohonan->nama_pemohon }}</span>
-            </div>
-            <div class="detail-item">
-                <span class="label">Status Pemohon</span>
-                <span class="value">{{ $permohonan->status_pemohon }}</span>
-            </div>
-            <div class="detail-item">
-                <span class="label">Jenis Alsintan</span>
-                <span class="value">{{ $permohonan->jenis_alsintan }}</span>
-            </div>
-            <div class="detail-item">
-                <span class="label">Merek/Model/Tipe</span>
-                <span class="value">{{ $permohonan->merek_model_tipe }}</span>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-file-earmark"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Nomor Permohonan</div>
+                            <div class="info-value">
+                                {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Pemohon</div>
+                            <div class="info-value">{{ $permohonan->nama_pemohon }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Alsintan</div>
+                            <div class="info-value">{{ $permohonan->jenis_alsintan }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-tag"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Merek/Tipe</div>
+                            <div class="info-value">{{ $permohonan->merek_model_tipe }}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -208,8 +301,12 @@
                             </div>
                         </div>
                         <div class="file-actions">
-                            <a href="{{ asset('storage/' . $file) }}" target="_blank" class="btn-download">
+                            <!-- Tombol Lihat dan Download -->
+                            <a href="{{ asset('storage/' . $file) }}" target="_blank" class="btn-view">
                                 <i class="bi bi-eye"></i> Lihat
+                            </a>
+                            <a href="{{ asset('storage/' . $file) }}" download class="btn-download">
+                                <i class="bi bi-download"></i> Download
                             </a>
                         </div>
                     </div>
@@ -224,10 +321,10 @@
 
         <!-- Tombol Kembali -->
         <div class="d-flex gap-2 mb-4">
-            <a href="{{ route('dashboard.' . auth()->user()->role) }}" class="btn-back">
+            <a href="{{ auth()->user()->isAdmin() ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="btn-back">
                 <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
         </div>
     </div>
 </div>
-@endsection     
+@endsection

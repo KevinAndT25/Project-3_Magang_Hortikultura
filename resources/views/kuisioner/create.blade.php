@@ -726,12 +726,12 @@
             <!-- Action Buttons -->
             <div class="form-section">
                 <div class="form-actions" style="margin-top: -25px;">
-                    <button type="submit" class="btn-submit-kuisioner" id="btnSubmit">
-                        <i class="bi bi-send"></i> Kirim Kuisioner
-                    </button>
                     <a href="{{ route('dashboard.pemohon') }}" class="btn-cancel">
                         <i class="bi bi-x-circle"></i> Batal
                     </a>
+                    <button type="submit" class="btn-submit-kuisioner" id="btnSubmit">
+                        <i class="bi bi-send"></i> Kirim Kuisioner
+                    </button>
                 </div>
             </div>
         </form>

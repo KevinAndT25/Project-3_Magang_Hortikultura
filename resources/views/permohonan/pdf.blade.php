@@ -38,7 +38,7 @@
             text-align: left;
         }
         .header-logo img {
-            width: 70px;
+            width: auto;
             height: 70px;
             object-fit: contain;
         }
@@ -493,7 +493,6 @@
                 </tr>
             </table>
         </div>
-            {{-- <div style="height: 50px;"></div> --}}
 
         <!-- ============================================ -->
         <!-- III. DAFTAR PENGECEKAN PERSYARATAN -->
