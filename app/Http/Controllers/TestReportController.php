@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\TestReport;
 use App\Models\Permohonan;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\TestReportSelesaiMail;
+use Illuminate\Support\Facades\Mail;
 
 class TestReportController extends Controller
 {
@@ -89,6 +91,10 @@ class TestReportController extends Controller
 
         // Update status permohonan
         $permohonan->test_report_selesai = true;
+
+        // KIRIM EMAIL KE PEMOHON
+        $this->sendEmailToPemohon($permohonan);
+
         $permohonan->save();
 
         return redirect()->route('dashboard.admin')
@@ -110,5 +116,20 @@ class TestReportController extends Controller
         $testReport = $permohonan->testReport;
         
         return view('testreport.show', compact('permohonan', 'testReport'));
+    }
+
+    /**
+     * Kirim notifikasi email ke pemohon
+     */
+    private function sendEmailToPemohon($permohonan)
+    {
+        try {
+            $pemohon = $permohonan->user;
+            if ($pemohon && $pemohon->email) {
+                Mail::to($pemohon->email)->send(new TestReportSelesaiMail($permohonan));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email notifikasi test report: ' . $e->getMessage());
+        }
     }
 }

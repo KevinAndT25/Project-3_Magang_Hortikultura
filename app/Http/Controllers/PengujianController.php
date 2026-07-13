@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pengujian;
 use App\Models\Permohonan;
+use App\Mail\PengujianSelesaiMail;
+use Illuminate\Support\Facades\Mail;
 
 class PengujianController extends Controller
 {
@@ -73,6 +75,10 @@ class PengujianController extends Controller
 
         // Update status permohonan
         $permohonan->pengujian_selesai = true;
+
+        // KIRIM EMAIL KE PEMOHON
+        $this->sendEmailToPemohon($permohonan);
+
         $permohonan->save();
 
         return redirect()->route('dashboard.admin')
@@ -94,5 +100,20 @@ class PengujianController extends Controller
         $pengujian = $permohonan->pengujian;
         
         return view('pengujian.show', compact('permohonan', 'pengujian'));
+    }
+
+    /**
+     * Kirim notifikasi email ke pemohon
+     */
+    private function sendEmailToPemohon($permohonan)
+    {
+        try {
+            $pemohon = $permohonan->user;
+            if ($pemohon && $pemohon->email) {
+                Mail::to($pemohon->email)->send(new PengujianSelesaiMail($permohonan));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email notifikasi pengujian: ' . $e->getMessage());
+        }
     }
 }

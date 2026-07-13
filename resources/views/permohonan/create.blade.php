@@ -772,15 +772,15 @@
             <!-- ============================================ -->
             <div class="form-section">
                 <div class="form-actions">
+                    <a href="{{ route('dashboard.pemohon') }}" class="btn-cancel">
+                        <i class="bi bi-x-circle"></i> Batal
+                    </a>
                     <button type="submit" name="action" value="draft" class="btn-draft" id="btnDraft">
                         <i class="bi bi-file-earmark"></i> Simpan sebagai Draft
                     </button>
                     <button type="submit" name="action" value="submit" class="btn-submit" id="btnSubmit">
                         <i class="bi bi-send"></i> Submit Permohonan
                     </button>
-                    <a href="{{ route('dashboard.pemohon') }}" class="btn-cancel">
-                        <i class="bi bi-x-circle"></i> Batal
-                    </a>
                 </div>
                 <div class="mt-3">
                     <small class="text-muted">

@@ -39,7 +39,7 @@
         }
         .header-logo img {
             width: auto;
-            height: 70px;
+            height: 90px;
             object-fit: contain;
         }
         .header-text {
@@ -47,7 +47,7 @@
             padding: 0 10px;
         }
         .header-text .title-main {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             color: #1a6e4a;
             text-transform: uppercase;
@@ -72,6 +72,11 @@
         .header-right {
             width: 80px;
             text-align: right;
+        }
+        .header-right img {
+            width: auto;
+            height: 70px;
+            object-fit: contain;
         }
         
         /* ============================================
@@ -315,7 +320,7 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo">
-                    <img src="{{ public_path('images/logo-sumbar.png') }}" alt="Logo Sumbar">
+                    <img src="{{ public_path('images/logo-sumbar.png') }}" alt="">
                 </td>
                 <td class="header-text">
                     <div class="title-main">LABORATORIUM PENGUJI MUTU ALSINTAN</div>
@@ -327,7 +332,7 @@
                     </div>
                 </td>
                 <td class="header-right">
-                    <!-- Kosong di kanan -->
+                    <img src="{{ public_path('images/logo-komite.png') }}" alt="">
                 </td>
             </tr>
         </table>
@@ -476,7 +481,7 @@
             <table class="header-table">
                 <tr>
                     <td class="header-logo">
-                        <img src="{{ public_path('images/logo-sumbar.png') }}" alt="Logo Sumbar">
+                        <img src="{{ public_path('images/logo-sumbar.png') }}" alt="">
                     </td>
                     <td class="header-text">
                         <div class="title-main">LABORATORIUM PENGUJI MUTU ALSINTAN</div>
@@ -488,7 +493,7 @@
                         </div>
                     </td>
                     <td class="header-right">
-                        <!-- Kosong di kanan -->
+                        <img src="{{ public_path('images/logo-komite.png') }}" alt="">
                     </td>
                 </tr>
             </table>

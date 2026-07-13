@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Permohonan;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage; 
+use App\Mail\PermohonanBaruMail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 
 class PermohonanController extends Controller
 {
@@ -178,7 +181,10 @@ class PermohonanController extends Controller
             $message = 'Permohonan berhasil disimpan sebagai draft. Anda dapat mengeditnya nanti.';
         } else {
             $permohonan->status = 'aktif';
-            $message = 'Permohonan berhasil disubmit! Menunggu proses validasi oleh admin.';
+            $message = 'Permohonan berhasil di  submit! Menunggu proses validasi oleh admin.';
+                
+                // KIRIM EMAIL KE ADMIN
+                $this->sendEmailToAdmin($permohonan);
         }
         
         $permohonan->save();
@@ -299,6 +305,10 @@ class PermohonanController extends Controller
         if ($permohonan->isSubmittable()) {
             // Proses submit
             $permohonan->status = 'aktif';
+            
+            // KIRIM EMAIL KE ADMIN
+            $this->sendEmailToAdmin($permohonan);
+            
             $permohonan->save();
             
             return redirect()->route('permohonan.show', $permohonan->id)
@@ -398,6 +408,21 @@ class PermohonanController extends Controller
         
         foreach ($files as $file) {
             Storage::disk('public')->delete($file);
+        }
+    }
+
+    /**
+     * Kirim notifikasi email ke admin
+     */
+    private function sendEmailToAdmin($permohonan)
+    {
+        try {
+            $admin = User::where('role', 'admin')->first();
+            if ($admin && $admin->email) {
+                Mail::to($admin->email)->send(new PermohonanBaruMail($permohonan));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email notifikasi permohonan baru: ' . $e->getMessage());
         }
     }
 }

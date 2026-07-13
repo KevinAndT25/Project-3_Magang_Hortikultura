@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Kuisioner;
 use App\Models\Permohonan;
+use App\Mail\KuisionerSelesaiMail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 
 class KuisionerController extends Controller
 {
@@ -109,11 +112,10 @@ class KuisionerController extends Controller
 
         // Update status permohonan
         $permohonan->kuisioner_selesai = true;
-        
-        // ==========================================
-        // PERUBAHAN: Ubah status permohonan menjadi SELESAI
-        // ==========================================
         $permohonan->status = 'selesai';
+
+        // KIRIM EMAIL KE ADMIN
+        $this->sendEmailToAdmin($permohonan);
         
         $permohonan->save();
 
@@ -136,5 +138,20 @@ class KuisionerController extends Controller
         $kuisioner = $permohonan->kuisioner;
         
         return view('kuisioner.show', compact('permohonan', 'kuisioner'));
+    }
+
+    /**
+     * Kirim notifikasi email ke admin
+     */
+    private function sendEmailToAdmin($permohonan)
+    {
+        try {
+            $admin = User::where('role', 'admin')->first();
+            if ($admin && $admin->email) {
+                Mail::to($admin->email)->send(new KuisionerSelesaiMail($permohonan));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email notifikasi kuisioner: ' . $e->getMessage());
+        }
     }
 }

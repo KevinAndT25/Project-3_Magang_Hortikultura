@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Validasi;
 use App\Models\Permohonan;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\ValidasiSelesaiMail;
+use Illuminate\Support\Facades\Mail;
 
 class ValidasiController extends Controller
 {
@@ -84,6 +86,10 @@ class ValidasiController extends Controller
 
         // Update status permohonan
         $permohonan->validasi_selesai = true;
+
+        // KIRIM EMAIL KE PEMOHON
+        $this->sendEmailToPemohon($permohonan);
+
         $permohonan->save();
 
         return redirect()->route('dashboard.admin')
@@ -105,5 +111,20 @@ class ValidasiController extends Controller
         $validasi = $permohonan->validasi;
         
         return view('validasi.show', compact('permohonan', 'validasi'));
+    }
+
+    /**
+     * Kirim notifikasi email ke pemohon
+     */
+    private function sendEmailToPemohon($permohonan)
+    {
+        try {
+            $pemohon = $permohonan->user;
+            if ($pemohon && $pemohon->email) {
+                Mail::to($pemohon->email)->send(new ValidasiSelesaiMail($permohonan));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email notifikasi validasi: ' . $e->getMessage());
+        }
     }
 }
