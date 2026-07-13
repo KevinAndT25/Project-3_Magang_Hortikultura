@@ -116,6 +116,39 @@
         margin-bottom: 0;
         padding-left: 20px;
     }
+
+    /* Password Toggle Wrapper */
+    .password-wrapper {
+        position: relative;
+    }
+    .password-wrapper .form-control {
+        padding-right: 45px;
+    }
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #95a5a6;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 18px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .password-toggle:hover {
+        color: #1a6e4a;
+    }
+    .password-toggle:focus {
+        outline: none;
+    }
+    .password-toggle .bi {
+        font-size: 20px;
+    }
 </style>
 
 <div class="register-container">
@@ -157,14 +190,26 @@
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" 
-                       placeholder="Minimal 6 karakter" required>
+                <div class="password-wrapper">
+                    <input type="password" class="form-control" id="password" name="password" 
+                        placeholder="Minimal 6 karakter" required>
+                    <button type="button" class="password-toggle" id="togglePassword" 
+                            title="Tampilkan/Sembunyikan password">
+                        <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                    </button>
+                </div>
             </div>
             <div class="mb-3">
-                <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                <input type="password" class="form-control" id="password_confirmation" 
-                       name="password_confirmation" placeholder="Ulangi password" required>
-            </div>
+                <label for="password_confirmation" class="form-label">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" class="form-control" id="password_confirmation" 
+                        name="password_confirmation" placeholder="Masukkan ulang password" required>
+                    <button type="button" class="password-toggle" id="togglePasswordconfirmation" 
+                            title="Tampilkan/Sembunyikan password">
+                        <i class="bi bi-eye-slash" id="toggleConfirmationIcon"></i>
+                    </button>
+                </div>
+            </div> 
             <button type="submit" class="btn-register">Daftar Sekarang</button>
         </form>
 
@@ -174,4 +219,41 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const togglePasswordconfirmation = document.getElementById('togglePasswordconfirmation');
+        const passwordInput = document.getElementById('password');
+        const passwordConfirmationInput = document.getElementById('password_confirmation');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const toggleConfirmationIcon = document.getElementById('toggleConfirmationIcon');
+
+        togglePassword.addEventListener('click', function() {
+            // Toggle type input
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Toggle icon
+            if (type === 'password') {
+                toggleIcon.className = 'bi bi-eye-slash';
+            } else {
+                toggleIcon.className = 'bi bi-eye';
+            }
+        });
+
+        togglePasswordconfirmation.addEventListener('click', function() {
+            // Toggle type input
+            const confirmationType = passwordConfirmationInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordConfirmationInput.setAttribute('type', confirmationType);
+
+            // Toggle icon
+            if (confirmationType === 'password_confirmation') {
+                toggleConfirmationIcon.className = 'bi bi-eye-slash';
+            } else {
+                toggleConfirmationIcon.className = 'bi bi-eye';
+            }
+        });
+    });
+</script>
 @endsection
