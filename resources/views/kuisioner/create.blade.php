@@ -4,6 +4,45 @@
 
 @section('content')
 <style>
+    .detail-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 25px 30px;
+        margin-bottom: 20px;
+    }
+    .detail-section .section-title {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 16px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f2f5;
+    }
+    .info-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    .info-card .info-icon {
+        font-size: 20px;
+        color: #1a6e4a;
+    }
+    .info-card .info-label {
+        font-size: 12px;
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+    .info-card .info-value {
+        font-size: 14px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
     /* Form Styling */
     .form-section {
         background: white;
@@ -278,31 +317,60 @@
                     <strong>Nomor Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
-            <a href="{{ route('dashboard.pemohon') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-            </a>
         </div>
 
         <!-- Info Permohonan -->
-        <div class="form-section">
+        <div class="detail-section">
             <div class="section-title">
                 <i class="bi bi-file-earmark-text me-2" style="color: #1a6e4a;"></i>
                 Informasi Permohonan
             </div>
             <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label text-muted">Nomor Permohonan</label>
-                    <p class="fw-semibold mb-0">
-                        {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
-                    </p>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-file-earmark"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Nomor Permohonan</div>
+                            <div class="info-value">
+                                {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label text-muted">Nama Pemohon</label>
-                    <p class="fw-semibold mb-0">{{ $permohonan->nama_pemohon }}</p>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Pemohon</div>
+                            <div class="info-value">{{ $permohonan->nama_pemohon }}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label text-muted">Jenis Alsintan</label>
-                    <p class="fw-semibold mb-0">{{ $permohonan->jenis_alsintan }}</p>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Alsintan</div>
+                            <div class="info-value">{{ $permohonan->jenis_alsintan }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-tag"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Merek/Tipe</div>
+                            <div class="info-value">{{ $permohonan->merek_model_tipe }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

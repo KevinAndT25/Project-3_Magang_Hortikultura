@@ -245,9 +245,6 @@
                     Laboratorium Penguji Mutu Alsintan UPTD BMSPP
                 </p>
             </div>
-            <a href="{{ route('dashboard.pemohon') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-            </a>
         </div>
 
         <form method="POST" action="{{ route('permohonan.store') }}" enctype="multipart/form-data" id="formPermohonan">

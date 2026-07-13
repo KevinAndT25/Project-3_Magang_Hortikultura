@@ -302,17 +302,6 @@
         @endif
     </div>
 
-    <!-- Legend (hanya untuk admin) -->
-    @if(auth()->user()->isAdmin())
-    <div class="legend-section">
-        <span class="fw-semibold text-dark">Penanda:</span>
-        <span class="legend-item">
-            <span class="legend-dot urgent"></span>
-            Tombol Isi: <span class="text-warning fw-semibold">berwarna kuning</span> dengan titik berkedip menandakan tahap yang perlu segera diselesaikan admin
-        </span>
-    </div>
-    @endif
-
     <!-- ============================================ -->
     <!-- TABEL DRAFT (HANYA UNTUK PEMOHON) -->
     <!-- ============================================ -->
@@ -337,6 +326,7 @@
                                 <th>Pengujian</th>
                                 <th>Test Report</th>
                                 <th>Kuisioner</th>
+                                <th style="width: 60px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -357,8 +347,8 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-action btn-warning" onclick="event.stopPropagation();">
-                                        <i class="bi bi-pencil"></i> Edit Draft
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-warning-action btn-action" onclick="event.stopPropagation();">
+                                        <i class="blink-dot dot-warning"></i> Edit
                                     </a>
                                 </td>
                                 <td>
@@ -381,10 +371,21 @@
                                         <span class="status-dot dot-draft"></span> Draft
                                     </span>
                                 </td>
+                                <td>
+                                    <form action="{{ route('draft.destroy', $p->id) }}" method="POST" 
+                                        onsubmit="event.stopPropagation(); return confirm('Yakin ingin menghapus draft ini? Semua data akan hilang permanen.');"
+                                        onclick="event.stopPropagation();">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger btn-action" title="Hapus Draft">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="9">
+                                <td colspan="10">
                                     <div class="empty-state">
                                         <i class="bi bi-file-earmark"></i>
                                         <p>Belum ada draft permohonan</p>
@@ -403,6 +404,7 @@
     <!-- ============================================ -->
     <!-- TABEL PERMOHONAN AKTIF -->
     <!-- ============================================ -->
+    @if(auth()->user()->isAdmin())
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
@@ -423,11 +425,12 @@
                                 <th>Pengujian</th>
                                 <th>Test Report</th>
                                 <th>Kuisioner</th>
+                                <th style="width: 60px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($aktifPermohonans as $p)
-                            <tr class="clickable-row {{ auth()->user()->isAdmin() && (!$p->validasi_selesai || !$p->pengujian_selesai || !$p->test_report_selesai)}}" 
+                            <tr class="clickable-row {{ (!$p->validasi_selesai || !$p->pengujian_selesai || !$p->test_report_selesai) ? 'tr-highlight' : '' }}" 
                                 data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
@@ -491,7 +494,7 @@
                                 </td>
                                 <td>
                                     @if($p->kuisioner_selesai)
-                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                        <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-info btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
                                     @elseif($p->test_report_selesai)
@@ -518,6 +521,120 @@
                             </tr>
                             @empty
                             <tr>
+                                <td colspan="10">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>Tidak ada permohonan aktif</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @elseif(auth()->user()->isPemohon())
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-table">
+                <div class="card-header">
+                    <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
+                    <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dashboard table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>No. Permohonan</th>
+                                <th>Tanggal</th>
+                                <th>Pemohon</th>
+                                <th>Alsintan</th>
+                                <th>Permohonan</th>
+                                <th>Validasi</th>
+                                <th>Pengujian</th>
+                                <th>Test Report</th>
+                                <th>Kuisioner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($aktifPermohonans as $p)
+                            <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
+                                <td>
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
+                                        {{ $p->nomor_surat_permohonan ?? 'PMH-'.str_pad($p->id, 6, '0', STR_PAD_LEFT) }}
+                                    </a>
+                                </td>
+                                <td>{{ $p->tanggal_surat_permohonan ? \Carbon\Carbon::parse($p->tanggal_surat_permohonan)->format('d M Y') : $p->created_at->format('d M Y') }}</td>
+                                <td>
+                                    <div>{{ $p->nama_pemohon ?? 'Unknown' }}</div>
+                                    <small class="text-muted">{{ $p->status_pemohon ?? 'Pemohon' }}</small>
+                                </td>
+                                <td>
+                                    <div>{{ $p->jenis_alsintan ?? '-' }}</div>
+                                    <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
+                                </td>
+                                <td>
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </a>
+                                </td>
+                                <td>
+                                    @if($p->validasi)
+                                        <a href="{{ route('validasi.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($p->pengujian)
+                                        <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Lihat
+                                        </a>
+                                    @elseif($p->validasi)
+                                        <span class="badge-status badge-warning">
+                                            <span class="status-dot dot-warning"></span> Diproses
+                                        </span>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($p->testReport)
+                                        <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Lihat
+                                        </a>
+                                    @elseif($p->pengujian)
+                                        <span class="badge-status badge-warning">
+                                            <span class="status-dot dot-warning"></span> Diproses
+                                        </span>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($p->testReport)
+                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action" onclick="event.stopPropagation();">
+                                            <i class="blink-dot dot-warning"></i> Isi
+                                        </a>
+                                    @else
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
                                 <td colspan="9">
                                     <div class="empty-state">
                                         <i class="bi bi-inbox"></i>
@@ -532,6 +649,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- ============================================ -->
     <!-- TABEL PERMOHONAN SELESAI -->

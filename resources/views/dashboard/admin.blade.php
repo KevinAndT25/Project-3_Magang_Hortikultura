@@ -386,15 +386,6 @@
         </div>
     </div>
 
-    <!-- Legend -->
-    <div class="legend-section">
-        <span class="fw-semibold text-dark">Penanda:</span>
-        <span class="legend-item">
-            <span class="legend-dot urgent"></span>
-            Tombol Isi: <span class="text-warning fw-semibold">berwarna kuning</span> dengan titik berkedip menandakan tahap yang perlu segera diselesaikan admin
-        </span>
-    </div>
-
     <!-- ============================================ -->
     <!-- TABEL PERMOHONAN AKTIF (UNTUK ADMIN) -->
     <!-- ============================================ -->
@@ -403,7 +394,6 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
-                    {{-- <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -537,7 +527,6 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-check-circle me-2"></i>Permohonan Selesai</span>
-                    {{-- <span class="badge-count selesai-badge">{{ $selesaiPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -601,7 +590,7 @@
                                 <td>
                                     @if($p->testReport)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-download"></i> Download
+                                            <i class="bi bi-download"></i> Lihat
                                         </a>
                                     @else
                                         <span class="badge-status badge-success">
@@ -626,7 +615,7 @@
                                 <td colspan="9">
                                     <div class="empty-state">
                                         <i class="bi bi-check-circle"></i>
-                                        <p>Tidak ada permohonan selesai</p>
+                                        <p>Belum ada permohonan selesai</p>
                                     </div>
                                 </td>
                             </tr>

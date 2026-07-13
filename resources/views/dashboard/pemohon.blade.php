@@ -243,6 +243,26 @@
         background: #f0f2f5 !important;
     }
     
+    .blink-dot {
+        animation: blink 1s infinite;
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+    .blink-dot.dot-warning {
+        background: #f39c12;
+    }
+    .btn-action.btn-warning-action {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffc107;
+    }
+    .btn-action.btn-warning-action:hover {
+        background: #ffe69c;
+    }
+    
     /* Card Table */
     .card-table {
         border: none;
@@ -322,7 +342,7 @@
     <div class="dashboard-header">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h4>Dashboard Pemohon</h4>
+                <h4>Dashboard Pemohon</h4>  
                 <p>Laboratorium Penguji Mutu Alsintan UPTD BMSPP</p>
             </div>
             <div class="col-md-4 text-md-end mt-2 mt-md-0">
@@ -382,7 +402,6 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-file-earmark me-2"></i>Draft</span>
-                    {{-- <span class="badge-count draft-badge">{{ $draftPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -418,8 +437,8 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-warning btn-action" onclick="event.stopPropagation();">
-                                        <i class="bi bi-eye"></i> Lihat
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-warning-action btn-action" onclick="event.stopPropagation();">
+                                        <i class="blink-dot dot-warning"></i> Edit
                                     </a>
                                 </td>
                                 <td>
@@ -479,7 +498,6 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
-                    {{-- <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -561,8 +579,8 @@
                                 </td>
                                 <td>
                                     @if($p->testReport)
-                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-warning btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-pencil"></i> Isi
+                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action" onclick="event.stopPropagation();">
+                                            <i class="blink-dot dot-warning"></i> Isi
                                         </a>
                                     @else
                                         <span class="badge-status badge-waiting">
@@ -596,7 +614,6 @@
             <div class="card card-table">
                 <div class="card-header">
                     <span><i class="bi bi-check-circle me-2"></i>Permohonan Selesai</span>
-                    {{-- <span class="badge-count selesai-badge">{{ $selesaiPermohonans->count() }}</span> --}}
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">

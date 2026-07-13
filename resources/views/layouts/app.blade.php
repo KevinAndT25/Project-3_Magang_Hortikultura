@@ -657,7 +657,7 @@
                         {{ $user->initials ?? strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                         <span class="online-dot"></span>
                         <span class="edit-badge">
-                            <i class="bi bi-pencil" style="font-size: 8px;"></i>
+                            <i class="bi" style="font-size: 8px;"></i>
                         </span>
                     </div>
                     <div class="user-info">
