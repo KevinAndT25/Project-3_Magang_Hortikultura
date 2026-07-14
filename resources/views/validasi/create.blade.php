@@ -343,7 +343,7 @@
                 <div class="col-md-4">
                     <label class="form-label text-muted">Nomor Permohonan</label>
                     <p class="fw-semibold mb-0">
-                        {{ $permohonan->no_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
+                        {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                     </p>
                 </div>
                 <div class="col-md-4">
