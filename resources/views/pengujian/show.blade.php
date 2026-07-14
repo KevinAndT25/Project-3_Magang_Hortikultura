@@ -184,7 +184,7 @@
             
             <div class="detail-item">
                 <span class="label">Nomor Permohonan Uji</span>
-                <span class="value">{{ $pengujian->nomor_permohonan_uji ?? '-' }}</span>
+                <span class="value">{{ $permohonan->nomor_surat_permohonan ?? '-' }}</span>
             </div>
             <div class="detail-item">
                 <span class="label">Tanggal Pengujian</span>

@@ -400,8 +400,8 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
-                    <span><i class="bi bi-file-earmark me-2"></i>Draft</span>
+                <div class="card-header" style="background: linear-gradient(135deg, #d8dbdc 0%, #7f8c8d 100%)">
+                    <span><i class="bi bi-file-earmark me-2" style=""></i>Draft</span>
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -496,7 +496,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
+                <div class="card-header" style="background: linear-gradient(135deg, #fff0e3 0%, #f39c12 100%)">
                     <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
                 </div>
                 <div class="card-body">
@@ -612,7 +612,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
+                <div class="card-header" style="background: linear-gradient(135deg, #c9f9df 0%, #2ecc71 100%)">
                     <span><i class="bi bi-check-circle me-2"></i>Permohonan Selesai</span>
                 </div>
                 <div class="card-body">

@@ -309,7 +309,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
+                <div class="card-header" style="background: linear-gradient(135deg, #d8dbdc 0%, #7f8c8d 100%)">
                     <span><i class="bi bi-file-earmark me-2"></i>Draft</span>
                     <span class="badge-count draft-badge">{{ $draftPermohonans->count() }}</span>
                 </div>
@@ -408,7 +408,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
+                <div class="card-header" style="background: linear-gradient(135deg, #fff0e3 0%, #f39c12 100%)">
                     <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
                     <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span>
                 </div>
@@ -539,7 +539,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
+                <div class="card-header" style="background: linear-gradient(135deg, #fff0e3 0%, #f39c12 100%)">
                     <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
                     <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span>
                 </div>
@@ -657,7 +657,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
+                <div class="card-header" style="background: linear-gradient(135deg, #c9f9df 0%, #2ecc71 100%)">
                     <span><i class="bi bi-check-circle me-2"></i>Permohonan Selesai</span>
                     <span class="badge-count selesai-badge">{{ $selesaiPermohonans->count() }}</span>
                 </div>
