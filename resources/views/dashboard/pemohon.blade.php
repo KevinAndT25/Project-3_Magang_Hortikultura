@@ -542,8 +542,8 @@
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
-                                        <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        <span class="badge-status badge-warning">
+                                            <span class="status-dot dot-warning"></span> Diproses
                                         </span>
                                     @endif
                                 </td>
@@ -584,7 +584,7 @@
                                         </a>
                                     @else
                                         <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                            <span class="status-dot dot-secondary"></span> Terkunci
                                         </span>
                                     @endif
                                 </td>
@@ -677,7 +677,7 @@
                                 <td>
                                     @if($p->testReport)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-download"></i> Lihat
+                                            <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
                                         <span class="badge-status badge-success">

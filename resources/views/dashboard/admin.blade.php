@@ -463,7 +463,7 @@
                                 <td>
                                     @if($p->test_report_selesai)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-download"></i> Download
+                                            <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @elseif($p->pengujian_selesai)
                                         <a href="{{ route('testreport.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action btn-urgent" onclick="event.stopPropagation();">
@@ -590,7 +590,7 @@
                                 <td>
                                     @if($p->testReport)
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-download"></i> Lihat
+                                            <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
                                         <span class="badge-status badge-success">
