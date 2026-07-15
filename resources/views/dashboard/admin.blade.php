@@ -430,7 +430,7 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-success btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
                                 </td>
@@ -561,7 +561,7 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-success btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
                                 </td>

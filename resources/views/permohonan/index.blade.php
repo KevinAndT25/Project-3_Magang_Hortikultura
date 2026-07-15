@@ -37,21 +37,20 @@
         justify-content: space-between;
         align-items: center;
     }
-    .card-table .card-header .badge-count {
-        background: #1a6e4a;
+    .card-table .card-header .badge-count { 
         color: white;
         padding: 2px 10px;
         border-radius: 20px;
         font-size: 12px;
     }
     .card-table .card-header .badge-count.draft-badge {
-        background: #7f8c8d;
+        background: #717e7f;
     }
     .card-table .card-header .badge-count.aktif-badge {
-        background: #f39c12;
+        background: #e99611;
     }
     .card-table .card-header .badge-count.selesai-badge {
-        background: #27ae60;
+        background: #2bc26a;
     }
     
     /* Table Styling */
@@ -447,7 +446,7 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-success btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
                                 </td>
@@ -576,7 +575,7 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-success btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
                                 </td>
@@ -694,7 +693,7 @@
                                     <small class="text-muted">{{ $p->merek_model_tipe ?? '' }}</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-primary btn-action" onclick="event.stopPropagation();">
+                                    <a href="{{ route('permohonan.show', $p->id) }}" class="btn btn-sm btn-outline-success btn-action" onclick="event.stopPropagation();">
                                         <i class="bi bi-eye"></i> Lihat
                                     </a>
                                 </td>
@@ -734,7 +733,7 @@
                                 <td>
                                     @if($p->kuisioner)
                                         <a href="{{ route('kuisioner.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
-                                            <i class="bi bi-eye"></i> Lihat
+                                            <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
                                         <span class="badge-status badge-success">
@@ -761,7 +760,7 @@
     </div>
 </div>
 
-{{-- <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         // Clickable row
         document.querySelectorAll('.clickable-row').forEach(row => {
@@ -773,5 +772,5 @@
             });
         });
     });
-</script> --}}
+</script>
 @endsection 
