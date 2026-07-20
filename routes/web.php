@@ -35,6 +35,8 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.forgot');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');
 
 // ======================
 // ROUTE DENGAN AUTH

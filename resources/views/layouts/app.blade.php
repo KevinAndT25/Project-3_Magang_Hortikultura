@@ -609,7 +609,7 @@
 <body>
 
 @php
-    $isAuthPage = in_array(Route::currentRouteName(), ['login.admin', 'login.pemohon', 'register']);
+    $isAuthPage = in_array(Route::currentRouteName(), ['login.admin', 'login.pemohon', 'register', 'password.forgot', 'password.reset']);
     $user = Auth::user();
     $isAdmin = $user && $user->role === 'admin';
 @endphp

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;        
+use Illuminate\Support\Str; 
 use App\Models\User;
+use App\Mail\ResetPasswordMail;  
 use Illuminate\Validation\Rule; 
 
 class AuthController extends Controller
@@ -26,6 +29,55 @@ class AuthController extends Controller
     public function showRegister()
     {
         return view('auth.register');
+    }
+
+    /**
+     * Tampilkan halaman lupa password
+     */
+    public function showForgotPassword()
+    {
+        return view('auth.forgot_password');
+    }
+
+    /**
+     * Proses reset password
+     */
+    public function resetPassword(Request $request)
+    {
+        // Validasi email
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.exists' => 'Email tidak ditemukan. Pastikan email yang Anda masukkan benar.',
+        ]);
+
+        // Cari user berdasarkan email
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->with('error', 'Email tidak ditemukan.');
+        }
+
+        // Generate password baru (8 karakter acak)
+        $newPassword = Str::random(8);
+
+        // Update password user
+        $user->password = Hash::make($newPassword);
+        $user->save();
+
+        try {
+            // Kirim email dengan password baru
+            Mail::to($user->email)->send(new ResetPasswordMail($user, $newPassword));
+
+            return redirect()->route('login.pemohon')
+                ->with('success', 'Password baru telah dikirim ke email Anda. Silakan cek inbox atau folder spam.');
+        } catch (\Exception $e) {
+            // Jika email gagal dikirim, rollback password
+            $user->password = $user->getOriginal('password');
+            $user->save();
+
+            return back()->with('error', 'Gagal mengirim email. Silakan coba lagi nanti.');
+        }
     }
 
     // Proses login dengan role

@@ -238,6 +238,12 @@
                     </button>
                 </div>
             </div>
+            {{-- Lupa Password --}}
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{{ route('password.forgot') }}" class="text-decoration-none" style="font-size: 13px; color: #1a6e4a;">
+                    Lupa Password?
+                </a>
+            </div>
             <button type="submit" class="btn-login">Masuk</button>
         </form>
 
