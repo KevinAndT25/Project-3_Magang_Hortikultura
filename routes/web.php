@@ -9,7 +9,7 @@ use App\Http\Controllers\ValidasiController;
 use App\Http\Controllers\PengujianController;
 use App\Http\Controllers\TestReportController;
 use App\Http\Controllers\KuisionerController;
-
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PermohonanPdfController; 
 use App\Http\Controllers\KuisionerPdfController;
 
@@ -44,6 +44,11 @@ Route::middleware(['auth'])->group(function () {
     // Route untuk update profil
     Route::put('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
 
+    // Route untuk melihat file
+    Route::get('/file/{path}', [FileController::class, 'show'])
+        ->name('file.show')
+        ->where('path', '.*');
+        
     // Permohonan Index
     Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
     Route::get('/permohonan/{id}/pdf', [PermohonanPdfController::class, 'download'])

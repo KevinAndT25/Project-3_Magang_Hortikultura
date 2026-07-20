@@ -323,43 +323,58 @@
             </div>
             
             @php
-                $canDownload = auth()->user()->isAdmin() || $permohonan->kuisioner_selesai;
+                $canDownload = auth()->user()->isAdmin() || ($permohonan->kuisioner_selesai ?? false);
                 $isPemohon = auth()->user()->isPemohon();
             @endphp
             
             @if($testReport && $testReport->file_test_report_multiple && count($testReport->file_test_report_multiple) > 0)
                 @foreach($testReport->file_test_report_multiple as $file)
+                    @php
+                        $fileExists = Storage::disk('public')->exists($file);
+                        $fileSize = $fileExists ? Storage::disk('public')->size($file) : 0;
+                        $sizeMB = $fileSize > 0 ? number_format($fileSize / 1024 / 1024, 2) : '0';
+                        $fileUrl = route('file.show', ['path' => $file]);
+                        $fileName = basename($file);
+                        
+                        // Tentukan icon berdasarkan ekstensi
+                        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                        $iconClass = 'bi-file-earmark';
+                        if (in_array($extension, ['pdf'])) {
+                            $iconClass = 'bi-file-earmark-pdf';
+                        } elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'])) {
+                            $iconClass = 'bi-file-earmark-image';
+                        } elseif (in_array($extension, ['doc', 'docx'])) {
+                            $iconClass = 'bi-file-earmark-word';
+                        } elseif (in_array($extension, ['xls', 'xlsx'])) {
+                            $iconClass = 'bi-file-earmark-excel';
+                        } elseif (in_array($extension, ['zip', 'rar', '7z'])) {
+                            $iconClass = 'bi-file-earmark-zip';
+                        }
+                    @endphp
+                    
                     <div class="file-card">
                         <div class="file-icon">
-                            <i class="bi {{ 
-                                str_ends_with($file, '.pdf') ? 'bi-file-earmark-pdf' : 
-                                (str_ends_with($file, '.jpg') || str_ends_with($file, '.jpeg') || str_ends_with($file, '.png') ? 'bi-file-earmark-image' : 'bi-file-earmark') 
-                            }}"></i>
+                            <i class="bi {{ $iconClass }}"></i>
                         </div>
                         <div class="file-info">
-                            <div class="file-name">{{ basename($file) }}</div>
+                            <div class="file-name">{{ $fileName }}</div>
                             <div class="file-size">
-                                @php
-                                    $size = Storage::disk('public')->exists($file) ? Storage::disk('public')->size($file) : 0;
-                                    $sizeMB = $size > 0 ? number_format($size / 1024 / 1024, 2) : '0';
-                                @endphp
-                                {{ $sizeMB }} MB
+                                @if($fileExists)
+                                    {{ $sizeMB }} MB
+                                @else
+                                    <span style="color: #e74c3c;">File tidak ditemukan</span>
+                                @endif
                             </div>
                         </div>
                         <div class="file-actions">
-                            <!-- Tombol Lihat (selalu bisa) -->
-                            <a href="{{ asset('storage/' . $file) }}" target="_blank" class="btn-view">
-                                <i class="bi bi-eye"></i> Lihat
-                            </a>
-                            
-                            <!-- Tombol Download (tergantung kondisi) -->
+                            <!-- Tombol Lihat -->
                             @if($canDownload)
-                                <a href="{{ asset('storage/' . $file) }}" download class="btn-download">
-                                    <i class="bi bi-download"></i> Download
+                                <a href="{{ $fileUrl }}" target="_blank" class="btn-view">
+                                    <i class="bi bi-eye"></i> Lihat
                                 </a>
                             @else
                                 <button class="btn-download" disabled title="Harap isi kuisioner terlebih dahulu untuk dapat mendownload">
-                                    <i class="bi bi-download"></i> Download
+                                    <i class="bi bi-eye"></i> Isi Kuisioner
                                 </button>
                             @endif
                         </div>

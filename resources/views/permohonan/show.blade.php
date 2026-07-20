@@ -359,7 +359,8 @@
                 @if(!empty($filePath))
                     @php 
                         $hasFiles = true;
-                        $fileUrl = asset('storage/' . $filePath);
+                        // Gunakan route file controller, bukan asset langsung
+                        $fileUrl = route('file.show', ['path' => $filePath]);
                         $fileName = basename($filePath);
                         $fileSize = $fileExists ? Storage::disk('public')->size($filePath) : 0;
                         $fileSizeFormatted = $fileSize > 0 ? number_format($fileSize / 1024, 0) . ' KB' : '0 KB';
@@ -382,18 +383,18 @@
                     
                     <div class="file-item-wrapper" style="display: inline-block; margin: 3px 5px 3px 0;">
                         @if($fileExists)
-                            <a href="{{ $fileUrl }}" 
-                            target="_blank" 
-                            class="file-link" 
-                            data-file="{{ $fileName }}"
-                            onclick="openFile(event, '{{ $fileUrl }}', '{{ $fileName }}')">
-                                <i class="bi {{ $iconClass }}"></i>
-                                {{ $file['label'] }}
+                            <a href="{{ $fileUrl }}" target="_blank" class="btn-view">
+                                <div class="file-card" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #f0f9f4; border-radius: 6px; border-left: 3px solid #1a6e4a;">
+                                    <i class="bi {{ $iconClass }}" style="color: #1a6e4a; font-size: 18px;"></i>
+                                    <span style="font-size: 13px; font-weight: 500; color: #2c3e50;">{{ $file['label'] }}</span>
+                                    <span style="font-size: 11px; color: #95a5a6;">({{ $fileSizeFormatted }})</span>
+                                </div>
                             </a>
                         @else
-                            <span class="file-link file-missing" style="background: #fce4ec; color: #c62828; border-color: #ef9a9a; cursor: default;">
+                            <span class="file-link file-missing" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; border-radius: 6px; cursor: default;">
                                 <i class="bi {{ $iconClass }}"></i>
                                 {{ $file['label'] }}
+                                <span style="font-size: 11px; color: #c62828;">(file tidak ditemukan)</span>
                             </span>
                         @endif
                     </div>

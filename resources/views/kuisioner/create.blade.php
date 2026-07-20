@@ -620,7 +620,7 @@
                             <option value="">-- Pilih --</option>
                             <option value="uji_awal" {{ old('unit_layanan') == 'uji_awal' ? 'selected' : '' }}>Uji Awal</option>
                             <option value="uji_ulang" {{ old('unit_layanan') == 'uji_ulang' ? 'selected' : '' }}>Uji Ulang</option>
-                            <option value="uji_perpanjangan" {{ old('unit_layanan') == 'uji_perpanjangan' ? 'selected' : '' }}>Uji Perjanjian</option>
+                            <option value="uji_perpanjangan" {{ old('unit_layanan') == 'uji_perpanjangan' ? 'selected' : '' }}>Uji Perpanjangan</option>
                         </select>
                         @error('unit_layanan')
                             <div class="invalid-feedback">{{ $message }}</div>
