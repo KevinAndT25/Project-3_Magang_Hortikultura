@@ -131,13 +131,22 @@ class AuthController extends Controller
         return redirect()->route('dashboard.pemohon');
     }
 
-    // Logout
+    /**
+     * Logout user dan redirect ke halaman login yang sesuai
+     */
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        $role = $user ? $user->role : 'pemohon';
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        
+        if ($role === 'admin') {
+            return redirect()->route('login.admin')->with('info', 'Anda telah logout.');
+        }
+        return redirect()->route('login.pemohon')->with('info', 'Anda telah logout.');
     }
 
      /**
