@@ -24,18 +24,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>❌ Pengujian Ditolak</h1>
+            <h1>Pengujian Ditolak</h1>
             <div class="sub">Laboratorium Penguji Mutu Alsintan UPTD BMSPP</div>
         </div>
         <div class="body">
             <p>Yth. <strong>Admin</strong>,</p>
             
             <div class="highlight">
-                <p style="margin: 0; font-size: 15px;">
+                <p style="margin: 0;">
                     Pemohon <strong>{{ $pemohon->name ?? 'Pemohon' }}</strong> 
                     telah <strong>menolak</strong> hasil pengujian untuk permohonan:
                 </p>
-                <p style="margin: 8px 0 0 0; font-size: 14px;">
+                <p style="margin: 5px 0 0 0; font-size: 14px;">
                     <strong>Nomor Permohonan:</strong> {{ $permohonan->nomor_surat_permohonan ?? 'PMH-'.str_pad($permohonan->id, 6, '0', STR_PAD_LEFT) }}
                 </p>
                 <p style="margin: 5px 0 0 0; font-size: 14px;">
