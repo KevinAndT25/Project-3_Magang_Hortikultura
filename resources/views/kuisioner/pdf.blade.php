@@ -475,21 +475,36 @@
             </div>
             @endif
         </div>
-        <!-- TANDA TANGAN -->
+        
+        <!-- ============================================ -->
+        <!-- DATA PEMOHON (TANDA TANGAN) -->
+        <!-- ============================================ -->
         <table class="signature-table">
             <tr>
                 <td class="col-left">
-                    
+                    <!-- KOSONG -->
                 </td>
                 <td class="col-right">
                     <div class="signature-box">
-                        <span class="label-sign">................., ......................</span>
+                        <span class="label-sign">Data Pemohon</span>
                         
-                        <!-- Ruang kosong untuk tanda tangan (60px) -->
-                        <div class="sign-space"></div>
-                        
-                        <div class="sign-line">
-                            ( ................................ )<br>
+                        <div style="text-align: left; margin-top: 10px; padding: 12px 16px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #1a6e4a;">
+                            <div style="display: flex; padding: 4px 0; font-size: 12px; border-bottom: 1px dotted #eee;">
+                                <span style="font-weight: 600; color: #555; width: 100px; flex-shrink: 0;">Nama</span>
+                                <span style="color: #333;">: {{ $permohonan->nama_pemohon ?? '-' }}</span>
+                            </div>
+                            <div style="display: flex; padding: 4px 0; font-size: 12px; border-bottom: 1px dotted #eee;">
+                                <span style="font-weight: 600; color: #555; width: 100px; flex-shrink: 0;">Email</span>
+                                <span style="color: #333;">: {{ $permohonan->user->email ?? '-' }}</span>
+                            </div>
+                            <div style="display: flex; padding: 4px 0; font-size: 12px; border-bottom: 1px dotted #eee;">
+                                <span style="font-weight: 600; color: #555; width: 100px; flex-shrink: 0;">No. Telepon</span>
+                                <span style="color: #333;">: {{ $permohonan->telepon ?? '-' }}</span>
+                            </div>
+                            <div style="display: flex; padding: 4px 0; font-size: 12px;">
+                                <span style="font-weight: 600; color: #555; width: 100px; flex-shrink: 0;">Status</span>
+                                <span style="color: #333;">: {{ $permohonan->status_pemohon ?? '-' }}</span>
+                            </div>
                         </div>
                     </div>
                 </td>

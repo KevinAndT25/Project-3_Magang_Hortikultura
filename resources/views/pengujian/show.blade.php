@@ -365,77 +365,7 @@
             </div>
         </div>
 
-        <!-- File Dokumentasi Pengujian -->
-        <div class="detail-section">
-            <div class="section-title">
-                <i class="bi bi-files me-2" style="color: #1a6e4a;"></i>
-                File Dokumentasi Pengujian
-            </div>
-            
-            @if($pengujian && $pengujian->file_pengujian_multiple && count($pengujian->file_pengujian_multiple) > 0)
-                @foreach($pengujian->file_pengujian_multiple as $file)
-                    @php
-                        $fileExists = Storage::disk('public')->exists($file);
-                        $fileSize = $fileExists ? Storage::disk('public')->size($file) : 0;
-                        $sizeMB = $fileSize > 0 ? number_format($fileSize / 1024 / 1024, 2) : '0';
-                        $fileUrl = route('file.show', ['path' => $file]);
-                        $fileName = basename($file);
-                        
-                        // Tentukan icon berdasarkan ekstensi
-                        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-                        $iconClass = 'bi-file-earmark';
-                        if (in_array($extension, ['pdf'])) {
-                            $iconClass = 'bi-file-earmark-pdf';
-                        } elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'])) {
-                            $iconClass = 'bi-file-earmark-image';
-                        } elseif (in_array($extension, ['doc', 'docx'])) {
-                            $iconClass = 'bi-file-earmark-word';
-                        } elseif (in_array($extension, ['xls', 'xlsx'])) {
-                            $iconClass = 'bi-file-earmark-excel';
-                        } elseif (in_array($extension, ['zip', 'rar', '7z'])) {
-                            $iconClass = 'bi-file-earmark-zip';
-                        }
-                    @endphp
-                    
-                    <div class="file-card">
-                        <div class="file-icon">
-                            <i class="bi {{ $iconClass }}"></i>
-                        </div>
-                        <div class="file-info">
-                            <div class="file-name">{{ $fileName }}</div>
-                            <div class="file-size">
-                                @if($fileExists)
-                                    {{ $sizeMB }} MB
-                                @else
-                                    <span style="color: #e74c3c;">File tidak ditemukan</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="file-actions">
-                            @if($fileExists)
-                                <!-- Tombol Lihat -->
-                                <a href="{{ $fileUrl }}" target="_blank" class="btn-view">
-                                    <i class="bi bi-eye"></i> Lihat
-                                </a>
-                            @else
-                                <span style="font-size: 12px; color: #e74c3c;">
-                                    <i class="bi bi-exclamation-triangle"></i> File tidak tersedia
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            @else
-                <div class="text-center py-4" style="color: #95a5a6;">
-                    <i class="bi bi-file-earmark" style="font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
-                    <p>Belum ada file dokumentasi yang diunggah.</p>
-                </div>
-            @endif
-        </div>
-
-        <!-- ============================================ -->
-        <!-- STATUS PERSETUJUAN UNTUK PEMOHON             -->
-        <!-- ============================================ -->
+        <!-- Status Persetujuan (khusus pemohon) -->
         @if(auth()->user()->isPemohon())
             @php
                 $isApproved = $permohonan->pengujian_disetujui ?? false;
@@ -526,6 +456,74 @@
                 </div>
             @endif
         @endif
+
+        <!-- File Dokumentasi Pengujian -->
+        <div class="detail-section">
+            <div class="section-title">
+                <i class="bi bi-files me-2" style="color: #1a6e4a;"></i>
+                File Dokumentasi Pengujian
+            </div>
+            
+            @if($pengujian && $pengujian->file_pengujian_multiple && count($pengujian->file_pengujian_multiple) > 0)
+                @foreach($pengujian->file_pengujian_multiple as $file)
+                    @php
+                        $fileExists = Storage::disk('public')->exists($file);
+                        $fileSize = $fileExists ? Storage::disk('public')->size($file) : 0;
+                        $sizeMB = $fileSize > 0 ? number_format($fileSize / 1024 / 1024, 2) : '0';
+                        $fileUrl = route('file.show', ['path' => $file]);
+                        $fileName = basename($file);
+                        
+                        // Tentukan icon berdasarkan ekstensi
+                        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                        $iconClass = 'bi-file-earmark';
+                        if (in_array($extension, ['pdf'])) {
+                            $iconClass = 'bi-file-earmark-pdf';
+                        } elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'])) {
+                            $iconClass = 'bi-file-earmark-image';
+                        } elseif (in_array($extension, ['doc', 'docx'])) {
+                            $iconClass = 'bi-file-earmark-word';
+                        } elseif (in_array($extension, ['xls', 'xlsx'])) {
+                            $iconClass = 'bi-file-earmark-excel';
+                        } elseif (in_array($extension, ['zip', 'rar', '7z'])) {
+                            $iconClass = 'bi-file-earmark-zip';
+                        }
+                    @endphp
+                    
+                    <div class="file-card">
+                        <div class="file-icon">
+                            <i class="bi {{ $iconClass }}"></i>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name">{{ $fileName }}</div>
+                            <div class="file-size">
+                                @if($fileExists)
+                                    {{ $sizeMB }} MB
+                                @else
+                                    <span style="color: #e74c3c;">File tidak ditemukan</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            @if($fileExists)
+                                <!-- Tombol Lihat -->
+                                <a href="{{ $fileUrl }}" target="_blank" class="btn-view">
+                                    <i class="bi bi-eye"></i> Lihat
+                                </a>
+                            @else
+                                <span style="font-size: 12px; color: #e74c3c;">
+                                    <i class="bi bi-exclamation-triangle"></i> File tidak tersedia
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                <div class="text-center py-4" style="color: #95a5a6;">
+                    <i class="bi bi-file-earmark" style="font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                    <p>Belum ada file dokumentasi yang diunggah.</p>
+                </div>
+            @endif
+        </div>
 
         <!-- Tombol Kembali -->
         <div class="d-flex gap-2 mb-4">

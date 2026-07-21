@@ -301,15 +301,29 @@
                 @if($kuisionerSelesai)
                     <div class="alert-success-custom">
                         <i class="bi bi-check-circle-fill"></i>
-                        <strong>Kuisioner sudah diisi.</strong> Anda dapat mendownload file test report di bawah ini.
+                        <strong>Kuisioner sudah diisi.</strong> 
+                        Anda dapat mendownload file test report di bawah ini.
                     </div>
                 @else
                     <div class="alert-warning-custom">
                         <i class="bi bi-exclamation-triangle-fill"></i>
                         <strong>Kuisioner belum diisi.</strong> 
-                        Anda hanya dapat <strong>melihat</strong> file test report. 
                         Silakan <a href="{{ route('kuisioner.create', $permohonan->id) }}" class="alert-link">isi kuisioner</a> 
-                        terlebih dahulu untuk dapat mendownload file.
+                        terlebih dahulu untuk dapat melihat isi file test report.
+                    </div>
+                @endif
+            @else
+                @if($kuisionerSelesai)
+                    <div class="alert-success-custom">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <strong>Kuisioner sudah diisi oleh pemohon.</strong> 
+                        Pemohon sudah dapat mendownload file test report ini.
+                    </div>
+                @else
+                    <div class="alert-warning-custom">
+                        <i class="bi bi-clock-history"></i>
+                        <strong>Kuisioner belum diisi oleh pemohon.</strong> 
+                        Pemohon perlu mengisi kuisioner terlebih dahulu untuk dapat melihat isi file test report.
                     </div>
                 @endif
             @endif
