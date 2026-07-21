@@ -13,52 +13,6 @@ use App\Models\User;
 class PermohonanController extends Controller
 {
     /**
-     * Menampilkan daftar permohonan berdasarkan role
-     */
-    public function index()
-    {
-        $user = auth()->user();
-        
-        if ($user->isAdmin()) {
-            // Admin melihat semua permohonan (kecuali draft)
-            $aktifPermohonans = Permohonan::with('user')
-                                ->where('status', 'aktif')
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-            
-            $selesaiPermohonans = Permohonan::with('user')
-                                ->where('status', 'selesai')
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-            
-            $draftPermohonans = collect(); // Kosong untuk admin
-            
-        } else {
-            // Pemohon melihat semua permohonan milik sendiri
-            $draftPermohonans = $user->permohonans()
-                                ->where('status', 'draft')
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-            
-            $aktifPermohonans = $user->permohonans()
-                                ->where('status', 'aktif')
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-            
-            $selesaiPermohonans = $user->permohonans()
-                                ->where('status', 'selesai')
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-        }
-        
-        return view('permohonan.index', compact(
-            'draftPermohonans',
-            'aktifPermohonans',
-            'selesaiPermohonans'
-        ));
-    }
-
-    /**
      * Menampilkan detail permohonan
      */
     public function show($id)

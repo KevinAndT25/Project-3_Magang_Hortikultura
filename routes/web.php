@@ -54,7 +54,6 @@ Route::middleware(['auth'])->group(function () {
         ->where('path', '.*');
         
     // Permohonan Index
-    Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
     Route::get('/permohonan/{id}/pdf', [PermohonanPdfController::class, 'download'])
         ->name('permohonan.pdf')
         ->middleware('auth');

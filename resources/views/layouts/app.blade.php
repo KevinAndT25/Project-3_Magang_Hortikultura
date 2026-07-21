@@ -700,15 +700,6 @@
                     </a>
                 </li>
                 
-                {{-- Daftar Permohonan --}}
-                <li class="nav-item">
-                    <a href="{{ route('permohonan.index') }}" 
-                    class="nav-link {{ request()->routeIs('permohonan.index') || request()->routeIs('permohonan.show') || request()->routeIs('permohonan.edit') ? 'active' : '' }}">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span>Daftar Permohonan</span>
-                    </a>
-                </li>
-                
                 {{-- Menu khusus Admin: Kelola User --}}
                 @if($isAdmin)
                 <li class="nav-item">
@@ -977,7 +968,7 @@
         activeLinks.forEach(link => link.classList.remove('active'));
         
         // Cari yang paling sesuai berdasarkan route
-        const priorityRoutes = ['dashboard.admin', 'dashboard.pemohon', 'permohonan.index', 'permohonan.create', 'admin.users'];
+        const priorityRoutes = ['dashboard.admin', 'dashboard.pemohon', 'permohonan.create', 'admin.users'];
         let found = false;
         
         for (const route of priorityRoutes) {
@@ -985,10 +976,6 @@
                 document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => {
                     const href = link.getAttribute('href');
                     if (href === '{{ $isAdmin ? route('dashboard.admin') : route('dashboard.pemohon') }}' && route === 'dashboard.admin' || route === 'dashboard.pemohon') {
-                        link.classList.add('active');
-                        found = true;
-                    }
-                    if (href === '{{ route('permohonan.index') }}' && route === 'permohonan.index') {
                         link.classList.add('active');
                         found = true;
                     }

@@ -574,6 +574,24 @@
         const searchInput = document.getElementById('searchUser');
         const table = document.getElementById('userTable');
         const rows = table.querySelectorAll('tbody tr');
+
+        searchInput.addEventListener('keyup', function() {
+            const searchText = this.value.toLowerCase();
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchText)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update active users count
+            document.getElementById('activeUsersCount').textContent = visibleCount;
+        });
     });
 
     // ============================================
