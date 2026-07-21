@@ -706,7 +706,17 @@
                     </a>
                 </li>
                 
-                <!-- Menu khusus Pemohon: Permohonan Baru -->
+                {{-- Menu khusus Admin: Kelola User --}}
+                @if($isAdmin)
+                    <li class="nav-item">
+                        <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                            <i class="bi bi-people"></i>
+                            <span>Kelola User</span>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Menu khusus Pemohon: Permohonan Baru --}}
                 @if(!$isAdmin)
                 <li class="nav-item">
                     <a href="{{ route('permohonan.create') }}" class="nav-link {{ request()->routeIs('permohonan.create') ? 'active' : '' }}">

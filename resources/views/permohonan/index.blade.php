@@ -4,6 +4,49 @@
 
 @section('content')
 <style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #1a6e4a 0%, #27ae60 100%);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+    }
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+    .dashboard-header::after {
+        content: '';
+        position: absolute;
+        bottom: -30px;
+        left: -30px;
+        width: 150px;
+        height: 150px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+    .dashboard-header h4 {
+        font-weight: 700;
+        margin-bottom: 3px;
+        position: relative;
+        z-index: 1;
+    }
+    .dashboard-header p {
+        opacity: 0.9;
+        margin-bottom: 0;
+        font-size: 14px;
+        position: relative;
+        z-index: 1;
+    }
+
     /* Section Title */
     .section-title {
         font-weight: 700;
@@ -259,6 +302,13 @@
     
     /* Responsive */
     @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 20px;
+        }
+        .dashboard-header h4 {
+            font-size: 18px;
+        }
+
         .table-dashboard {
             font-size: 12px;
         }
@@ -284,16 +334,24 @@
 
 <div>
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-        <div>
-            <h4 class="fw-bold text-dark mb-1">
-                <i class="bi bi-file-earmark-text me-2" style="color: #1a6e4a;"></i>
-                Daftar Permohonan
-            </h4>
-            <p class="text-muted mb-0" style="font-size: 14px;">
-                {{ auth()->user()->isAdmin() ? 'Semua permohonan yang telah disubmit' : 'Semua permohonan Anda' }}
-            </p>
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h4><i class="bi bi-file-earmark-text me-2"></i>Daftar Permohonan</h4>
+                <p class="mb-0" style="font-size: 14px;">
+                    {{ auth()->user()->isAdmin() ? 'Semua permohonan yang telah disubmit' : 'Semua permohonan Anda' }}
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                <span class="badge bg-light text-dark px-3 py-2">
+                    <i class="bi bi-person-circle me-1"></i> 
+                    {{ Auth::user()->name ?? 'Admin' }}
+                </span>
+            </div>
         </div>
+    </div>
+    
+    <div class="d-flex align-items-center mb-4 flex-wrap">
         @if(auth()->user()->isPemohon())
             <a href="{{ route('permohonan.create') }}" class="btn-permohonan-baru">
                 <i class="bi bi-plus-circle"></i> Permohonan Baru

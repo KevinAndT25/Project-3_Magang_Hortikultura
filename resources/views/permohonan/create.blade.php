@@ -259,7 +259,7 @@
                     Data Pemohon Uji
                 </div>
                 <div class="section-subtitle">
-                    Isi data identitas pemohon <strong>– tidak menggunakan data akun</strong>
+                    Isi data identitas pemohon
                 </div>
                 
                 <div class="row g-3">

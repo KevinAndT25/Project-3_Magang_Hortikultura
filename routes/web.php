@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermohonanController;
 use App\Http\Controllers\ValidasiController;
@@ -88,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/permohonan/{id}', [PermohonanController::class, 'destroy'])->name('permohonan.destroy');
 
         // Admin Users & Reports
-        Route::get('/users', function() { return view('admin.users'); })->name('admin.users');
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users');
         Route::get('/reports', function() { return view('admin.reports'); })->name('admin.reports');
     });
 

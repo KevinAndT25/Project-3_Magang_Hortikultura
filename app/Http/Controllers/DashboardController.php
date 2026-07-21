@@ -4,36 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Permohonan;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
     /**
-     * Dashboard untuk Admin
+     * Dashboard Admin
      */
     public function admin()
     {
-        // Permohonan Aktif (status aktif dan belum selesai semua tahap)
-        $aktifPermohonans = Permohonan::aktif()
-                            ->where(function($q) {
-                                $q->whereDoesntHave('validasi')
-                                  ->orWhereDoesntHave('pengujian')
-                                  ->orWhereDoesntHave('testReport')
-                                  ->orWhereDoesntHave('kuisioner');
-                            })
+        $permohonanAktif = Permohonan::where('status', 'aktif')->count();
+        $permohonanSelesai = Permohonan::where('status', 'selesai')->count();
+        
+        $aktifPermohonans = Permohonan::with('user')
+                            ->where('status', 'aktif')
                             ->orderBy('created_at', 'desc')
                             ->get();
         
-        $permohonanAktif = $aktifPermohonans->count();
-        
-        // Permohonan Selesai (status selesai)
-        $selesaiPermohonans = Permohonan::selesai()
+        $selesaiPermohonans = Permohonan::with('user')
+                            ->where('status', 'selesai')
                             ->orderBy('created_at', 'desc')
                             ->get();
-        
-        $permohonanSelesai = $selesaiPermohonans->count();
         
         return view('dashboard.admin', compact(
-            'permohonanAktif', 
+            'permohonanAktif',
             'permohonanSelesai',
             'aktifPermohonans',
             'selesaiPermohonans'
@@ -41,39 +35,34 @@ class DashboardController extends Controller
     }
 
     /**
-     * Dashboard untuk Pemohon
+     * Dashboard Pemohon
      */
     public function pemohon()
     {
         $user = auth()->user();
         
-        // Draft: permohonan dengan status draft
+        $draft = $user->permohonans()->where('status', 'draft')->count();
+        $permohonanAktif = $user->permohonans()->where('status', 'aktif')->count();
+        $permohonanSelesai = $user->permohonans()->where('status', 'selesai')->count();
+        
         $draftPermohonans = $user->permohonans()
-                            ->draft()
+                            ->where('status', 'draft')
                             ->orderBy('created_at', 'desc')
                             ->get();
         
-        $draft = $draftPermohonans->count();
-        
-        // Permohonan Aktif: status aktif
         $aktifPermohonans = $user->permohonans()
-                            ->aktif()
+                            ->where('status', 'aktif')
                             ->orderBy('created_at', 'desc')
                             ->get();
         
-        $permohonanAktif = $aktifPermohonans->count();
-        
-        // Permohonan Selesai: status selesai
         $selesaiPermohonans = $user->permohonans()
-                            ->selesai()
+                            ->where('status', 'selesai')
                             ->orderBy('created_at', 'desc')
                             ->get();
         
-        $permohonanSelesai = $selesaiPermohonans->count();
-
         return view('dashboard.pemohon', compact(
-            'draft', 
-            'permohonanAktif', 
+            'draft',
+            'permohonanAktif',
             'permohonanSelesai',
             'draftPermohonans',
             'aktifPermohonans',
