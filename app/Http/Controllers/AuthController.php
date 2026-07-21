@@ -132,21 +132,53 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user dan redirect ke halaman login yang sesuai
+     * Logout user dan redirect ke halaman login yang sesuai (via POST)
      */
     public function logout(Request $request)
     {
+        // Simpan role user sebelum logout
         $user = Auth::user();
         $role = $user ? $user->role : 'pemohon';
         
+        // Logout
         Auth::logout();
+        
+        // Invalidate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
+        // Redirect berdasarkan role sebelumnya
         if ($role === 'admin') {
             return redirect()->route('login.admin')->with('info', 'Anda telah logout.');
         }
+        
         return redirect()->route('login.pemohon')->with('info', 'Anda telah logout.');
+    }
+
+    /**
+     * Logout user via GET (untuk keamanan jika ada akses langsung)
+     */
+    public function logoutGet(Request $request)
+    {
+        // Cek apakah user masih login
+        if (Auth::check()) {
+            $user = Auth::user();
+            $role = $user->role;
+            
+            // Logout
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            // Redirect berdasarkan role
+            if ($role === 'admin') {
+                return redirect()->route('login.admin')->with('info', 'Anda telah logout.');
+            }
+            return redirect()->route('login.pemohon')->with('info', 'Anda telah logout.');
+        }
+        
+        // Jika sudah logout, langsung redirect ke login
+        return redirect()->route('login.pemohon');
     }
 
      /**

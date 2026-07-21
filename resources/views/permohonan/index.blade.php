@@ -619,7 +619,6 @@
             <div class="card card-table">
                 <div class="card-header" style="background: linear-gradient(135deg, #fff0e3 0%, #f39c12 100%)">
                     <span><i class="bi bi-hourglass-split me-2"></i>Permohonan Aktif</span>
-                    <span class="badge-count aktif-badge">{{ $aktifPermohonans->count() }}</span>
                 </div>
                 <div class="card-body">
                     <table class="table table-dashboard table-hover mb-0">
@@ -638,6 +637,12 @@
                         </thead>
                         <tbody>
                             @forelse($aktifPermohonans as $p)
+                            @php
+                                // Cek status persetujuan pengujian
+                                $pengujianDisetujui = $p->pengujian_disetujui ?? false;
+                                $pengujianDitolak = $p->pengujian_ditolak ?? false;
+                                $menungguPersetujuan = $p->pengujian_selesai && !$pengujianDisetujui && !$pengujianDitolak;
+                            @endphp
                             <tr class="clickable-row" data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
                                     <a href="{{ route('permohonan.show', $p->id) }}" class="text-decoration-none fw-semibold text-dark" onclick="event.stopPropagation();">
@@ -664,13 +669,17 @@
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
-                                        <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        <span class="badge-status badge-warning">
+                                            <span class="status-dot dot-warning"></span> Diproses
                                         </span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->pengujian)
+                                    @if($menungguPersetujuan)
+                                        <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-warning btn-action" onclick="event.stopPropagation();">
+                                            <i class="bi bi-check-circle"></i> Persetujuan
+                                        </a>
+                                    @elseif($pengujianDisetujui)
                                         <a href="{{ route('pengujian.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
@@ -689,7 +698,11 @@
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
-                                    @elseif($p->pengujian)
+                                    @elseif($menungguPersetujuan)
+                                        <span class="badge-status badge-waiting">
+                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                        </span>
+                                    @elseif($pengujianDisetujui)
                                         <span class="badge-status badge-warning">
                                             <span class="status-dot dot-warning"></span> Diproses
                                         </span>
@@ -701,12 +714,12 @@
                                 </td>
                                 <td>
                                     @if($p->testReport)
-                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action" onclick="event.stopPropagation();">
+                                        <a href="{{ route('kuisioner.create', $p->id) }}" class="btn btn-sm btn-warning btn-action" onclick="event.stopPropagation();">
                                             <i class="blink-dot dot-warning"></i> Isi
                                         </a>
                                     @else
                                         <span class="badge-status badge-waiting">
-                                            <span class="status-dot dot-secondary"></span> Menunggu
+                                            <span class="status-dot dot-secondary"></span> Terkunci
                                         </span>
                                     @endif
                                 </td>

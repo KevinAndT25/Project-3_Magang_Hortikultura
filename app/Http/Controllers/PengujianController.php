@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Pengujian;
 use App\Models\Permohonan;
 use App\Mail\PengujianSelesaiMail;
+use App\Mail\PengujianDiterimaMail;
+use App\Mail\PengujianDitolakMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class PengujianController extends Controller
 {
@@ -153,6 +156,8 @@ class PengujianController extends Controller
         // Update status
         $permohonan->pengujian_disetujui = true;
         $permohonan->save();
+
+        $this->sendEmailToAdminDiterima($permohonan);
         
         return redirect()->route('pengujian.show', $permohonan_id)
                        ->with('success', 'Pengujian disetujui. Permohonan akan melanjutkan ke tahap Test Report.');
@@ -179,8 +184,40 @@ class PengujianController extends Controller
         $permohonan->pengujian_ditolak = true;
         $permohonan->status = 'selesai'; // Ubah status menjadi selesai
         $permohonan->save();
+
+        $this->sendEmailToAdminDitolak($permohonan);
         
         return redirect()->route('pengujian.show', $permohonan_id)
                        ->with('success', 'Pengujian ditolak. Permohonan telah diakhiri di tahap pengujian.');
+    }
+
+    /**
+     * Kirim notifikasi email ke admin (Pengujian Diterima)
+     */
+    private function sendEmailToAdminDiterima($permohonan)
+    {
+        try {
+            $admin = User::where('role', 'admin')->first();
+            if ($admin && $admin->email) {
+                Mail::to($admin->email)->send(new PengujianDiterimaMail($permohonan));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email notifikasi pengujian diterima: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Kirim notifikasi email ke admin (Pengujian Ditolak)
+     */
+    private function sendEmailToAdminDitolak($permohonan)
+    {
+        try {
+            $admin = User::where('role', 'admin')->first();
+            if ($admin && $admin->email) {
+                Mail::to($admin->email)->send(new PengujianDitolakMail($permohonan));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email notifikasi pengujian ditolak: ' . $e->getMessage());
+        }
     }
 }
