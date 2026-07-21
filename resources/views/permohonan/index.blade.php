@@ -351,13 +351,13 @@
         </div>
     </div>
     
-    <div class="d-flex align-items-center mb-4 flex-wrap">
-        @if(auth()->user()->isPemohon())
-            <a href="{{ route('permohonan.create') }}" class="btn-permohonan-baru">
-                <i class="bi bi-plus-circle"></i> Permohonan Baru
-            </a>
-        @endif
-    </div>
+    @if(auth()->user()->isPemohon())
+        <div class="d-flex align-items-center mb-4 flex-wrap">
+                <a href="{{ route('permohonan.create') }}" class="btn-permohonan-baru">
+                    <i class="bi bi-plus-circle"></i> Permohonan Baru
+                </a>
+        </div>
+    @endif
 
     <!-- ============================================ -->
     <!-- TABEL DRAFT (HANYA UNTUK PEMOHON) -->

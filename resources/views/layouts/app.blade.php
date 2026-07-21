@@ -672,7 +672,7 @@
                     <i class="bi bi-chevron-down user-arrow" id="userArrow"></i>
                 </div>
                 
-                <!-- Dropdown - SEMUA USER BISA KELOLA AKUN -->
+                <!-- Dropdown -->
                 <div class="user-dropdown" id="userDropdown">
                     <button class="dropdown-item" onclick="openProfileModal()">
                         <i class="bi bi-person-gear"></i>
@@ -691,16 +691,19 @@
             
             <!-- Menu -->
             <ul class="sidebar-menu">
+                {{-- Dashboard --}}
                 <li class="nav-item">
-                    <a href="{{ $isAdmin ? route('dashboard.admin') : route('dashboard.pemohon') }}" class="nav-link {{ request()->routeIs('dashboard.*') ? 'active' : '' }}">
+                    <a href="{{ $isAdmin ? route('dashboard.admin') : route('dashboard.pemohon') }}" 
+                    class="nav-link {{ request()->routeIs('dashboard.*') ? 'active' : '' }}">
                         <i class="bi bi-speedometer2"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 
-                <!-- Menu Permohonan untuk semua user -->
+                {{-- Daftar Permohonan --}}
                 <li class="nav-item">
-                    <a href="{{ route('permohonan.index') }}" class="nav-link {{ request()->routeIs('permohonan.*') ? 'active' : '' }}">
+                    <a href="{{ route('permohonan.index') }}" 
+                    class="nav-link {{ request()->routeIs('permohonan.index') || request()->routeIs('permohonan.show') || request()->routeIs('permohonan.edit') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Daftar Permohonan</span>
                     </a>
@@ -708,18 +711,20 @@
                 
                 {{-- Menu khusus Admin: Kelola User --}}
                 @if($isAdmin)
-                    <li class="nav-item">
-                        <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                            <i class="bi bi-people"></i>
-                            <span>Kelola User</span>
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.users') }}" 
+                    class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i>
+                        <span>Kelola User</span>
+                    </a>
+                </li>
                 @endif
 
                 {{-- Menu khusus Pemohon: Permohonan Baru --}}
                 @if(!$isAdmin)
                 <li class="nav-item">
-                    <a href="{{ route('permohonan.create') }}" class="nav-link {{ request()->routeIs('permohonan.create') ? 'active' : '' }}">
+                    <a href="{{ route('permohonan.create') }}" 
+                    class="nav-link {{ request()->routeIs('permohonan.create') ? 'active' : '' }}">
                         <i class="bi bi-plus-circle"></i>
                         <span>Permohonan Baru</span>
                     </a>
@@ -770,67 +775,125 @@
 <!-- ============================================ -->
 @auth
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden;">
+            <!-- Header dengan gaya yang sama seperti modal detail user -->
+            <div class="modal-header-custom" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; background: linear-gradient(135deg, #1a6e4a 0%, #27ae60 100%);">
+                <h5 class="modal-title" id="profileModalLabel" style="margin: 0; color: white; font-weight: 700;">
+                    <i class="bi bi-person-gear me-2"></i> Kelola Akun
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="margin: 0;"></button>
+            </div>
+            
             <form action="{{ route('profile.update') }}" method="POST" id="profileForm">
                 @csrf
                 @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="profileModalLabel">
-                        <i class="bi bi-person-gear me-2" style="color: #1a6e4a;"></i>
-                        Kelola Akun
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                
+                <div class="modal-body" style="padding: 25px;">
+                    <!-- Avatar Preview -->
+                    <div class="text-center mb-4">
+                        @php
+                            $user = Auth::user();
+                            $initials = $user->initials ?? strtoupper(substr($user->name ?? 'U', 0, 1));
+                            $avatarColor = $user->avatar_color ?? '#1a6e4a';
+                        @endphp
+                        <div class="detail-avatar-lg" style="width: 80px; height: 80px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #fff; background: {{ $avatarColor }}; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                            {{ $initials }}
+                        </div>
+                        {{-- <p class="text-muted mt-2" style="font-size: 13px;">
+                            <i class="bi bi-info-circle me-1"></i> Foto profil diambil dari inisial nama
+                        </p> --}}
+                    </div>
+                    
+                    <!-- Form Fields dengan style seperti detail item -->
+                    <div class="detail-item" style="display: flex; padding: 10px 0; border-bottom: 1px solid #f0f2f5; align-items: center;">
+                        <span class="detail-label" style="font-weight: 600; color: #7f8c8d; width: 140px; flex-shrink: 0; font-size: 13px;">
+                            <i class="bi bi-person me-2"></i>Username <span class="text-danger">*</span>
+                        </span>
+                        <div class="detail-value" style="flex: 1;">
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                                   id="profile_name" name="name" 
+                                   value="{{ old('name', Auth::user()->name) }}" 
+                                   style="border-radius: 8px; border: 1px solid #dce1e8; padding: 10px 14px; font-size: 14px; transition: all 0.3s;"
+                                   required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item" style="display: flex; padding: 10px 0; border-bottom: 1px solid #f0f2f5; align-items: center;">
+                        <span class="detail-label" style="font-weight: 600; color: #7f8c8d; width: 140px; flex-shrink: 0; font-size: 13px;">
+                            <i class="bi bi-envelope me-2"></i>Email <span class="text-danger">*</span>
+                        </span>
+                        <div class="detail-value" style="flex: 1;">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                                   id="profile_email" name="email" 
+                                   value="{{ old('email', Auth::user()->email) }}" 
+                                   style="border-radius: 8px; border: 1px solid #dce1e8; padding: 10px 14px; font-size: 14px; transition: all 0.3s;"
+                                   required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item" style="display: flex; padding: 10px 0; border-bottom: 1px solid #f0f2f5; align-items: center;">
+                        <span class="detail-label" style="font-weight: 600; color: #7f8c8d; width: 140px; flex-shrink: 0; font-size: 13px;">
+                            <i class="bi bi-phone me-2"></i>No HP
+                        </span>
+                        <div class="detail-value" style="flex: 1;">
+                            <input type="text" class="form-control @error('no_hp') is-invalid @enderror" 
+                                   id="profile_no_hp" name="no_hp" 
+                                   value="{{ old('no_hp', Auth::user()->no_hp ?? '') }}" 
+                                   placeholder="08xxxxxxxxx"
+                                   style="border-radius: 8px; border: 1px solid #dce1e8; padding: 10px 14px; font-size: 14px; transition: all 0.3s;">
+                            @error('no_hp')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                    <!-- Separator dengan informasi password -->
+                    <div class="info-banner" style="background: #fff3cd; border-left: 4px solid #f39c12; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #856404; margin: 15px 0;">
+                        <i class="bi bi-info-circle me-2" style="color: #f39c12;"></i>
+                        Kosongkan kolom password jika tidak ingin mengubah password.
+                    </div>
+                    
+                    <div class="detail-item" style="display: flex; padding: 10px 0; border-bottom: 1px solid #f0f2f5; align-items: center;">
+                        <span class="detail-label" style="font-weight: 600; color: #7f8c8d; width: 140px; flex-shrink: 0; font-size: 13px;">
+                            <i class="bi bi-key me-2"></i>Password Baru
+                        </span>
+                        <div class="detail-value" style="flex: 1;">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                                   id="profile_password" name="password" 
+                                   placeholder="Minimal 6 karakter"
+                                   style="border-radius: 8px; border: 1px solid #dce1e8; padding: 10px 14px; font-size: 14px; transition: all 0.3s;">
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item" style="display: flex; padding: 10px 0; align-items: center;">
+                        <span class="detail-label" style="font-weight: 600; color: #7f8c8d; width: 140px; flex-shrink: 0; font-size: 13px;">
+                            <i class="bi bi-key-fill me-2"></i>Konfirmasi Password
+                        </span>
+                        <div class="detail-value" style="flex: 1;">
+                            <input type="password" class="form-control" 
+                                   id="profile_password_confirmation" 
+                                   name="password_confirmation" 
+                                   placeholder="Ketik ulang password baru"
+                                   style="border-radius: 8px; border: 1px solid #dce1e8; padding: 10px 14px; font-size: 14px; transition: all 0.3s;">
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="profile_name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                               id="profile_name" name="name" 
-                               value="{{ old('name', Auth::user()->name) }}" required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="profile_email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                               id="profile_email" name="email" 
-                               value="{{ old('email', Auth::user()->email) }}" required>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="profile_no_hp" class="form-label">Nomor Handphone</label>
-                        <input type="text" class="form-control @error('no_hp') is-invalid @enderror" 
-                               id="profile_no_hp" name="no_hp" 
-                               value="{{ old('no_hp', Auth::user()->no_hp ?? '') }}" placeholder="08xxxxxxxxx">
-                        @error('no_hp')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <hr>
-                    <p class="text-muted" style="font-size: 13px;">Kosongkan kolom password jika tidak ingin mengubah password.</p>
-                    <div class="mb-3">
-                        <label for="profile_password" class="form-label">Password Baru</label>
-                        <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                               id="profile_password" name="password" 
-                               placeholder="Minimal 6 karakter">
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="profile_password_confirmation" class="form-label">Konfirmasi Password Baru</label>
-                        <input type="password" class="form-control" 
-                               id="profile_password_confirmation" 
-                               name="password_confirmation" placeholder="Ketik ulang password baru">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">
+                
+                <div class="modal-footer" style="border-top: 1px solid #f0f2f5; padding: 15px 25px;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 6px; padding: 8px 20px; font-weight: 500;">
+                        <i class="bi bi-x-circle me-1"></i> Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary" style="border-radius: 6px; padding: 8px 25px; background: linear-gradient(135deg, #1a6e4a 0%, #27ae60 100%); border: none; font-weight: 600;">
                         <i class="bi bi-save me-1"></i> Simpan Perubahan
                     </button>
                 </div>
@@ -905,18 +968,43 @@
                 }
             }
         });
-        
-        // ============================================
-        // ACTIVE MENU LINK
-        // ============================================
-        const currentPath = window.location.pathname;
-        document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => {
-            if (link.getAttribute('href') === currentPath) {
-                link.classList.add('active');
-            }
-        });
     });
     
+    // Pastikan tidak ada double active
+    const activeLinks = document.querySelectorAll('.sidebar-menu .nav-link.active');
+    if (activeLinks.length > 1) {
+        // Jika lebih dari 1 active, hapus semua dan aktifkan berdasarkan prioritas
+        activeLinks.forEach(link => link.classList.remove('active'));
+        
+        // Cari yang paling sesuai berdasarkan route
+        const priorityRoutes = ['dashboard.admin', 'dashboard.pemohon', 'permohonan.index', 'permohonan.create', 'admin.users'];
+        let found = false;
+        
+        for (const route of priorityRoutes) {
+            if (currentRoute === route) {
+                document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === '{{ $isAdmin ? route('dashboard.admin') : route('dashboard.pemohon') }}' && route === 'dashboard.admin' || route === 'dashboard.pemohon') {
+                        link.classList.add('active');
+                        found = true;
+                    }
+                    if (href === '{{ route('permohonan.index') }}' && route === 'permohonan.index') {
+                        link.classList.add('active');
+                        found = true;
+                    }
+                    if (href === '{{ route('permohonan.create') }}' && route === 'permohonan.create') {
+                        link.classList.add('active');
+                        found = true;
+                    }
+                    if (href === '{{ route('admin.users') }}' && route === 'admin.users') {
+                        link.classList.add('active');
+                        found = true;
+                    }
+                });
+                if (found) break;
+            }
+        }
+    }
     // ============================================
     // MODAL FUNCTIONS (UNTUK SEMUA USER)
     // ============================================
