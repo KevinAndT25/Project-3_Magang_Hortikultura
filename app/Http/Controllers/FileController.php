@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class FileController extends Controller
 {
     /**
-     * Download atau view file dari storage
+     * Menampilkan file di browser (view)
      */
     public function show($path)
     {

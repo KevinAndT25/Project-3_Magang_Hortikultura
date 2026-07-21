@@ -40,6 +40,8 @@ class Permohonan extends Model
         'npwp',              
         'nib',               
         'validasi_selesai', 
+        'pengujian_disetujui',  
+        'pengujian_ditolak',
         'pengujian_selesai',
         'test_report_selesai', 
         'kuisioner_selesai'
@@ -50,6 +52,8 @@ class Permohonan extends Model
         'tahun_pembuatan' => 'integer',
         'jumlah_unit' => 'integer',
         'validasi_selesai' => 'boolean',
+        'pengujian_disetujui' => 'boolean',
+        'pengujian_ditolak' => 'boolean',
         'pengujian_selesai' => 'boolean',
         'test_report_selesai' => 'boolean',
         'kuisioner_selesai' => 'boolean',

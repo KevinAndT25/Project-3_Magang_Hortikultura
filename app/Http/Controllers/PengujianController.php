@@ -7,6 +7,7 @@ use App\Models\Pengujian;
 use App\Models\Permohonan;
 use App\Mail\PengujianSelesaiMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class PengujianController extends Controller
 {
@@ -51,6 +52,8 @@ class PengujianController extends Controller
             'tanggal_pengujian' => 'required|date',
             'lokasi' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
+            'file_pengujian' => 'nullable|array',
+            'file_pengujian.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $permohonan = Permohonan::findOrFail($permohonan_id);
@@ -61,6 +64,18 @@ class PengujianController extends Controller
                            ->with('error', 'Pengujian sudah disubmit dan tidak dapat diubah.');
         }
 
+        // Simpan file jika ada
+        $filePaths = [];
+        if ($request->hasFile('file_pengujian')) {
+            foreach ($request->file('file_pengujian') as $file) {
+                if ($file->isValid()) {
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $path = $file->storeAs('pengujian/' . $permohonan_id, $filename, 'public');
+                    $filePaths[] = $path;
+                }
+            }
+        }
+
         // Buat atau update pengujian
         Pengujian::updateOrCreate(
             ['permohonan_id' => $permohonan_id],
@@ -69,6 +84,7 @@ class PengujianController extends Controller
                 'tanggal_pengujian' => $request->tanggal_pengujian,
                 'lokasi' => $request->lokasi,
                 'deskripsi' => $request->deskripsi,
+                'file_pengujian_multiple' => $filePaths,
                 'is_submit' => true,
             ]
         );
@@ -115,5 +131,56 @@ class PengujianController extends Controller
         } catch (\Exception $e) {
             \Log::error('Gagal mengirim email notifikasi pengujian: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Menyetujui pengujian oleh pemohon
+     */
+    public function approve($permohonan_id)
+    {
+        $permohonan = Permohonan::findOrFail($permohonan_id);
+        
+        // Cek akses: hanya pemohon yang memiliki permohonan
+        if (auth()->user()->role !== 'pemohon' || $permohonan->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses.');
+        }
+        
+        // Cek apakah sudah ada persetujuan
+        if ($permohonan->pengujian_disetujui || $permohonan->pengujian_ditolak) {
+            return redirect()->back()->with('error', 'Anda sudah memberikan persetujuan untuk pengujian ini.');
+        }
+        
+        // Update status
+        $permohonan->pengujian_disetujui = true;
+        $permohonan->save();
+        
+        return redirect()->route('pengujian.show', $permohonan_id)
+                       ->with('success', 'Pengujian disetujui. Permohonan akan melanjutkan ke tahap Test Report.');
+    }
+
+    /**
+     * Menolak pengujian oleh pemohon
+     */
+    public function reject($permohonan_id)
+    {
+        $permohonan = Permohonan::findOrFail($permohonan_id);
+        
+        // Cek akses: hanya pemohon yang memiliki permohonan
+        if (auth()->user()->role !== 'pemohon' || $permohonan->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses.');
+        }
+        
+        // Cek apakah sudah ada persetujuan
+        if ($permohonan->pengujian_disetujui || $permohonan->pengujian_ditolak) {
+            return redirect()->back()->with('error', 'Anda sudah memberikan persetujuan untuk pengujian ini.');
+        }
+        
+        // Update status
+        $permohonan->pengujian_ditolak = true;
+        $permohonan->status = 'selesai'; // Ubah status menjadi selesai
+        $permohonan->save();
+        
+        return redirect()->route('pengujian.show', $permohonan_id)
+                       ->with('success', 'Pengujian ditolak. Permohonan telah diakhiri di tahap pengujian.');
     }
 }

@@ -10,8 +10,17 @@ class Pengujian extends Model
     use HasFactory;
 
     protected $fillable = [
-        'permohonan_id', 'nomor_permohonan_uji', 'tanggal_pengujian',
-        'lokasi', 'deskripsi', 'is_submit'
+        'permohonan_id', 
+        'nomor_permohonan_uji', 
+        'tanggal_pengujian',
+        'lokasi', 
+        'deskripsi', 
+        'file_pengujian_multiple',  
+        'is_submit'
+    ];
+
+    protected $casts = [
+        'file_pengujian_multiple' => 'array', 
     ];
 
     public function permohonan()

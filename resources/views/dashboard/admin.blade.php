@@ -413,6 +413,12 @@
                         </thead>
                         <tbody>
                             @forelse($aktifPermohonans as $p)
+                            @php
+                                // Cek status persetujuan pengujian
+                                $pengujianDisetujui = $p->pengujian_disetujui ?? false;
+                                $pengujianDitolak = $p->pengujian_ditolak ?? false;
+                                $menungguPersetujuan = $p->pengujian_selesai && !$pengujianDisetujui && !$pengujianDitolak;
+                            @endphp
                             <tr class="clickable-row {{ (!$p->validasi_selesai || !$p->pengujian_selesai || !$p->test_report_selesai) ? 'tr-highlight' : '' }}" 
                                 data-href="{{ route('permohonan.show', $p->id) }}">
                                 <td>
@@ -465,10 +471,26 @@
                                         <a href="{{ route('testreport.show', $p->id) }}" class="btn btn-sm btn-success btn-action" onclick="event.stopPropagation();">
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
-                                    @elseif($p->pengujian_selesai)
+                                    @elseif($pengujianDitolak)
+                                        {{-- Jika pengujian ditolak, permohonan selesai --}}
+                                        <span class="badge-status badge-danger" style="background: #fce4ec; color: #c62828;">
+                                            <i class="bi bi-x-circle"></i> Ditolak
+                                        </span>
+                                    @elseif($menungguPersetujuan)
+                                        {{-- Menunggu persetujuan pemohon --}}
+                                        <span class="badge-status badge-warning" style="background: #fff3cd; color: #856404;">
+                                            <span class="status-dot dot-warning"></span> Menunggu
+                                        </span>
+                                    @elseif($pengujianDisetujui)
+                                        {{-- Pengujian disetujui, bisa lanjut ke Test Report --}}
                                         <a href="{{ route('testreport.create', $p->id) }}" class="btn btn-sm btn-warning-action btn-action btn-urgent" onclick="event.stopPropagation();">
                                             <span class="blink-dot dot-warning"></span> Isi
                                         </a>
+                                    @elseif($p->pengujian_selesai)
+                                        {{-- Pengujian selesai tapi belum ada status persetujuan --}}
+                                        <span class="badge-status badge-warning">
+                                            <span class="status-dot dot-warning"></span> Menunggu
+                                        </span>
                                     @else
                                         <span class="badge-status badge-waiting">
                                             <span class="status-dot dot-secondary"></span> Terkunci
@@ -593,8 +615,8 @@
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
-                                        <span class="badge-status badge-success">
-                                            <span class="status-dot dot-success"></span> Selesai
+                                        <button class="btn btn-sm btn-danger btn-action" disabled style="background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; cursor: not-allowed; opacity: 1;">
+                                            <i class="bi bi-x-circle"></i> Ditolak
                                         </span>
                                     @endif
                                 </td>
@@ -604,9 +626,9 @@
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
                                     @else
-                                        <span class="badge-status badge-success">
-                                            <i class="bi bi-check-circle"></i> Selesai
-                                        </span>
+                                        <button class="btn btn-sm btn-danger btn-action" disabled style="background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; cursor: not-allowed; opacity: 1;">
+                                            <i class="bi bi-x-circle"></i> Ditolak
+                                        </button>
                                     @endif
                                 </td>
                             </tr>

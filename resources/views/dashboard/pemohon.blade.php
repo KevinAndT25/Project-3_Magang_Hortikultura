@@ -680,8 +680,8 @@
                                             <i class="bi bi-check-circle"></i> Lihat
                                         </a>
                                     @else
-                                        <span class="badge-status badge-success">
-                                            <span class="status-dot dot-success"></span> Selesai
+                                        <button class="btn btn-sm btn-danger btn-action" disabled style="background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; cursor: not-allowed; opacity: 1;">
+                                            <i class="bi bi-x-circle"></i> Ditolak
                                         </span>
                                     @endif
                                 </td>
@@ -691,9 +691,9 @@
                                             <i class="bi bi-eye"></i> Lihat
                                         </a>
                                     @else
-                                        <span class="badge-status badge-success">
-                                            <i class="bi bi-check-circle"></i> Selesai
-                                        </span>
+                                        <button class="btn btn-sm btn-danger btn-action" disabled style="background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; cursor: not-allowed; opacity: 1;">
+                                            <i class="bi bi-x-circle"></i> Ditolak
+                                        </button>
                                     @endif
                                 </td>
                             </tr>

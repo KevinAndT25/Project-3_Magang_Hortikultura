@@ -107,6 +107,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/permohonan/{id}/edit', [PermohonanController::class, 'edit'])->name('permohonan.edit');
         Route::put('/permohonan/{id}', [PermohonanController::class, 'update'])->name('permohonan.update');
         Route::post('/permohonan/{id}/submit', [PermohonanController::class, 'submitDraft'])->name('permohonan.submit');
+
+        // Pengujian Approve & Reject
+        Route::post('/pengujian/{permohonan_id}/approve', [PengujianController::class, 'approve'])->name('pengujian.approve');
+        Route::post('/pengujian/{permohonan_id}/reject', [PengujianController::class, 'reject'])->name('pengujian.reject');
         
         // Kuisioner
         Route::get('/kuisioner/create/{permohonan_id}', [KuisionerController::class, 'create'])->name('kuisioner.create');
