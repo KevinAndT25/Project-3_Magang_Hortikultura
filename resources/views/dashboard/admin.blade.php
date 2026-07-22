@@ -191,11 +191,11 @@
     /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 30px 20px;
+        padding: 25px 20px;
         color: #95a5a6;
     }
     .empty-state i {
-        font-size: 36px;
+        font-size: 30px;
         margin-bottom: 10px;
         opacity: 0.3;
     }
