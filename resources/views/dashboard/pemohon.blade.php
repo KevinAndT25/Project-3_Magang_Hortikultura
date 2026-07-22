@@ -387,7 +387,7 @@
 
     <!-- Tombol Permohonan Baru -->
     <div class="row mb-4">
-        <div class="col-12">
+        <div class="d-flex justify-content-end col-12">
             <a href="{{ route('permohonan.create') }}" class="btn-permohonan-baru">
                 <i class="bi bi-plus-circle"></i> Permohonan Baru
             </a>
