@@ -442,13 +442,12 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-table">
-                <div class="card-header">
+                <div class="card-header" style="background: linear-gradient(135deg, #c9f9df 0%, #2ecc71 100%)">
                     <span><i class="bi bi-list-ul me-2"></i>Daftar Akun Pemohon</span>
-                    <span class="badge-count">{{ $users->count() ?? 0 }} pemohon</span>
                 </div>
                 <div class="card-body">
                     <!-- Search Box -->
-                    <div class="px-3 pt-3 pb-2">
+                    <div class="px-3 pt-2 pb-2">
                         <div class="search-box">
                             <i class="bi bi-search search-icon"></i>
                             <input type="text" class="form-control" id="searchUser" placeholder="Cari user...">
@@ -485,7 +484,7 @@
                                 <td>{{ $user->no_hp ?? '-' }}</td>
                                 <td class="text-center">
                                     <button class="btn-detail" 
-                                            onclick="viewUser('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}', '{{ $user->no_hp }}', '{{ $user->role }}', '{{ $user->created_at }}', '{{ $user->updated_at }}')">
+                                            onclick="viewUser('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}', '{{ $user->no_hp }}', '{{ $user->role }}', '{{ $user->created_at }}')">
                                         <i class="bi bi-eye"></i> Detail
                                     </button>
                                 </td>
@@ -588,16 +587,13 @@
                     row.style.display = 'none';
                 }
             });
-            
-            // Update active users count
-            document.getElementById('activeUsersCount').textContent = visibleCount;
         });
     });
 
     // ============================================
     // VIEW USER DETAIL
     // ============================================
-    function viewUser(id, name, email, phone, role, created, updated) {
+    function viewUser(id, name, email, phone, role, created) {
         const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
         
         // Set data ke modal
